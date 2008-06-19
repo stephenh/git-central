@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Delegates to post-receive-email and post-receive-trac
+#
+
+input=""
+while read line ; do
+    input="$input$line"
+done
+
+echo $input | sh hooks/post-receive-email
+echo $input | sh hooks/post-receive-trac
+
