@@ -230,8 +230,12 @@ generate_create_branch_email()
 	# (see generate_update_branch_email for the explanation of this
 	# command)
 	git rev-parse --not --branches | grep -v $(git rev-parse $refname) |
-	git rev-list --pretty --stdin $newrev
+	git rev-list --pretty --reverse --stdin $newrev
 	echo $LOGEND
+
+	echo ""
+	echo "Summary of changes:"
+	git diff-tree --stat -p $newrev
 }
 
 #
@@ -391,7 +395,7 @@ generate_update_branch_email()
 		echo ""
 		echo $LOGBEGIN
 		git rev-parse --not --branches | grep -v $(git rev-parse $refname) |
-		git rev-list --pretty --stdin $oldrev..$newrev
+		git rev-list --reverse --pretty --stdin $oldrev..$newrev
 
 		# XXX: Need a way of detecting whether git rev-list actually
 		# outputted anything, so that we can issue a "no new
@@ -411,7 +415,7 @@ generate_update_branch_email()
 	# non-fast forward updates.
 	echo ""
 	echo "Summary of changes:"
-	git diff-tree --stat --summary --find-copies-harder $oldrev..$newrev
+	git diff-tree --stat -p --find-copies-harder $oldrev..$newrev
 }
 
 #
@@ -596,7 +600,8 @@ send_mail()
 	if [ -n "$envelopesender" ]; then
 		/usr/sbin/sendmail -t -f "$envelopesender"
 	else
-		/usr/sbin/sendmail -t
+		# /usr/sbin/sendmail -t
+		/home/BIPFS/shaberman/local/bin/msmtp --file=/srv/git/hooks/msmtp.conf -t
 	fi
 }
 
