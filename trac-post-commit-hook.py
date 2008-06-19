@@ -167,7 +167,7 @@ class CommitHook:
         pass
 
     def _cmdQa(self, ticket):
-        ticket['phase'] = 'QA'
+        ticket['phase'] = 'Initial QA'
         ticket['owner'] = ''
         ticket['status'] = 'new'
 
