@@ -1,0 +1,10 @@
+#!/bin/sh
+
+grep '\(re\|refs\|qa\) #[0-9]\+' $1 > /dev/null
+
+if [ $? -ne 0 ]
+then
+    echo "Please reference a ticket"
+    exit 1
+fi
+
