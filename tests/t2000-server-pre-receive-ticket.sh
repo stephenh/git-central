@@ -22,8 +22,8 @@ install_server_hook 'pre-receive-ticket' 'pre-receive'
 test_expect_success 'reject with bad message' '
 	echo $test_name >a &&
 	git commit -a -m "$test_name" &&
-	head=$(git rev-parse HEAD)
-	git push >push.out 2>push.err
+	head=$(git rev-parse HEAD) &&
+	! git push >push.out 2>push.err &&
 	cat push.err | grep "Commit $head does not reference a ticket"
 '
 
@@ -49,24 +49,25 @@ test_expect_success 'reject with bad message in second of three' '
 	# the bad one
 	echo "$test_name second" >a &&
 	git commit -a -m "$test_name second" &&
-	head=$(git rev-parse HEAD)
+	head=$(git rev-parse HEAD) &&
+	echo "head=$head" &&
 
 	echo "$test_name third" >a &&
 	git commit -a -m "$test_name third re #3222" &&
 
-	git push
+	! git push >push.out 2>push.err &&
 	cat push.err | grep "Commit $head does not reference a ticket"
 '
 
 test_expect_success 'accept with re in all of three' '
-	git reset --hard HEAD^^^
+	git reset --hard HEAD^^^ &&
 	echo "$test_name first" >a &&
 	git commit -a -m "$test_name first re #3222" &&
 
 	# the bad one
 	echo "$test_name second" >a &&
 	git commit -a -m "$test_name second re #3222" &&
-	head=$(git rev-parse HEAD)
+	head=$(git rev-parse HEAD) &&
 
 	echo "$test_name third" >a &&
 	git commit -a -m "$test_name third re #3222" &&

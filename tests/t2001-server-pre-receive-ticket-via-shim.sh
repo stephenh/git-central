@@ -23,8 +23,8 @@ install_server_hook 'pre-receive-ticket' 'pre-receive-ticket'
 test_expect_success 'reject with bad message via shim' '
 	echo $test_name >a &&
 	git commit -a -m "$test_name" &&
-	head=$(git rev-parse HEAD)
-	git push >push.out 2>push.err
+	head=$(git rev-parse HEAD) &&
+	! git push >push.out 2>push.err &&
 	cat push.err | grep "Commit $head does not reference a ticket"
 '
 
