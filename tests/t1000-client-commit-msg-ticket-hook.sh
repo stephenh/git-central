@@ -34,8 +34,8 @@ test_expect_success 'accepts with re' '
 test_expect_success 'accepts with re on the second line' '
 	echo "$test_name" >file &&
 	git add file &&
-	echo "line one" >msg
-	echo "line two re #3200" >>msg
+	echo "line one" >msg &&
+	echo "line two re #3200" >>msg &&
 	git commit -F msg
 '
 
