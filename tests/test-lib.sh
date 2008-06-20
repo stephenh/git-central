@@ -435,3 +435,9 @@ install_client_hook () {
     chmod +x "$TRASH_HOOKS/$2"
 }
 
+install_server_hook () {
+    mkdir -p "server/.git/hooks"
+    cp "../../server/$1" "server/.git/hooks/$2"
+    chmod +x "server/.git/hooks/$2"
+}
+

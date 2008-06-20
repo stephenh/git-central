@@ -4,7 +4,7 @@ grep -i '\(\(re\|refs\|qa\) #[0-9]\+\)\|\(no ticket\)' "$1" > /dev/null
 
 if [ $? -ne 0 ]
 then
-    echo "Please reference a ticket"
-    exit 1
+	echo "Please reference a ticket"
+	exit 1
 fi
 

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+while read oldrev newrev refname ; do
+	if expr "$oldrev" : '0*$' >/dev/null
+	then
+		git rev-list $newrev
+	else
+		git rev-list $oldrev..$newrev
+	fi | while read commit ; do
+		git log -n 1 '--pretty=format:%s%n%b' "$commit" | grep -i '\(\(re\|refs\|qa\) #[0-9]\+\)\|\(no ticket\)' > /dev/null
+		if [ $? -ne 0 ]
+		then
+			echo "Commit $commit does not reference a ticket"
+			exit 1
+		fi
+	done
+done
+

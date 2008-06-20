@@ -1,9 +1,8 @@
 #!/bin/sh
 
-test_description='commit-msg ticket hook'
+test_description='client commit-msg ticket enforcer'
 
 . ./test-lib.sh
-
 
 # setup the commit-msg hook
 install_client_hook 'commit-msg' 'commit-msg'
