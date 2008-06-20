@@ -50,5 +50,11 @@ test_expect_success 'accepts with qa' '
 	git commit -m "first qa #3200"
 '
 
+test_expect_success 'accepts with no ticket' '
+	echo "$test_name" > file &&
+	git add file &&
+	git commit -m "first no ticket"
+'
+
 test_done
 

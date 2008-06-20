@@ -1,6 +1,6 @@
 #!/bin/sh
 
-grep -i '\(re\|refs\|qa\) #[0-9]\+' "$1" > /dev/null
+grep -i '\(\(re\|refs\|qa\) #[0-9]\+\)\|\(no ticket\)' "$1" > /dev/null
 
 if [ $? -ne 0 ]
 then
