@@ -42,5 +42,37 @@ test_expect_success 'accept with re on second line' '
 	git push
 '
 
+test_expect_success 'reject with bad message in second of three' '
+	echo "$test_name first" >a &&
+	git commit -a -m "$test_name first re #3222" &&
+
+	# the bad one
+	echo "$test_name second" >a &&
+	git commit -a -m "$test_name second" &&
+	head=$(git rev-parse HEAD)
+
+	echo "$test_name third" >a &&
+	git commit -a -m "$test_name third re #3222" &&
+
+	git push
+	cat push.err | grep "Commit $head does not reference a ticket"
+'
+
+test_expect_success 'accept with re in all of three' '
+	git reset --hard HEAD^^^
+	echo "$test_name first" >a &&
+	git commit -a -m "$test_name first re #3222" &&
+
+	# the bad one
+	echo "$test_name second" >a &&
+	git commit -a -m "$test_name second re #3222" &&
+	head=$(git rev-parse HEAD)
+
+	echo "$test_name third" >a &&
+	git commit -a -m "$test_name third re #3222" &&
+
+	git push
+'
+
 test_done
 
