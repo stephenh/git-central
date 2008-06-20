@@ -1,0 +1,4 @@
+#!/bin/sh
+
+. $GIT_DIR/hooks/pre-receive-ticket
+

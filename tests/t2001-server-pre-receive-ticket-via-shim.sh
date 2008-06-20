@@ -1,7 +1,7 @@
 
 #!/bin/sh
 
-test_description='server pre-receive ticket enforcer'
+test_description='server pre-receive ticket enforcer via shim'
 
 . ./test-lib.sh
 
@@ -16,10 +16,11 @@ test_expect_success 'setup' '
 	git config --add branch.master.merge refs/heads/master
 '
 
-# setup the pre-receive hook
-install_server_hook 'pre-receive-ticket' 'pre-receive'
+# setup the shim
+install_server_hook 'pre-receive' 'pre-receive'
+install_server_hook 'pre-receive-ticket' 'pre-receive-ticket'
 
-test_expect_success 'reject with bad message' '
+test_expect_success 'reject with bad message via shim' '
 	echo $test_name >a &&
 	git commit -a -m "$test_name" &&
 	head=$(git rev-parse HEAD)
@@ -28,17 +29,9 @@ test_expect_success 'reject with bad message' '
 '
 
 # the last test has a dirty commit message, so ammend it with a good message
-test_expect_success 'accept with re' '
+test_expect_success 'accept with re via shim' '
 	echo $test_name >a &&
 	git commit --amend -m "$test_name re #3222" &&
-	git push
-'
-
-test_expect_success 'accept with re on second line' '
-	echo $test_name >a &&
-	echo "first subject line" >msg
-	echo "second line re #322" >>msg
-	git commit -a -F msg &&
 	git push
 '
 
