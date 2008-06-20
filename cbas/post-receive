@@ -8,6 +8,6 @@ while read line ; do
     input="$input$line"
 done
 
-echo $input | sh $GIT_DIR/hooks/post-receive-email
-echo $input | sh $GIT_DIR/hooks/post-receive-trac
+echo $input | sh /srv/git/hooks/server/post-receive-email
+echo $input | sh /srv/git/hooks/server/post-receive-trac
 

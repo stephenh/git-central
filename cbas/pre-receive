@@ -5,6 +5,6 @@ while read line ; do
     input="$input$line"
 done
 
-echo $input | sh $GIT_DIR/hooks/pre-receive-stable &&
-echo $input | sh $GIT_DIR/hooks/noop
+echo $input | sh /srv/git/hooks/server/pre-receive-stable &&
+echo $input | sh /srv/git/hooks/server/pre-receive-trac
 
