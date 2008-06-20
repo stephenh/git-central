@@ -1,4 +1,3 @@
-
 #!/bin/sh
 
 test_description='server pre-receive ticket enforcer'
