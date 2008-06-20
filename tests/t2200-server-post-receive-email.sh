@@ -4,8 +4,6 @@ test_description='server post-receive email notification'
 
 . ./test-lib.sh
 
-export POST_RECEIVE_EMAIL_DUMP=true
-
 test_expect_success 'setup' '
 	echo "setup" >a &&
 	git add a &&

@@ -1,0 +1,49 @@
+#!/bin/sh
+
+while read oldrev newrev refname ; do
+	if expr "$oldrev" : '0*$' >/dev/null ; then
+		exit 0
+	fi
+
+	# If the new ref is a merge, it'll have spaces in the parents log (ugly, yes)
+	git log -n 1 --pretty=format:%p $newrev | grep " "
+	if [ $? -ne 0 ] ; then
+		exit 0
+	fi
+
+	# If they are introducing non-merge commits /and/ merge commits, it could
+	# look like:
+	#
+	# * --- * --- * --- O
+	#        \           \
+	#         N --- N --- M
+	#
+	# They should have done a rebase.
+	#
+	# But if it looks like:
+	#
+	# * --- * --- * --- O
+	#        \           \
+	#         S --- N --- M
+	#
+	# Then they were correct in doing a merge as S was already shared.
+
+	baserev=$(git merge-base $oldrev $newrev)
+	base_to_old=$(git rev-list $baserev..$oldrev | wc -l)
+	base_to_new=$(git rev-list $baserev..$newrev | wc -l)
+	# includes the base_to_new includes both legs, so subtract to get new leg count
+	new_leg=$(expr $base_to_new - $base_to_old)
+	all_new=$(git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --stdin $oldrev..$newrev | wc -l)
+
+	# echo "new_leg=$new_leg"
+	# echo "all_new=$all_new"
+	if [ $all_new -eq $new_leg ] ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "It looks like you should rebase"
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
+done
+
