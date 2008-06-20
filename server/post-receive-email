@@ -202,12 +202,11 @@ generate_email_header()
 
 generate_email_footer()
 {
-	SPACE=" "
 	cat <<-EOF
 
 
 	hooks/post-receive
-	--${SPACE}
+	--
 	$projectdesc
 	EOF
 }
@@ -597,7 +596,7 @@ generate_delete_general_email()
 
 send_mail()
 {
-	if [ -n "$envelopesender" ]; then
+	if [ -n "$envelopesender" ] ; then
 		/usr/sbin/sendmail -t -f "$envelopesender"
 	else
 		# /usr/sbin/sendmail -t
@@ -632,6 +631,7 @@ recipients=$(git config hooks.mailinglist)
 announcerecipients=$(git config hooks.announcelist)
 envelopesender=$(git config hooks.envelopesender)
 emailprefix=$(git config hooks.emailprefix || echo '[SCM] ')
+debug=$(git config hooks.debug)
 
 # --- Main loop
 # Allow dual mode: run from the command line just like the update hook, or
@@ -644,6 +644,10 @@ if [ -n "$1" -a -n "$2" -a -n "$3" ]; then
 else
 	while read oldrev newrev refname
 	do
-		generate_email $oldrev $newrev $refname | send_mail
+		if [ "$debug" == "true" ] ; then
+			generate_email $oldrev $newrev $refname > "${refname//\//.}.out"
+		else
+			generate_email $oldrev $newrev $refname | send_mail
+		fi
 	done
 fi

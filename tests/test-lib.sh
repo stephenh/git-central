@@ -337,6 +337,24 @@ test_cmp() {
 	$GIT_TEST_CMP "$@"
 }
 
+# interpolate takes the contents of one file and interpolates the
+# given variables into it. E.g.:
+#
+#     interpolate sourceFile destinationFile variableNameOne variableNameTwo
+#
+interpolate () {
+	input_file=$1
+	output_file=$2
+	shift && shift
+	data=$(cat $input_file)
+	# Interpolate the renaming arguments
+	for name in $* ; do
+		eval value="$"$name
+		data="${data//\$$name/$value}"
+	done
+	echo "$data" > $output_file
+}
+
 # Most tests can use the created repository, but some may need to create more.
 # Usage: test_create_repo <directory>
 test_create_repo () {
