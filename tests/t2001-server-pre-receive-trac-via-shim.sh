@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test_description='server pre-receive ticket enforcer via shim'
+test_description='server pre-receive trac ticket enforcer via shim'
 
 . ./test-lib.sh
 
@@ -16,8 +16,9 @@ test_expect_success 'setup' '
 '
 
 # setup the shim
-install_server_hook 'pre-receive' 'pre-receive'
-install_server_hook 'pre-receive-ticket' 'pre-receive-ticket'
+install_server_hook 'noop' 'noop'
+install_server_hook 'pre-receive-trac' 'pre-receive-trac'
+install_server_hook 'pre-receive-trac-then-noop' 'pre-receive'
 
 test_expect_success 'reject with bad message via shim' '
 	echo $test_name >a &&

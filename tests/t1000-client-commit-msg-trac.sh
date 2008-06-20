@@ -1,11 +1,11 @@
 #!/bin/sh
 
-test_description='client commit-msg ticket enforcer'
+test_description='client commit-msg trac ticket enforcer'
 
 . ./test-lib.sh
 
 # setup the commit-msg hook
-install_client_hook 'commit-msg' 'commit-msg'
+install_client_hook 'commit-msg-trac' 'commit-msg'
 
 test_expect_success 'rejects with bad message' '
 	echo "$test_name" >file &&

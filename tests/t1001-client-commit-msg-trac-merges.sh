@@ -1,11 +1,11 @@
 #!/bin/sh
 
-test_description='client commit-msg ticket enforcer for merges'
+test_description='client commit-msg trac ticket enforcer for merges'
 
 . ./test-lib.sh
 
 # setup the commit-msg hook
-install_client_hook 'commit-msg' 'commit-msg'
+install_client_hook 'commit-msg-trac' 'commit-msg'
 
 test_expect_success 'accepts merge' '
 	echo "$test_name" >file &&

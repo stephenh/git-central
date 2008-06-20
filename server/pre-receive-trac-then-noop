@@ -1,0 +1,10 @@
+#!/bin/sh
+
+input=""
+while read line ; do
+    input="$input$line"
+done
+
+echo $input | sh $GIT_DIR/hooks/pre-receive-trac &&
+echo $input | sh $GIT_DIR/hooks/noop
+
