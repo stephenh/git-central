@@ -5,6 +5,8 @@ while read line ; do
     input="$input$line"
 done
 
+echo $input | sh /srv/git/hooks/server/pre-receive-only-one &&
+echo $input | sh /srv/git/hooks/server/pre-receive-prefer-rebase &&
 echo $input | sh /srv/git/hooks/server/pre-receive-stable &&
 echo $input | sh /srv/git/hooks/server/pre-receive-trac
 
