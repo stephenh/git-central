@@ -1,0 +1,4 @@
+#!/bin/sh
+
+. /srv/git/hooks/server/update-no-rewind
+
