@@ -41,9 +41,9 @@ repos.sync()
 
 changeset = repos.get_changeset(rev)
 
-for command, tickets in commandPattern.findall(changeset.message):
+for command, ticketList in commandPattern.findall(changeset.message):
 	if commands.has_key(command.lower()):
-		for ticketId in ticketPattern.findall(tickets):
+		for ticketId in ticketPattern.findall(ticketList):
 			tickets.setdefault(ticketId, []).append(commands[command.lower()])
 
 for ticketId, commands in tickets.iteritems():
