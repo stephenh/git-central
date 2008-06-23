@@ -3,11 +3,12 @@
 # Delegates to post-receive-email and post-receive-trac
 #
 
+nl=$'\n'
 input=""
-while read line ; do
-    input="$input$line"
+while read newref oldref refname ; do
+    input="$input$newref $oldref $refname$nl"
 done
 
-echo $input | sh /srv/git/hooks/server/post-receive-email
-echo $input | sh /srv/git/hooks/server/post-receive-trac
+echo -n "$input" | sh /srv/git/hooks/server/post-receive-email
+echo -n "$input" | sh /srv/git/hooks/server/post-receive-trac
 
