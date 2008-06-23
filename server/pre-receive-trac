@@ -8,11 +8,13 @@ while read oldrev newrev refname ; do
 		git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --stdin --no-merges $oldrev..$newrev
 	fi | while read commit ; do
 		git log -n 1 '--pretty=format:%s%n%b' "$commit" | grep -i '\(\(re\|refs\|qa\) #[0-9]\+\)\|\(no ticket\)' > /dev/null
-		if [ $? -ne 0 ]
-		then
+		if [ $? -ne 0 ] ; then
 			echo "Commit $commit does not reference a ticket"
 			exit 1
 		fi
 	done
+	if [ $? -ne 0 ] ; then
+		exit 1
+	fi
 done
 
