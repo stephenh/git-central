@@ -1,9 +1,8 @@
 #!/bin/sh
 
 while read oldrev newrev refname ; do
-	if expr "$oldrev" : '0*$' >/dev/null
-	then
-		git rev-parse --not --branches | grep -v $newrev | git rev-list --stdin --no-merges $newrev
+	if expr "$oldrev" : '0*$' >/dev/null ; then
+		git rev-parse --not --branches | git rev-list --stdin --no-merges $newrev
 	else
 		git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --stdin --no-merges $oldrev..$newrev
 	fi | while read commit ; do

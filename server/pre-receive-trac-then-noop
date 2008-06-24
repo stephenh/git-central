@@ -1,10 +1,11 @@
 #!/bin/sh
 
+nl=$'\n'
 input=""
 while read line ; do
-    input="$input$line"
+    input="$input$line$nl"
 done
 
-echo $input | sh $GIT_DIR/hooks/pre-receive-trac &&
-echo $input | sh $GIT_DIR/hooks/noop
+echo -n "$input" | sh $GIT_DIR/hooks/pre-receive-trac &&
+echo -n "$input" | sh $GIT_DIR/hooks/noop
 
