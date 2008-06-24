@@ -7,7 +7,5 @@ while read newref oldref refname ; do
 done
 
 echo -n "$input" | sh /srv/git/hooks/server/pre-receive-only-one &&
-echo -n "$input" | sh /srv/git/hooks/server/pre-receive-prefer-rebase &&
-echo -n "$input" | sh /srv/git/hooks/server/pre-receive-stable &&
-echo -n "$input" | sh /srv/git/hooks/server/pre-receive-trac
+echo -n "$input" | sh /srv/git/hooks/server/pre-receive-stable
 

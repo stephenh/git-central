@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test_description='server pre-receive trac ticket enforcer via shim'
+test_description='server update trac ticket enforcer via shim'
 
 . ./test-lib.sh
 
@@ -16,7 +16,7 @@ test_expect_success 'setup' '
 '
 
 # setup the hook
-install_server_hook 'pre-receive-trac' 'pre-receive'
+install_server_hook 'update-trac' 'update'
 
 test_expect_success 'accept merge with merge message' '
 	git checkout -b topic1 master &&

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test_description='server pre-receive trac ticket enforcer'
+test_description='server update trac ticket enforcer'
 
 . ./test-lib.sh
 
@@ -15,8 +15,8 @@ test_expect_success 'setup' '
 	git config --add branch.master.merge refs/heads/master
 '
 
-# setup the pre-receive hook
-install_server_hook 'pre-receive-trac' 'pre-receive'
+# setup the update hook
+install_server_hook 'update-trac' 'update'
 
 test_expect_success 'reject with bad message' '
 	echo $test_name >a &&
