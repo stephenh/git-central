@@ -12,31 +12,39 @@ while read oldrev newrev refname ; do
 	fi
 
 	# If they are introducing non-merge commits /and/ merge commits, it could
-	# look like:
+	# look like one of two ways. This way:
 	#
-	# * --- * --- * --- O
-	#        \           \
-	#         N --- N --- M
+	# * --- B --- * --- oldrev
+	#        \             \
+	#        new --- new --- newrev
 	#
-	# They should have done a rebase.
+	# They basically had an un-shared local dev branch (probably by making a
+	# merge) and instead should have done a rebase.
 	#
 	# But if it looks like:
 	#
-	# * --- * --- * --- O
-	#        \           \
-	#         S --- N --- M
+	# * --- B --- * --- oldrev
+	#        \              \
+	#        old --- new --- newrev
 	#
-	# Then they were correct in doing a merge as S was already shared.
+	# Then they had a pre-shared branch that cannot be rebased and so they
+	# were correct in doing a merge to tie "old" and "oldrev" together.
 
+	# Find the original branch point (B)
 	baserev=$(git merge-base $oldrev $newrev)
+
+	# Before newrev is trying to be pushed, what was the old leg?
 	base_to_old=$(git rev-list $baserev..$oldrev | wc -l)
+
+	# We can now guess the new log by finding both legs old..new...
 	base_to_new=$(git rev-list $baserev..$newrev | wc -l)
-	# includes the base_to_new includes both legs, so subtract to get new leg count
+	# And then substract out the old leg
 	new_leg=$(expr $base_to_new - $base_to_old)
+
+	# See post-receive-email for an explanation of this--all new commits
 	all_new=$(git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --stdin $oldrev..$newrev | wc -l)
 
-	# echo "new_leg=$new_leg"
-	# echo "all_new=$all_new"
+	# If all of their new commits on on their new lew, they didn't have any shared, they should have rebased
 	if [ $all_new -eq $new_leg ] ; then
 		echo "----------------------------------------------------"
 		echo
