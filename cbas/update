@@ -1,4 +1,9 @@
 #!/bin/sh
 
-. /srv/git/hooks/server/update-no-rewind
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+/srv/git/hooks/server/update-no-rewind "$refname" "$oldrev" "$newrev" &&
+/srv/git/hooks/server/update-prefer-rebase "$refname" "$oldrev" "$newrev"
 

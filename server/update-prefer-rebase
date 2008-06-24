@@ -1,0 +1,37 @@
+#!/bin/sh
+
+# Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+if expr "$oldrev" : '0*$' >/dev/null ; then
+	exit 0
+fi
+
+git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | while read commit ; do
+	number_of_parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | wc -l)
+	if [[ $number_of_parents > 1 ]] ; then
+		# Find the original branch point (B)
+		parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit)
+		baserev=$(git merge-base $parents)
+
+		# For each parent
+		git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | while read parent ; do
+			all_commits=$(git rev-list $baserev..$parent | wc -l)
+			new_commits=$(git rev-parse --not --branches | git rev-list --stdin $baserev..$parent | wc -l)
+			if [[ $all_commits -eq $new_commits ]] ; then
+				echo "----------------------------------------------------"
+				echo
+				echo "It looks like you should rebase instead of merging $commit"
+				echo
+				echo "----------------------------------------------------"
+				exit 1
+			fi
+		done
+		if [ $? -ne 0 ] ; then
+			exit 1
+		fi
+	fi
+done
+

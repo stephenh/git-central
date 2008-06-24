@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test_description='server pre-receive prefer rebase'
+test_description='server update prefer rebase'
 
 . ./test-lib.sh
 
@@ -16,7 +16,7 @@ test_expect_success 'setup' '
 	git fetch
 '
 
-install_server_hook 'pre-receive-prefer-rebase' 'pre-receive'
+install_server_hook 'update-prefer-rebase' 'update'
 
 test_expect_success 'all local changes do not need a merge' '
 	# server is on "setup"
