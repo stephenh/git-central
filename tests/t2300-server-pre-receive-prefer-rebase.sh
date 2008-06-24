@@ -35,9 +35,38 @@ test_expect_success 'all local changes do not need a merge' '
 	# go back to our client and it will merge in our changes
 	cd .. &&
 	git pull &&
+	merge=$(git rev-parse HEAD) &&
 
 	! git push 2>push.err &&
-	cat push.err | grep "It looks like you should rebase" &&
+	cat push.err | grep "It looks like you should rebase instead of merging $merge" &&
+	git reset --hard origin/master
+'
+
+test_expect_success 'all local changes do not need a merge even with more commits after' '
+	# server is on "setup"
+
+	# make an outstanding change for us--but do not push
+	echo "$test_name" >a.client1 &&
+	git add a.client1 &&
+	git commit -m "$test_name on client1" &&
+
+	# have another client commit (in this case, it is the server, but close enough)
+	cd server &&
+	echo "$test_name" >a.client2 &&
+	git add a.client2 &&
+	git commit -m "$test_name on client2" &&
+
+	# go back to our client and it will merge in our changes
+	cd .. &&
+	git pull &&
+	merge=$(git rev-parse HEAD) &&
+
+	# To complicate things, have them add another change
+	echo "$test_name again" >a.client1 &&
+	git commit -a -m "$test_name on client1 again" &&
+
+	! git push 2>push.err &&
+	cat push.err | grep "It looks like you should rebase instead of merging $merge" &&
 	git reset --hard origin/master
 '
 

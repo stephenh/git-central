@@ -5,12 +5,6 @@ while read oldrev newrev refname ; do
 		exit 0
 	fi
 
-	# If the new ref is a merge, it'll have spaces in the parents log (ugly, yes)
-	git log -n 1 --pretty=format:%p $newrev | grep " "
-	if [ $? -ne 0 ] ; then
-		exit 0
-	fi
-
 	# If they are introducing non-merge commits /and/ merge commits, it could
 	# look like one of two ways. This way:
 	#
@@ -19,7 +13,14 @@ while read oldrev newrev refname ; do
 	#        new --- new --- newrev
 	#
 	# They basically had an un-shared local dev branch (probably by making a
-	# merge) and instead should have done a rebase.
+	# merge) and instead should have done a rebase. Also, if they did:
+	#
+	# * --- B --- * --- oldrev
+	#        \             \
+	#        new --- new --- new -- newrev
+	#
+	# We should try and catch them--where the merge happened previously to
+	# them doing more work in the newrev commit.
 	#
 	# But if it looks like:
 	#
@@ -29,28 +30,37 @@ while read oldrev newrev refname ; do
 	#
 	# Then they had a pre-shared branch that cannot be rebased and so they
 	# were correct in doing a merge to tie "old" and "oldrev" together.
+	#
+	# Also, we obviously have to be okay with:
+	#
+	# * --- * --- * --- oldrev --- new --- new --- newrev
 
-	# Find the original branch point (B)
-	baserev=$(git merge-base $oldrev $newrev)
+	git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --stdin $oldrev..$newrev | while read commit ; do
+		number_of_parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | wc -l)
+		if [[ $number_of_parents > 1 ]] ; then
+			# Find the original branch point (B)
+			parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit)
+			baserev=$(git merge-base $parents)
 
-	# Before newrev is trying to be pushed, what was the old leg?
-	base_to_old=$(git rev-list $baserev..$oldrev | wc -l)
-
-	# We can now guess the new log by finding both legs old..new...
-	base_to_new=$(git rev-list $baserev..$newrev | wc -l)
-	# And then substract out the old leg
-	new_leg=$(expr $base_to_new - $base_to_old)
-
-	# See post-receive-email for an explanation of this--all new commits
-	all_new=$(git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --stdin $oldrev..$newrev | wc -l)
-
-	# If all of their new commits on on their new lew, they didn't have any shared, they should have rebased
-	if [ $all_new -eq $new_leg ] ; then
-		echo "----------------------------------------------------"
-		echo
-		echo "It looks like you should rebase"
-		echo
-		echo "----------------------------------------------------"
+			# For each parent
+			git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | while read parent ; do
+				all_commits=$(git rev-list $baserev..$parent | wc -l)
+				new_commits=$(git rev-parse --not --branches | git rev-list --stdin $baserev..$parent | wc -l)
+				if [[ $all_commits -eq $new_commits ]] ; then
+					echo "----------------------------------------------------"
+					echo
+					echo "It looks like you should rebase instead of merging $commit"
+					echo
+					echo "----------------------------------------------------"
+					exit 1
+				fi
+			done
+			if [ $? -ne 0 ] ; then
+				exit 1
+			fi
+		fi
+	done
+	if [ $? -ne 0 ] ; then
 		exit 1
 	fi
 done
