@@ -1,4 +1,36 @@
 #!/bin/sh
+#
+# Watches for merges that had only local merges (e.g. should have been rebases).
+#
+# If they are introducing non-merge commits /and/ merge commits, it could
+# look like one of two ways. This way:
+#
+# * --- B --- * --- oldrev
+#        \             \
+#        new --- new --- newrev
+#
+# They basically had an un-shared local dev branch (probably by making a
+# merge) and instead should have done a rebase. Also, if they did:
+#
+# * --- B --- * --- oldrev
+#        \             \
+#        new --- new --- new -- newrev
+#
+# We should try and catch them--where the merge happened previously to
+# them doing more work in the newrev commit.
+#
+# But if it looks like:
+#
+# * --- B --- * --- oldrev
+#        \              \
+#        old --- new --- newrev
+#
+# Then they had a pre-shared branch that cannot be rebased and so they
+# were correct in doing a merge to tie "old" and "oldrev" together.
+#
+# Also, we obviously have to be okay with:
+#
+# * --- * --- * --- oldrev --- new --- new --- newrev
 
 # Command line
 refname="$1"
