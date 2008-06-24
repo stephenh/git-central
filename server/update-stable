@@ -1,0 +1,31 @@
+#!/bin/sh
+
+# Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+if expr "$oldrev" : '0*$' >/dev/null ; then
+	exit 0
+fi
+
+if [ "$refname" != "refs/heads/stable" ] ; then
+	exit 0
+fi
+
+# read backwards:
+# - all commits from old..new
+# - unless they were already pointed to by a branch
+# = all new commits on stable
+count=$(git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | wc -l)
+if [ "$count" -ne "0" ] ; then
+	newname=$(git rev-parse "$newrev")
+	echo "----------------------------------------------------"
+	echo
+	echo "Moving stable to $newname includes a new commit"
+	echo
+	echo "----------------------------------------------------"
+	exit 1
+fi
+
+

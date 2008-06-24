@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test_description='server pre-receive stable enforcer'
+test_description='server update stable enforcer'
 
 . ./test-lib.sh
 
@@ -17,8 +17,8 @@ test_expect_success 'setup' '
 	git config --add branch.stable.merge refs/heads/stable
 '
 
-# setup the pre-receive hook
-install_server_hook 'pre-receive-stable' 'pre-receive'
+# setup the update hook
+install_server_hook 'update-stable' 'update'
 
 test_expect_success 'reject commit directly to stable' '
 	echo $test_name >a &&

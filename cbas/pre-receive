@@ -6,6 +6,5 @@ while read newref oldref refname ; do
     input="$input$newref $oldref $refname$nl"
 done
 
-echo -n "$input" | sh /srv/git/hooks/server/pre-receive-only-one &&
-echo -n "$input" | sh /srv/git/hooks/server/pre-receive-stable
+echo -n "$input" | sh /srv/git/hooks/server/pre-receive-only-one
 
