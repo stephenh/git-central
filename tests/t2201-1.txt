@@ -1,13 +1,9 @@
 To: commits@list.com
-Subject: [SCM] UNNAMED PROJECT annotated tag, 1.0, created. 1.0
+Subject: [cbas] 1.0 annotated tag created. 1.0
 X-Git-Refname: refs/tags/1.0
 X-Git-Reftype: annotated tag
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: $tag_hash
-
-This is an automated email from the git hooks/post-receive script. It was
-generated because a ref change was pushed to the repository containing
-the project "UNNAMED PROJECT".
 
 The annotated tag, 1.0 has been created
         at  $tag_hash (tag)
@@ -26,4 +22,4 @@ A U Thor (1):
 
 hooks/post-receive
 --
-UNNAMED PROJECT
+cbas

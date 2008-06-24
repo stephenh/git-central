@@ -1,13 +1,9 @@
 To: commits@list.com
-Subject: [SCM] UNNAMED PROJECT branch, topic, created. $new_commit_hash
+Subject: [cbas] topic branch created. $new_commit_hash
 X-Git-Refname: refs/heads/topic
 X-Git-Reftype: branch
 X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: $new_commit_hash
-
-This is an automated email from the git hooks/post-receive script. It was
-generated because a ref change was pushed to the repository containing
-the project "UNNAMED PROJECT".
 
 The branch, topic has been created
         at  $new_commit_hash (commit)
@@ -42,4 +38,4 @@ index 146f275..8516a40 100644
 
 hooks/post-receive
 --
-UNNAMED PROJECT
+cbas

@@ -16,6 +16,7 @@ test_expect_success 'setup' '
 	GIT_DIR=./server/.git git config --add hooks.mailinglist commits@list.com &&
 	GIT_DIR=./server/.git git config --add hooks.debug true &&
 	GIT_DIR=.
+	echo cbas >./server/.git/description
 '
 
 install_server_hook 'post-receive-email' 'post-receive'

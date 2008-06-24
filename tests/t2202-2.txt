@@ -1,13 +1,9 @@
 To: commits@list.com
-Subject: [SCM] UNNAMED PROJECT branch, topic, deleted. $old_commit_hash
+Subject: [cbas] topic branch deleted. $old_commit_hash
 X-Git-Refname: refs/heads/topic
 X-Git-Reftype: branch
 X-Git-Oldrev: $old_commit_hash
 X-Git-Newrev: 0000000000000000000000000000000000000000
-
-This is an automated email from the git hooks/post-receive script. It was
-generated because a ref change was pushed to the repository containing
-the project "UNNAMED PROJECT".
 
 The branch, topic has been deleted
        was  $old_commit_hash
@@ -19,4 +15,4 @@ $old_commit_hash create branch on topic 2
 
 hooks/post-receive
 --
-UNNAMED PROJECT
+cbas

@@ -1,13 +1,9 @@
 To: commits@list.com
-Subject: [SCM] UNNAMED PROJECT branch, master, updated. $new_commit_hash
+Subject: [cbas] master branch updated. $new_commit_hash
 X-Git-Refname: refs/heads/master
 X-Git-Reftype: branch
 X-Git-Oldrev: $old_commit_hash
 X-Git-Newrev: $new_commit_hash
-
-This is an automated email from the git hooks/post-receive script. It was
-generated because a ref change was pushed to the repository containing
-the project "UNNAMED PROJECT".
 
 The branch, master has been updated
        via  $new_commit_hash (commit)
@@ -41,4 +37,4 @@ index 146f275..b38f23c 100644
 
 hooks/post-receive
 --
-UNNAMED PROJECT
+cbas
