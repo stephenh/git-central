@@ -1,0 +1,31 @@
+To: commits@list.com
+Subject: [SCM] UNNAMED PROJECT annotated tag, 2.0, created. 2.0
+X-Git-Refname: refs/tags/2.0
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: $tag_hash
+
+This is an automated email from the git hooks/post-receive script. It was
+generated because a ref change was pushed to the repository containing
+the project "UNNAMED PROJECT".
+
+The annotated tag, 2.0 has been created
+        at  $tag_hash (tag)
+   tagging  $new_commit_hash (commit)
+  replaces  1.0
+ tagged by  C O Mitter
+        on  $tag_date
+
+- Log -----------------------------------------------------------------
+2.0
+
+A U Thor (2):
+      commit on tag branch
+      commit on tag branch 2
+
+-----------------------------------------------------------------------
+
+
+hooks/post-receive
+--
+UNNAMED PROJECT

@@ -1,0 +1,51 @@
+To: commits@list.com
+Subject: [SCM] UNNAMED PROJECT branch, master, updated. 1.0-2-g$new_commit_abbrev
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: $old_commit_hash
+X-Git-Newrev: $new_commit_hash
+
+This is an automated email from the git hooks/post-receive script. It was
+generated because a ref change was pushed to the repository containing
+the project "UNNAMED PROJECT".
+
+The branch, master has been updated
+       via  $new_commit_hash (commit)
+       via  $prior_commit_hash (commit)
+      from  $old_commit_hash (commit)
+
+Those revisions listed above that are new to this repository have
+not appeared on any other notification email; so we list those
+revisions in full, below.
+
+- Log -----------------------------------------------------------------
+commit $prior_commit_hash
+Author: A U Thor <author@example.com>
+Date:   $prior_commit_date
+
+    commit on tag branch
+
+commit $new_commit_hash
+Author: A U Thor <author@example.com>
+Date:   $new_commit_date
+
+    commit on tag branch 2
+
+-----------------------------------------------------------------------
+
+Summary of changes:
+ a |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/a b/a
+index 146f275..affecee 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-setup
++commit on tag branch 2
+
+
+hooks/post-receive
+--
+UNNAMED PROJECT

@@ -228,13 +228,13 @@ generate_create_branch_email()
 	# ref that were previously not accessible
 	# (see generate_update_branch_email for the explanation of this
 	# command)
-	git rev-parse --not --branches | grep -v $(git rev-parse $refname) |
-	git rev-list --pretty --reverse --stdin $newrev
+	git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --pretty --reverse --stdin $newrev
 	echo $LOGEND
 
 	echo ""
 	echo "Summary of changes:"
-	git diff-tree --stat -p $newrev
+	oldest_new=$(git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --stdin $newrev | tail -n 1)
+	git diff-tree --stat -p $oldest_new^..$newrev
 }
 
 #

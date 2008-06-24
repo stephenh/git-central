@@ -24,10 +24,10 @@ test_expect_success 'simple commit' '
 	echo $test_name >a &&
 	git commit -a -m "$test_name" &&
 	git push &&
-	old_commit_hash=$(git rev-parse HEAD^)
-	new_commit_hash=$(git rev-parse HEAD)
-	new_commit_date=$(git log -n 1 --pretty=format:%cd HEAD)
-	interpolate ../t2200-1.txt 1.txt old_commit_hash new_commit_hash new_commit_date
+	old_commit_hash=$(git rev-parse HEAD^) &&
+	new_commit_hash=$(git rev-parse HEAD) &&
+	new_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
+	interpolate ../t2200-1.txt 1.txt old_commit_hash new_commit_hash new_commit_date &&
 	test_cmp 1.txt server/.git/refs.heads.master.out
 '
 
