@@ -35,9 +35,6 @@
 # hooks.envelopesender
 #   If set then the -f option is passed to sendmail to allow the envelope
 #   sender address to be set
-# hooks.emailprefix
-#   All emails have their subjects prefixed with this prefix, or "[SCM]"
-#   if emailprefix is unset, to aid filtering
 #
 # Notes
 # -----
@@ -186,15 +183,11 @@ generate_email_header()
 	# Generate header
 	cat <<-EOF
 	To: $recipients
-	Subject: ${emailprefix}$projectdesc $refname_type, $short_refname, ${change_type}d. $describe
+	Subject: ${emailprefix} $short_refname $refname_type ${change_type}d. $describe
 	X-Git-Refname: $refname
 	X-Git-Reftype: $refname_type
 	X-Git-Oldrev: $oldrev
 	X-Git-Newrev: $newrev
-
-	This is an automated email from the git hooks/post-receive script. It was
-	generated because a ref change was pushed to the repository containing
-	the project "$projectdesc".
 
 	The $refname_type, $short_refname has been ${change_type}d
 	EOF
@@ -630,7 +623,7 @@ fi
 recipients=$(git config hooks.mailinglist)
 announcerecipients=$(git config hooks.announcelist)
 envelopesender=$(git config hooks.envelopesender)
-emailprefix=$(git config hooks.emailprefix || echo '[SCM] ')
+emailprefix="[$projectdesc]"
 debug=$(git config hooks.debug)
 
 # --- Main loop
