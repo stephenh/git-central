@@ -41,6 +41,7 @@ if expr "$oldrev" : '0*$' >/dev/null ; then
 	exit 0
 fi
 
+# Read backwards: all commits from old..new, unless they are already referenced by a branch
 git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | while read commit ; do
 	number_of_parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | wc -l)
 	if [[ $number_of_parents > 1 ]] ; then
