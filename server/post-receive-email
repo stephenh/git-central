@@ -593,7 +593,7 @@ send_mail()
 		/usr/sbin/sendmail -t -f "$envelopesender"
 	else
 		# /usr/sbin/sendmail -t
-		/home/BIPFS/shaberman/local/bin/msmtp --file=/srv/git/hooks/msmtp.conf -t
+		/home/BIPFS/shaberman/local/bin/msmtp -t
 	fi
 }
 
