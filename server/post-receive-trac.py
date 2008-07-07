@@ -33,6 +33,7 @@ def qa(ticket):
 commands = { 're': refs, 'refs': refs, 'qa': qa }
 commandPattern = re.compile(r'(?P<action>[A-Za-z]*).?(?P<ticket>#[0-9]+(?:(?:[, &]*|[ ]?and[ ]?)#[0-9]+)*)')
 ticketPattern = re.compile(r'#([0-9]*)')
+authorPattern = re.compile(r'<(.+)@')
 tickets = {}
 
 env = open_environment(project)
@@ -60,9 +61,10 @@ for ticketId, commands in tickets.iteritems():
 		if change['permanent']:
 			cnum += 1
 
+	username = authorPattern.findall(changeset.author)[0]
 	now = datetime.now(utc)
 	message = "(In [%s]) %s" % (rev, changeset.message)
-	ticket.save_changes(changeset.author, message, now, db, cnum+1)
+	ticket.save_changes(username, message, now, db, cnum+1)
 	db.commit()
 
 	tn = TicketNotifyEmail(env)
