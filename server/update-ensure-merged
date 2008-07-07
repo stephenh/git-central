@@ -1,0 +1,107 @@
+#!/bin/sh
+
+#
+# When tagging the candidate branch, and commit "A"
+# has gone onto a topic branch that we previously
+# merged, reject the tag.
+#
+# * -- * -- * -- A   topic A
+#  \        \
+#   * -- *           topic B
+#          \ \
+#            *       candidate
+#
+# We want to detect A when trying to tag candidate.
+#
+# This also implements candidate protection, e.g.
+# only merges are allowed on candidate branches.
+
+# Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+echo "updating $refname $oldrev $newrev"
+fail=0
+
+case "$refname" in
+	refs/tags/*)
+		# First make sure stable hasn't moved on us
+		baserev=$(git merge-base stable $newrev)
+		stablerev=$(git rev-parse stable)
+		if [ "$baserev" != "$stablerev" ] ; then
+			echo "----------------------------------------------------"
+			echo
+			echo " Rejecting $refname because you need to merge:"
+			echo
+			git rev-list "$baserev..$stablerev" | xargs git name-rev
+			echo
+			echo "----------------------------------------------------"
+			fail=1
+		else
+
+			# Now go back to stable and iterate through looking for commits on
+			# our merge parents that are not within us
+			git rev-list --first-parent "stable..$newrev" | while read commit ; do
+				number_of_parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | wc -l)
+				if [[ $number_of_parents > 1 ]] ; then
+					# For each parent
+					git rev-list --no-walk --parents $commit | sed 's/ /\n/g' | grep -v $commit | while read parent ; do
+						# Does this parent have any children besides us?
+						#
+						# List the parents of all branch commits (after stable/parent), find
+						# those that include our parent, get their sha1, remove our merge
+						git rev-list --parents --branches ^stable "^$parent" | grep $parent | gawk '{print $1}' | grep -v $commit | while read child ; do
+							number_missing=$(git rev-list "$child" "^$newrev" | wc -l)
+							if [[ $number_missing > 0 ]] ; then
+								echo "----------------------------------------------------"
+								echo
+								echo " Rejecting $refname because you need to merge:"
+								echo
+								git rev-list "$child" "^$newrev" | xargs git name-rev
+								echo
+								echo "----------------------------------------------------"
+								fail=1
+							fi
+						done
+
+						# Find any commits in the parent (and another branch) but not us--that means we need it
+						# number_missing=$(git rev-list "$parent" --all "^$newrev" | wc -l)
+						# if [[ $number_missing > 0 ]] ; then
+						# 	echo "----------------------------------------------------"
+						# 	echo
+						# 	echo " Rejecting $refname because you need to merge:"
+						# 	echo
+						# 	git rev-list "$parent" --all "^$newrev" | xargs git name-rev
+						# 	echo
+						# 	echo "----------------------------------------------------"
+						# 	exit 1
+						# fi
+					done
+				fi
+			done
+
+		fi
+		;;
+
+	refs/heads/candidate*)
+		# Look at commits between stable and us--ignoring those brought in by merges
+		git rev-list --first-parent "$newrev" ^stable | while read commit ; do
+			number_of_parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | wc -l)
+			if [[ $number_of_parents == 1 ]] ; then
+				echo "----------------------------------------------------"
+				echo
+				echo " Candidate branches must be only merges"
+				echo
+				echo "----------------------------------------------------"
+				fail=1
+			fi
+		done
+		;;
+
+	*)
+		;;
+esac
+
+exit "$fail"
+
