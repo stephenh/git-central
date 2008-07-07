@@ -12,7 +12,11 @@ else
 fi | while read commit ; do
 	git log -n 1 '--pretty=format:%s%n%b' "$commit" | grep -i '\(\(re\|refs\|qa\) #[0-9]\+\)\|\(no ticket\)' > /dev/null
 	if [ $? -ne 0 ] ; then
-		echo "Commit $commit does not reference a ticket"
+		echo "----------------------------------------------------" >&2
+		echo "" >&2
+		echo "Commit $commit does not reference a ticket" >&2
+		echo "" >&2
+		echo "----------------------------------------------------" >&2
 		exit 1
 	fi
 done
