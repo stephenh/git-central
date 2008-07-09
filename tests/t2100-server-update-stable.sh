@@ -25,11 +25,11 @@ test_expect_success 'reject commit directly to stable' '
 	git commit -a -m "$test_name going onto stable" &&
 	head=$(git rev-parse HEAD) &&
 	! git push 2>push.err &&
-	cat push.err | grep "Moving stable to $head includes a new commit" &&
+	cat push.err | grep "Moving stable must entail a merge commit" &&
 	git reset --hard HEAD^
 '
 
-test_expect_success 'reject aged topic branch' '
+test_expect_success 'reject fast-forward to candidate branch' '
 	# make one topic branch
 	git checkout -b topic1 stable &&
 	echo $test_name >topic1 &&
@@ -37,55 +37,71 @@ test_expect_success 'reject aged topic branch' '
 	git commit -m "$test_name topic1" &&
 	git push origin topic1 &&
 
-	# now make another topic
-	git checkout -b topic2 stable
+	git checkout stable &&
+	git merge topic1 >merge.out &&
+	cat merge.out | grep "Fast forward" &&
+	! git push 2>push.err &&
+	cat push.err | grep "Moving stable must entail a single commit" &&
+	git reset --hard ORIG_HEAD
+'
+
+test_expect_success 'reject merge with wrong first-parent' '
+	# make one topic branch
+	git checkout -b topic2 stable &&
 	echo $test_name >topic2 &&
 	git add topic2 &&
 	git commit -m "$test_name topic2" &&
 	git push origin topic2 &&
 
-	# merge in topic2
-	git checkout stable &&
-	git merge topic2 &&
-	git push &&
-
-	# merge in topic1 fails
-	git merge topic1 &&
-	head=$(git rev-parse HEAD) &&
-	! git push 2>push.err &&
-	cat push.err | grep "Moving stable to $head includes a new commit" &&
-	git reset --hard ORIG_HEAD
-'
-
-test_expect_success 'accept updated aged topic branch' '
-	# make one topic branch
+	# move ahead stable by topic3
 	git checkout -b topic3 stable &&
 	echo $test_name >topic3 &&
 	git add topic3 &&
 	git commit -m "$test_name topic3" &&
 	git push origin topic3 &&
+	git checkout stable &&
+	git merge --no-ff topic3 &&
+	git push &&
 
-	# now make another topic
-	git checkout -b topic4 stable
+	# back to topic2, merge in stable, and try to push it out as the new stable
+	git checkout topic2 &&
+	git merge stable &&
+	! git push origin topic2:refs/heads/stable 2>push.err &&
+	cat push.err | grep "Moving stable must have the previous stable as the first parent" &&
+
+	# Go ahead and push topic2 itself
+	git push &&
+
+	# but merging into stable should still work fine
+	git checkout stable &&
+	git merge --no-ff topic2 &&
+	git push
+'
+
+test_expect_success 'reject merge with changes' '
+	# make one topic branch
+	git checkout -b topic4 stable &&
 	echo $test_name >topic4 &&
 	git add topic4 &&
 	git commit -m "$test_name topic4" &&
 	git push origin topic4 &&
 
-	# merge in topic4
+	# move ahead stable by topic5
+	git checkout -b topic5 stable &&
+	echo $test_name >topic5 &&
+	git add topic5 &&
+	git commit -m "$test_name topic5" &&
+	git push origin topic5 &&
+	git checkout stable &&
+	git merge --no-ff topic5 &&
+	git push &&
+
+	# try merging topic4 into stable, which will get a merge commit, but
+	# it should have changes involved and so get rejected
 	git checkout stable &&
 	git merge topic4 &&
-	git push &&
-
-	# update topic3 first
-	git checkout topic3 &&
-	git merge stable &&
-	git push &&
-
-	# Now we can update stable
-	git checkout stable &&
-	git merge topic3 &&
-	git push
+	! git push 2>push.err &&
+	cat push.err | grep "Moving stable must not result in any changes"
 '
 
 test_done

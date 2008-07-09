@@ -1,5 +1,41 @@
 #!/bin/sh
 
+#
+# This enforces stable only moving in the approved way, which
+# is via empty (no change) merge commits. The rationale is that
+# in the DAG we want a simple, one-commit move from each release
+# to the next.
+#
+# We started out with:
+#
+# * -- A                stable
+#  \    \
+#   \    * -- * -- B    topic1
+#    \           /
+#     * -- * -- *       topic2
+#
+# And then publishing stable was a matter of fast-forwarding
+# from A to B.
+#
+# In a complicated (non-rebased) DAG, this becomes hard to follow,
+# so want we want instead is:
+#
+# * -- A ----------- C  stable
+#  \    \           /
+#   \    * -- * -- B    topic1
+#    \           /
+#     * -- * -- *       topic2
+#
+# Where commit C lists as it's first parent the prior stable
+# commit and as it's second parent the release candidate. No
+# other parents are allowed (e.g. no octopus merges here, which
+# would insinuate qa didn't happen on the merged result).
+#
+# Also, we want to enforce that C does not actually introduce
+# any diffs to the files between B and C--otherwise this changes
+# would not have appeared in QA.
+#
+
 # Command line
 refname="$1"
 oldrev="$2"
@@ -18,14 +54,43 @@ fi
 # - unless they were already pointed to by a branch
 # = all new commits on stable
 count=$(git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | wc -l)
-if [ "$count" -ne "0" ] ; then
-	newname=$(git rev-parse "$newrev")
+if [ "$count" -ne "1" ] ; then
 	echo "----------------------------------------------------"
 	echo
-	echo "Moving stable to $newname includes a new commit"
+	echo "Moving stable must entail a single commit"
 	echo
 	echo "----------------------------------------------------"
 	exit 1
 fi
 
+number_of_parents=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | wc -l)
+if [ "$number_of_parents" -ne "2" ] ; then
+	echo "----------------------------------------------------"
+	echo
+	echo "Moving stable must entail a merge commit"
+	echo
+	echo "----------------------------------------------------"
+	exit 1
+fi
+
+first_parent=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | head --lines=1)
+if [ "$first_parent" != "$oldrev" ] ; then
+	echo "----------------------------------------------------"
+	echo
+	echo "Moving stable must have the previous stable as the first parent"
+	echo
+	echo "----------------------------------------------------"
+	exit 1
+fi
+
+second_parent=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | tail --lines=1)
+changed_lines=$(git diff $second_parent..$newrev | wc -l)
+if [ "$changed_lines" -ne "0" ] ; then
+	echo "----------------------------------------------------"
+	echo
+	echo "Moving stable must not result in any changes"
+	echo
+	echo "----------------------------------------------------"
+	exit 1
+fi
 
