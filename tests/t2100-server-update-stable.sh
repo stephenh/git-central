@@ -5,20 +5,28 @@ test_description='server update stable enforcer'
 . ./test-lib.sh
 
 test_expect_success 'setup' '
-	echo This is a test. >a &&
+	echo setup >a &&
 	git add a &&
 	git commit -m "a" &&
 	git clone ./. server &&
-	rm -fr server/.git/hooks &&
-	git checkout -b stable &&
 	git remote add origin ./server &&
-	git push origin stable &&
-	git config --add branch.stable.remote origin &&
-	git config --add branch.stable.merge refs/heads/stable
+	rm -fr server/.git/hooks
 '
 
 # setup the update hook
 install_server_hook 'update-stable' 'update'
+
+test_expect_success 'initial stable commit works', '
+	# do one stable-less commit
+	echo $test_name >a &&
+	git commit -a -m "$test_name" &&
+	git push origin master &&
+
+	git checkout -b stable &&
+	git push origin stable &&
+	git config --add branch.stable.remote origin &&
+	git config --add branch.stable.merge refs/heads/stable
+'
 
 test_expect_success 'reject commit directly to stable' '
 	echo $test_name >a &&
