@@ -19,7 +19,7 @@ test_expect_success 'setup' '
 	echo cbas >./server/.git/description
 '
 
-install_server_hook 'post-receive-email' 'post-receive'
+install_post_receive_hook 'post-receive-email'
 
 test_expect_success 'simple commit' '
 	echo $test_name >a &&

@@ -14,7 +14,7 @@ test_expect_success 'setup' '
 '
 
 # setup the update hook
-install_server_hook 'update-stable' 'update'
+install_update_hook 'update-stable'
 
 test_expect_success 'initial stable commit works', '
 	# do one stable-less commit

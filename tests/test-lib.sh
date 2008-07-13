@@ -462,12 +462,34 @@ install_server_hook () {
 install_update_hook () {
 	mkdir -p "server/.git/hooks"
 	hook="server/.git/hooks/update"
-	chmod +x $hook
 
 	echo "#!/bin/sh" >$hook
 	for ((i=1;i<=$#;i+=1)); do
 		eval script_name="$"$i
 		echo "../../../../server/$script_name \$1 \$2 \$3" >>$hook
 	done
+
+	chmod +x $hook
+}
+
+install_post_receive_hook () {
+	mkdir -p "server/.git/hooks"
+	hook="server/.git/hooks/post-receive"
+
+	cat >$hook <<-'EOF'
+		#!/bin/sh
+		nl=$'\n'
+		input=""
+		while read newref oldref refname ; do
+			input="$input$newref $oldref $refname$nl"
+		done
+	EOF
+
+	for ((i=1;i<=$#;i+=1)); do
+		eval script_name="$"$i
+		echo "echo -n \"\$input\" | ../../../../server/$script_name" >>$hook
+	done
+
+	chmod +x $hook
 }
 

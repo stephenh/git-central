@@ -19,7 +19,7 @@ test_expect_success 'setup' '
 	echo cbas >./server/.git/description
 '
 
-install_server_hook 'post-receive-email' 'post-receive'
+install_post_receive_hook 'post-receive-email'
 
 test_expect_success 'create tag' '
 	git tag -a -m 1.0 1.0 &&
