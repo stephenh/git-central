@@ -45,6 +45,11 @@ fi
 git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | while read commit ; do
 	number_of_parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | wc -l)
 	if [[ $number_of_parents > 1 ]] ; then
+		# Hack to not interfer with the update-stable "--no-ff" method
+		if [[ "$refname" == "refs/heads/stable" && "$commit" == "$newrev" ]] ; then
+			exit 0
+		fi
+
 		# Find the original branch point (B)
 		parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit)
 		baserev=$(git merge-base $parents)

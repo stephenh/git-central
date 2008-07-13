@@ -459,3 +459,15 @@ install_server_hook () {
     chmod +x "server/.git/hooks/$2"
 }
 
+install_update_hook () {
+	mkdir -p "server/.git/hooks"
+	hook="server/.git/hooks/update"
+	chmod +x $hook
+
+	echo "#!/bin/sh" >$hook
+	for ((i=1;i<=$#;i+=1)); do
+		eval script_name="$"$i
+		echo "../../../../server/$script_name \$1 \$2 \$3" >>$hook
+	done
+}
+
