@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+# Simply enforces rate_tables instead of rateTables. Note
+# that ratetables could still sneak when, but we'll give
+# people the benefit of the doubt.
+
+# Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+if expr "$oldrev" : '0*$' >/dev/null ; then
+	if expr "$refname" : '.*[A-Z].*' ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "Please prefer underscored branch names (e.g. rate_tables)"
+		echo "instead of camel-casing branch names (e.g. rateTables)."
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
+fi
+
