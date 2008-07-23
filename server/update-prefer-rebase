@@ -56,7 +56,6 @@ git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | while r
 
 		# For each parent
 		git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | while read parent ; do
-			echo "looking at $baserev..$parent for $commit"
 			all_commits=$(git rev-list --first-parent $baserev..$parent | wc -l)
 			new_commits=$(git rev-parse --not --branches | git rev-list --stdin $baserev..$parent | wc -l)
 			if [[ $all_commits -eq $new_commits ]] ; then
