@@ -4,6 +4,7 @@ refname="$1"
 oldrev="$2"
 newrev="$3"
 
+ruby /srv/git/hooks/server/update-lock-check.rb "$refname" "$oldrev" "$newrev" &&
 sh /srv/git/hooks/server/update-trac "$refname" "$oldrev" "$newrev" &&
 sh /srv/git/hooks/server/update-allow-tags-branches "$refname" "$oldrev" "$newrev" &&
 sh /srv/git/hooks/server/update-prefer-rebase "$refname" "$oldrev" "$newrev" &&
