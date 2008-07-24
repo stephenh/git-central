@@ -52,18 +52,23 @@ git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | while r
 
 		# Find the original branch point (B)
 		parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit)
-		baserev=$(git merge-base $parents)
 
-		# For each parent
-		git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | while read parent ; do
-			all_commits=$(git rev-list --first-parent $baserev..$parent | wc -l)
-			new_commits=$(git rev-parse --not --branches | git rev-list --stdin $baserev..$parent | wc -l)
-			if [[ $all_commits -eq $new_commits ]] ; then
-				echo "----------------------------------------------------"
-				echo
-				echo "It looks like you should rebase instead of merging $commit"
-				echo
-				echo "----------------------------------------------------"
+		# For each baserev
+		git merge-base --all $parents | while read baserev ; do
+			# For each parent
+			git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | while read parent ; do
+				all_commits=$(git rev-list --first-parent $baserev..$parent | wc -l)
+				new_commits=$(git rev-parse --not --branches | git rev-list --stdin $baserev..$parent | wc -l)
+				if [[ $all_commits -eq $new_commits ]] ; then
+					echo "----------------------------------------------------"
+					echo
+					echo "It looks like you should rebase instead of merging $commit"
+					echo
+					echo "----------------------------------------------------"
+					exit 1
+				fi
+			done
+			if [ $? -ne 0 ] ; then
 				exit 1
 			fi
 		done
