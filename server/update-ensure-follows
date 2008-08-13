@@ -1,0 +1,38 @@
+#!/bin/sh
+#
+# When updating a branch, it must include the tip of stable.
+#
+
+# Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+# Branch deletions are okay
+# if expr "$newrev" : '0*$' >/dev/null ; then
+# exit 0
+# fi
+
+# Look up the config variable and exit if not set
+follows=$(git config hooks.ensure-follows)
+if [[ $? -ne 0 ]] ; then
+    exit 0
+fi
+
+follows=($follows)
+count=${#follows[@]}
+for (( i = 0 ; i < count ; i++)) do
+	follow="${follows[$i]}"
+	missing_commits=$(git log ^$newrev $follow --pretty=oneline | wc -l)
+	if [ $missing_commits -ne 0 ] ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "You need to merge with $follow"
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
+done
+
+exit 0
+
