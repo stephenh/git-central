@@ -9,5 +9,6 @@ sh /srv/git/hooks/server/update-trac "$refname" "$oldrev" "$newrev" &&
 sh /srv/git/hooks/server/update-allow-tags-branches "$refname" "$oldrev" "$newrev" &&
 sh /srv/git/hooks/server/update-prefer-rebase "$refname" "$oldrev" "$newrev" &&
 sh /srv/git/hooks/server/update-prefer-underscores "$refname" "$oldrev" "$newrev" &&
-sh /srv/git/hooks/server/update-stable "$refname" "$oldrev" "$newrev"
+sh /srv/git/hooks/server/update-stable "$refname" "$oldrev" "$newrev" &&
+sh /srv/git/hooks/server/update-ensure-follows "$refname" "$oldrev" "$newrev"
 
