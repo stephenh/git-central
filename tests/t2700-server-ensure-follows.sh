@@ -45,7 +45,7 @@ test_expect_success 'branch with moved stable requires merge' '
 	echo "$test_name" >a.topic1 &&
 	git commit -a -m "Change on topic1." &&
 	! git push origin topic1 2>push.err &&
-	cat push.err | grep "You need to merge with stable" &&
+	cat push.err | grep "You need to merge stable into topic1" &&
 
 	git merge stable &&
 	git push origin topic1
@@ -65,10 +65,28 @@ test_expect_success 'branch with moved stable as second branch requires merge' '
 	echo "$test_name" >a.topic1 &&
 	git commit -a -m "Change on topic1." &&
 	! git push origin topic1 2>push.err &&
-	cat push.err | grep "You need to merge with stable" &&
+	cat push.err | grep "You need to merge stable into topic1" &&
 
 	git merge stable &&
 	git push origin topic1
+'
+
+test_expect_success 'tag with moved stable is okay' '
+	git checkout stable &&
+	echo "$test_name" >a &&
+	git commit -a -m "Change on stable" &&
+	git push origin stable &&
+
+	git checkout topic1 &&
+	git tag topic1-tag1
+	git push --tags
+'
+
+test_expect_success 'branch deletion with moved stable is okay' '
+	git checkout stable &&
+	echo "$test_name" >a &&
+	git commit -a -m "Change on stable" &&
+	git push origin :stable
 '
 
 test_done

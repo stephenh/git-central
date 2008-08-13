@@ -1,6 +1,12 @@
 #!/bin/sh
 #
-# When updating a branch, it must include the tip of stable.
+# When updating a branch, ensure it has the latest changes
+# from other branches, e.g. stable.
+#
+# While this forces merging sooner than devs may like, it
+# assures deployment and qa staff that the latest revisions
+# they are qa'ing will always have the last stable release
+# in it.
 #
 
 # Command line
@@ -8,26 +14,36 @@ refname="$1"
 oldrev="$2"
 newrev="$3"
 
-# Branch deletions are okay
-# if expr "$newrev" : '0*$' >/dev/null ; then
-# exit 0
-# fi
-
 # Look up the config variable and exit if not set
 follows=$(git config hooks.ensure-follows)
 if [[ $? -ne 0 ]] ; then
-    exit 0
+	exit 0
 fi
+
+# Branch deletions are okay
+if expr "$newrev" : '0*$' >/dev/null ; then
+	exit 0
+fi
+
+# We only care about branches moving--ignore tags.
+case "$refname" in
+	refs/heads/*)
+		short_refname=${refname##refs/heads/}
+		;;
+	*)
+		exit 0
+		;;
+esac
 
 follows=($follows)
 count=${#follows[@]}
-for (( i = 0 ; i < count ; i++)) do
+for ((i = 0 ; i < count ; i++)) do
 	follow="${follows[$i]}"
 	missing_commits=$(git log ^$newrev $follow --pretty=oneline | wc -l)
 	if [ $missing_commits -ne 0 ] ; then
 		echo "----------------------------------------------------"
 		echo
-		echo "You need to merge with $follow"
+		echo "You need to merge $follow into $short_refname"
 		echo
 		echo "----------------------------------------------------"
 		exit 1
