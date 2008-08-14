@@ -7,13 +7,13 @@
 #
 # Config
 # ------
-# hooks.allowunannotated
+# hooks.update-allow-tags-branches.unannotatedtag
 #   This boolean sets whether unannotated tags will be allowed into the
 #   repository.  By default they won't be.
-# hooks.allowdeletetag
+# hooks.update-allow-tags-branches.deletetag
 #   This boolean sets whether deleting tags will be allowed in the
 #   repository.  By default they won't be.
-# hooks.allowdeletebranch
+# hooks.update-allow-tags-branches.deletebranch
 #   This boolean sets whether deleting branches will be allowed in the
 #   repository.  By default they won't be.
 #
@@ -37,9 +37,9 @@ if [ -z "$refname" -o -z "$oldrev" -o -z "$newrev" ]; then
 fi
 
 # --- Config
-allowunannotated=$(git config --bool hooks.allowunannotated)
-allowdeletebranch=$(git config --bool hooks.allowdeletebranch)
-allowdeletetag=$(git config --bool hooks.allowdeletetag)
+allowunannotatedtag=$(git config --bool hooks.update-allow-tags-branches.unannotatedtag)
+allowdeletebranch=$(git config --bool hooks.update-allow-tags-branches.deletebranch)
+allowdeletetag=$(git config --bool hooks.update-allow-tags-branches.deletetag)
 
 # check for no description
 projectdesc=$(sed -e '1q' "$GIT_DIR/description")
@@ -60,7 +60,7 @@ case "$refname","$newrev_type" in
 	refs/tags/*,commit)
 		# un-annotated tag
 		short_refname=${refname##refs/tags/}
-		if [ "$allowunannotated" != "true" ]; then
+		if [ "$allowunannotatedtag" != "true" ]; then
 			echo "*** The un-annotated tag, $short_refname, is not allowed in this repository" >&2
 			echo "*** Use 'git tag [ -a | -s ]' for tags you want to propagate." >&2
 			exit 1
