@@ -8,10 +8,8 @@ if [ "$refname" != "refs/heads/gitconfig" ] ; then
 	exit 0
 fi
 
-tree_contents=$(git ls-tree $newrev)
-if [[ "$tree_contents" =~ (.{40})[[:space:]]config ]] ; then
-	config_hash=${BASH_REMATCH[1]}
-	echo "hash=$config_hash"
+config_hash=$(git ls-tree $newrev | grep config | gawk '{print $3}')
+if [[ "$config_hash" != "" ]] ; then
 	git cat-file blob "$config_hash" | while read line ; do
 		key="${line%=*}"
 		value="${line#*=}"
