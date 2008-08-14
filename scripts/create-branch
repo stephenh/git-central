@@ -1,0 +1,16 @@
+#!/bin/sh
+
+new_branch_name=$1
+
+# Make sure we have the latest origin/stable to branch
+git fetch
+
+# Specifying stable to get the last released code
+git checkout -b $new_branch_name origin/stable
+
+# Go ahead and put the branch out on the server
+git push origin $new_branch_name
+
+# Setup the merge property so that pulls come from the right place (instead of stable)
+git config --replace-all "branch.$new_branch_name.merge" "refs/heads/$new_branch_name"
+
