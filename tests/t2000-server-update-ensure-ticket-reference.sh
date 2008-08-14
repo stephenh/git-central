@@ -16,7 +16,7 @@ test_expect_success 'setup' '
 '
 
 # setup the update hook
-install_server_hook 'update-trac' 'update'
+install_server_hook 'update-ensure-ticket-reference' 'update'
 
 test_expect_success 'reject with bad message' '
 	echo $test_name >a &&

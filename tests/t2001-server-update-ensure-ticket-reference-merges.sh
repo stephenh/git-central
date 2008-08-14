@@ -16,7 +16,7 @@ test_expect_success 'setup' '
 '
 
 # setup the hook
-install_server_hook 'update-trac' 'update'
+install_server_hook 'update-ensure-ticket-reference' 'update'
 
 test_expect_success 'accept merge with merge message' '
 	git checkout -b topic1 master &&
