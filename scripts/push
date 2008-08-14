@@ -1,0 +1,11 @@
+#!/bin/sh
+
+branch_name=$(git-symbolic-ref HEAD)
+
+git push origin $branch_name
+if [[ $? -ne 0 ]] ; then
+    exit $?
+fi
+
+# ...tags...
+
