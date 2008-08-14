@@ -5,6 +5,22 @@ refname="$1"
 oldrev="$2"
 newrev="$3"
 
+# We only care about branches moving--ignore tags/etc.
+case "$refname" in
+	refs/heads/*)
+		short_refname=${refname##refs/heads/}
+		;;
+	*)
+		exit 0
+		;;
+esac
+
+
+excused=" $(git config hooks.update-ensure-ticket-reference.excused) "
+if [[ $excused =~ " $short_refname " ]] ; then
+	exit 0
+fi
+
 if expr "$oldrev" : '0*$' >/dev/null ; then
 	git rev-parse --not --branches | git rev-list --stdin --no-merges $newrev
 else

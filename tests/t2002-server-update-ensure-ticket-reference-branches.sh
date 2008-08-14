@@ -16,7 +16,7 @@ test_expect_success 'setup' '
 '
 
 # setup the hook
-install_server_hook 'update-ensure-ticket-reference' 'update'
+install_update_hook 'update-ensure-ticket-reference'
 
 test_expect_success 'reject new branch with bad message' '
 	git checkout -b topic1 master &&
@@ -66,6 +66,20 @@ test_expect_success 'accept new branch with re in all of three' '
 	git commit -a -m "$test_name third re #3222" &&
 
 	git push origin topic4
+'
+
+test_expect_success 'accept branch that has been excused' '
+	git checkout -b topic5 master &&
+	echo "$test_name first" >a &&
+	git commit -a -m "$test_name first with no re" &&
+
+	! git push origin topic5
+
+	cd server
+	git config hooks.update-ensure-ticket-reference.excused topic5
+	cd ..
+
+	git push origin topic5
 '
 
 test_done
