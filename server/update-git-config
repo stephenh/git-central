@@ -1,0 +1,21 @@
+#!/bin/sh
+
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+if [ "$refname" != "refs/heads/gitconfig" ] ; then
+	exit 0
+fi
+
+tree_contents=$(git ls-tree $newrev)
+if [[ "$tree_contents" =~ (.{40})[[:space:]]config ]] ; then
+	config_hash=${BASH_REMATCH[1]}
+	echo "hash=$config_hash"
+	git cat-file blob "$config_hash" | while read line ; do
+		key="${line%=*}"
+		value="${line#*=}"
+		git config "${key}" "${value}"
+	done
+fi
+
