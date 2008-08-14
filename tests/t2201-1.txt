@@ -1,3 +1,4 @@
+From: author@payflex.com
 To: commits@list.com
 Subject: [cbas] 1.0 annotated tag created. 1.0
 X-Git-Refname: refs/tags/1.0

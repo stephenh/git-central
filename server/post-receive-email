@@ -25,14 +25,14 @@
 #
 # Config
 # ------
-# hooks.mailinglist
+# hooks.post-receive-email.mailinglist
 #   This is the list that all pushes will go to; leave it blank to not send
 #   emails for every ref update.
-# hooks.announcelist
+# hooks.post-receive-email.announcelist
 #   This is the list that all pushes of annotated tags will go to.  Leave it
 #   blank to default to the mailinglist field.  The announce emails lists
 #   the short log summary of the changes since the last annotated tag.
-# hooks.envelopesender
+# hooks.post-receive-email.envelopesender
 #   If set then the -f option is passed to sendmail to allow the envelope
 #   sender address to be set
 #
@@ -141,10 +141,10 @@ generate_email()
 	if [ -z "$recipients" ]; then
 		case "$refname_type" in
 			"annotated tag")
-				config_name="hooks.announcelist"
+				config_name="hooks.post-receive-email.announcelist"
 				;;
 			*)
-				config_name="hooks.mailinglist"
+				config_name="hooks.post-receive-email.mailinglist"
 				;;
 		esac
 		echo >&2 "*** $config_name is not set so no email will be sent"
@@ -621,11 +621,11 @@ then
 	projectdesc="UNNAMED PROJECT"
 fi
 
-recipients=$(git config hooks.mailinglist)
-announcerecipients=$(git config hooks.announcelist)
-envelopesender=$(git config hooks.envelopesender)
+recipients=$(git config hooks.post-receive-email.mailinglist)
+announcerecipients=$(git config hooks.post-receive-email.announcelist)
+envelopesender=$(git config hooks.post-receive-email.envelopesender)
 emailprefix="[$projectdesc]"
-debug=$(git config hooks.debug)
+debug=$(git config hooks.post-receive-email.debug)
 
 # --- Main loop
 # Allow dual mode: run from the command line just like the update hook, or

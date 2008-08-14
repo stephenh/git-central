@@ -1,3 +1,4 @@
+From: author@payflex.com
 To: commits@list.com
 Subject: [cbas] topic branch created. $new_commit_hash
 X-Git-Refname: refs/heads/topic
