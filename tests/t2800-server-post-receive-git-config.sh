@@ -16,7 +16,7 @@ test_expect_success 'setup' '
 	git fetch
 '
 
-install_update_hook 'update-git-config'
+install_post_receive_hook 'post-receive-git-config'
 
 test_expect_success 'pushing initial value works' '
 	cd server &&

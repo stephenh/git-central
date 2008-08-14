@@ -11,4 +11,5 @@ done
 
 echo -n "$input" | sh /srv/git/hooks/server/post-receive-email
 echo -n "$input" | sh /srv/git/hooks/server/post-receive-trac
+echo -n "$input" | sh /srv/git/hooks/server/post-receive-git-config
 

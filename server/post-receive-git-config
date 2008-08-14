@@ -1,0 +1,15 @@
+#!/bin/sh
+
+while read oldrev newrev refname ; do
+	if [ "$refname" == "refs/heads/gitconfig" ] ; then
+		config_hash=$(git ls-tree $newrev | grep config | gawk '{print $3}')
+		if [[ "$config_hash" != "" ]] ; then
+			git cat-file blob "$config_hash" | while read line ; do
+				key="${line%=*}"
+				value="${line#*=}"
+				git config "${key}" "${value}"
+			done
+		fi
+	fi
+done
+
