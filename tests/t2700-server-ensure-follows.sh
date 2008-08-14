@@ -25,7 +25,7 @@ test_expect_success 'pushing stable works' '
 
 test_expect_success 'branch with unmoved stable is okay' '
 	cd server &&
-	git config hooks.ensure-follows stable &&
+	git config hooks.update-ensure-follows.branches stable &&
 	cd .. &&
 
 	git checkout -b topic1 &&
@@ -53,7 +53,7 @@ test_expect_success 'branch with moved stable requires merge' '
 
 test_expect_success 'branch with moved stable as second branch requires merge' '
 	cd server &&
-	git config hooks.ensure-follows "foo stable" &&
+	git config hooks.update-ensure-follows.branches "foo stable" &&
 	cd .. &&
 
 	git checkout stable &&
@@ -86,7 +86,32 @@ test_expect_success 'branch deletion with moved stable is okay' '
 	git checkout stable &&
 	echo "$test_name" >a &&
 	git commit -a -m "Change on stable" &&
-	git push origin :stable
+
+	git push origin :topic1
+'
+
+test_expect_success 'excused branch with moved stable is okay' '
+	git checkout -b topic2 stable &&
+	echo "$test_name" >a.topic2 &&
+	git add a.topic2 &&
+	git commit -m "Change on topic2" &&
+	git push origin topic2 &&
+
+	git checkout stable &&
+	echo "$test_name" >a &&
+	git commit -a -m "Change on stable" &&
+	git push origin stable &&
+
+	git checkout topic2 &&
+	echo "$test_name foo" >a.topic2 &&
+	git commit -a -m "Change on topic2 again" &&
+	! git push origin topic2 &&
+
+	cd server &&
+	git config hooks.update-ensure-follows.excused topic2 &&
+	cd .. &&
+
+	git push origin topic2
 '
 
 test_done

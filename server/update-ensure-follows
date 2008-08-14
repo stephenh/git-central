@@ -15,7 +15,7 @@ oldrev="$2"
 newrev="$3"
 
 # Look up the config variable and exit if not set
-follows=$(git config hooks.ensure-follows)
+follows=$(git config hooks.update-ensure-follows.branches)
 if [[ $? -ne 0 ]] ; then
 	exit 0
 fi
@@ -35,18 +35,26 @@ case "$refname" in
 		;;
 esac
 
+excused=" $(git config hooks.update-ensure-follows.excused) "
+if [[ $excused =~ " $short_refname " ]] ; then
+	exit 0
+fi
+
 follows=($follows)
 count=${#follows[@]}
 for ((i = 0 ; i < count ; i++)) do
 	follow="${follows[$i]}"
-	missing_commits=$(git log ^$newrev $follow --pretty=oneline | wc -l)
-	if [ $missing_commits -ne 0 ] ; then
-		echo "----------------------------------------------------"
-		echo
-		echo "You need to merge $follow into $short_refname"
-		echo
-		echo "----------------------------------------------------"
-		exit 1
+	git rev-parse "$follow"
+	if [ $? -eq 0 ] ; then
+		missing_commits=$(git log ^$newrev $follow --pretty=oneline | wc -l)
+		if [ $missing_commits -ne 0 ] ; then
+			echo "----------------------------------------------------"
+			echo
+			echo "You need to merge $follow into $short_refname"
+			echo
+			echo "----------------------------------------------------"
+			exit 1
+		fi
 	fi
 done
 
