@@ -15,19 +15,20 @@ def reject(message)
 	Kernel::exit(1)
 end
 
+locked = `git config hooks.update-lock-check.locked`.split(' ').collect { |element| element.strip() }
+preserved = `git config hooks.update-lock-check.preserved`.split(' ').collect { |element| element.strip() }
+
 if(REFNAME =~ /^refs\/heads\/(.+)$/)
 	# Branch commit
 	commit_branch = $1
-	locked_branches = IO::readlines(DATA_DIR + 'locked_branches').collect!(){|element| element.strip()}
-	if(locked_branches.include?(commit_branch))
-		reject("Branch '#{commit_branch}' is locked.")
+	if(locked.include?(commit_branch))
+		reject("Branch #{commit_branch} is locked.")
 	end
 
 	if(NEWREV =~ /^0{40}$/)
 		# Branch deletion
-		preserved_branches = IO::readlines(DATA_DIR + 'preserved_branches').collect!(){|element| element.strip()}
-		if(preserved_branches.include?(commit_branch))
-			reject("Branch '#{commit_branch}' cannot be deleted.")
+		if(preserved.include?(commit_branch))
+			reject("Branch #{commit_branch} cannot be deleted.")
 		end
 	end
 end
