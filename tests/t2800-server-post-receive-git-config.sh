@@ -23,7 +23,7 @@ test_expect_success 'pushing initial value works' '
 	! git config --list | grep foo &&
 	cd .. &&
 
-	../../scripts/make-gitconfig-branch.sh &&
+	../../scripts/make-gitconfig-branch &&
 	git checkout gitconfig &&
 	echo "foo.foo=bar" > config &&
 	git commit -a -m "Set foo.foo=bar."
