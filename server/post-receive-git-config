@@ -2,12 +2,20 @@
 
 while read oldrev newrev refname ; do
 	if [ "$refname" == "refs/heads/gitconfig" ] ; then
-		config_hash=$(git ls-tree $newrev | grep config | gawk '{print $3}')
+		config_hash=$(git ls-tree $newrev | grep config | grep -oP '\w{40}')
 		if [[ "$config_hash" != "" ]] ; then
 			git cat-file blob "$config_hash" | while read line ; do
 				key="${line%=*}"
 				value="${line#*=}"
 				git config "${key}" "${value}"
+			done
+		fi
+
+		hooks_hash=$(git ls-tree $newrev | grep hooks | grep -oP '\w{40}')
+		if [[ "$hooks_hash" != "" ]] ; then
+			git ls-tree "$hooks_hash" | while read mode type file_hash file_name ; do
+				echo "Installing $file_name"
+				git cat-file blob "$file_hash" > "hooks/$file_name"
 			done
 		fi
 	fi
