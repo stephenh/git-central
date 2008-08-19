@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test_description='script create branch'
+test_description='script pull'
 
 . ./test-lib.sh
 
@@ -13,16 +13,12 @@ test_expect_success 'setup' '
 	git clone ./. server &&
 	rm -fr server/.git/hooks &&
 	git remote add origin ./server &&
-	git config --add branch.master.remote origin &&
-	git config --add branch.master.merge refs/heads/master &&
-	git fetch &&
-
 	git checkout -b stable &&
 	git push origin stable
 '
 
 test_expect_success 'pull does a rebase' '
-	create-branch topic1 &&
+	checkout topic1 &&
 	echo "$test_name" >a.topic1 &&
 	git add a.topic1 &&
 	git commit -m "move topic1" &&
@@ -41,7 +37,7 @@ test_expect_success 'pull does a rebase' '
 
 #test_expect_success 'pull does a rebase but does not fuck up merges' '
 #	# Change "a" itself so we will eventually conflict
-#	create-branch topic2 &&
+#	checkout topic2 &&
 #	echo "$test_name on topic2" >a &&
 #	git commit -a -m "move topic2" &&
 #

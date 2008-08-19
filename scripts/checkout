@@ -1,7 +1,6 @@
 #!/bin/sh
 
 branch_name=$1
-
 exists_local=$(git branch | grep -x "  $branch_name" | wc -l)
 exists_remote=$(git branch | grep -x "  origin/$branch_name" | wc -l)
 
