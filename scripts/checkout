@@ -1,0 +1,28 @@
+#!/bin/sh
+
+branch_name=$1
+
+exists_local=$(git branch | grep -x "  $branch_name" | wc -l)
+exists_remote=$(git branch | grep -x "  origin/$branch_name" | wc -l)
+
+if [[ $exists_remote -eq 0 ]] ; then
+	# Make sure we have the latest origin/stable to branch
+	git fetch
+	# Specifying stable to get the last released code
+	git checkout -b "$branch_name" origin/stable
+	# Go ahead and put the branch out on the server
+	git push origin "$branch_name"
+	# Setup the merge property so that pulls come from the right place (instead of stable)
+	git config --replace-all "branch.$branch_name.merge" "refs/heads/$branch_name"
+else
+	if [[ $exists_local -eq 0 ]] ; then
+		# Make sure we have the latest origin/$branch_name to branch
+		git fetch
+		# Do the checkout
+		git checkout -b "$branch_name" "origin/$branch_name"
+	else
+		# Just checkout
+		git checkout "$branch_name"
+	fi
+fi
+
