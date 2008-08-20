@@ -41,6 +41,34 @@ test_expect_success 'create branch' '
 	test_cmp 1.txt server/.git/refs.heads.topic.out
 '
 
+test_expect_success 'create branch with existing commits does not replay them' '
+	git checkout -b topic2 topic &&
+	existing_commit_hash=$(git rev-parse HEAD) &&
+	existing_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
+
+	git push origin topic2 &&
+
+	interpolate ../t2202-3.txt 3.txt existing_commit_hash existing_commit_date &&
+	test_cmp 3.txt server/.git/refs.heads.topic2.out
+'
+
+test_expect_success 'update branch with existing commits does not replay them' '
+	# Put a commit on topic2, then fast foward topic to it
+	git checkout topic2 &&
+	echo "$test_name" >a &&
+	git commit -a -m "$test_name on topic" &&
+	git push &&
+
+	git checkout topic &&
+	old_commit_hash=$(git rev-parse HEAD) &&
+	git merge topic2 &&
+	existing_commit_hash=$(git rev-parse HEAD) &&
+	git push &&
+
+	interpolate ../t2202-4.txt 4.txt old_commit_hash existing_commit_hash &&
+	test_cmp 4.txt server/.git/refs.heads.topic.out
+'
+
 test_expect_success 'delete branch' '
 	old_commit_hash=$(git rev-parse HEAD) &&
 	git push origin :refs/heads/topic &&

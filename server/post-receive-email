@@ -45,6 +45,8 @@
 
 # ---------------------------- Functions
 
+. $(dirname $0)/functions
+
 #
 # Top level email generation function.  This decides what type of update
 # this is and calls the appropriate body-generation routine after outputting
@@ -222,13 +224,18 @@ generate_create_branch_email()
 	# ref that were previously not accessible
 	# (see generate_update_branch_email for the explanation of this
 	# command)
-	git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --pretty --reverse --stdin $newrev
+
+	set_new_commits
+	echo "$new_commits" | git rev-list --pretty --reverse --stdin
 	echo $LOGEND
 
 	echo ""
 	echo "Summary of changes:"
-	oldest_new=$(git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --stdin $newrev | tail -n 1)
-	git diff-tree --stat -p $oldest_new^..$newrev
+
+	oldest_new=$(echo "$new_commits" | git rev-list --stdin | tail -n 1)
+	if [ "$oldest_new" != "" ] ; then
+		git diff-tree --stat -p $oldest_new^..$newrev
+	fi
 }
 
 #
@@ -387,8 +394,9 @@ generate_update_branch_email()
 
 		echo ""
 		echo $LOGBEGIN
-		git rev-parse --not --branches | grep -v $(git rev-parse $refname) |
-		git rev-list --reverse --pretty --stdin $oldrev..$newrev
+
+		set_new_commits
+		echo "$new_commits" | git rev-list --reverse --pretty --stdin
 
 		# XXX: Need a way of detecting whether git rev-list actually
 		# outputted anything, so that we can issue a "no new

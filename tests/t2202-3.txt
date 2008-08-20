@@ -1,0 +1,20 @@
+From: author@payflex.com
+To: commits@list.com
+Subject: [cbas] topic2 branch created. $existing_commit_hash
+X-Git-Refname: refs/heads/topic2
+X-Git-Reftype: branch
+X-Git-Oldrev: 0000000000000000000000000000000000000000
+X-Git-Newrev: $existing_commit_hash
+
+The branch, topic2 has been created
+        at  $existing_commit_hash (commit)
+
+- Log -----------------------------------------------------------------
+-----------------------------------------------------------------------
+
+Summary of changes:
+
+
+hooks/post-receive
+--
+cbas

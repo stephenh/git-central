@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# Sets: new_commits
+# Assumes: $oldrev, $newrev, and $refname
+#
+# This is for use in post receive hooks, as it assumes the refname has moved and
+# is now newrev, we need to discard it. This is down with bash string replace,
+# as it will replace only the first match, compared to the canonical "grep -v"
+# approach which will throw out multiple matches if the same commit is referred
+# to by multiple branches.
+function set_new_commits() {
+	nl=$'\n'
+
+	# Get all the current branches, not'd as we want only new ones
+	new_commits=$(git rev-parse --not --branches)
+
+	# Strip off the not current branch
+	new_hash=$(git rev-parse $refname)
+	new_commits=${new_commits/^$new_hash/}
+
+	# Put back newrev without the not
+	new_commits=${new_commits}${nl}${newrev}
+
+	# Put in ^oldrev if it's not a new branch
+	if [ "$oldrev" != "0000000000000000000000000000000000000000" ] ; then
+		new_commits=${new_commits}${nl}^${oldrev}
+	fi
+
+	new_commits=${new_commits/$nl$nl/$nl}
+	new_commits=${new_commits/#$nl/}
+}
+

@@ -1,16 +1,11 @@
 #!/bin/sh
 
-export LD_LIBRARY_PATH=/home/BIPFS/shaberman/local/lib
-TRAC_ENV=/srv/trac/cbas
+. $(dirname $0)/functions
 
 while read oldrev newrev refname ; do
-	if expr "$oldrev" : '0*$' >/dev/null
-	then
-		git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --reverse --stdin $newrev
-	else
-		git rev-parse --not --branches | grep -v $(git rev-parse $refname) | git rev-list --reverse --stdin $oldrev..$newrev
-	fi | while read commit ; do
-		/home/BIPFS/shaberman/local/bin/python /srv/git/hooks/server/post-receive-trac.py "$TRAC_ENV" "$commit"
+	set_new_commits
+	echo "$new_commits" | git rev-list --reverse --stdin | while read commit ; do
+		"$PYTHON" "$POST_RECEIVE_TRAC" "$TRAC_ENV" "$commit"
 	done
 done
 

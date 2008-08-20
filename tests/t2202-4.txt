@@ -1,0 +1,35 @@
+From: author@payflex.com
+To: commits@list.com
+Subject: [cbas] topic branch updated. $existing_commit_hash
+X-Git-Refname: refs/heads/topic
+X-Git-Reftype: branch
+X-Git-Oldrev: $old_commit_hash
+X-Git-Newrev: $existing_commit_hash
+
+The branch, topic has been updated
+       via  $existing_commit_hash (commit)
+      from  $old_commit_hash (commit)
+
+Those revisions listed above that are new to this repository have
+not appeared on any other notification email; so we list those
+revisions in full, below.
+
+- Log -----------------------------------------------------------------
+-----------------------------------------------------------------------
+
+Summary of changes:
+ a |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/a b/a
+index 8516a40..5c0be09 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-create branch 2
++update branch with existing commits does not replay them
+
+
+hooks/post-receive
+--
+cbas

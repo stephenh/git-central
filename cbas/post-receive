@@ -9,6 +9,11 @@ while read newref oldref refname ; do
     input="$input$newref $oldref $refname$nl"
 done
 
+export LD_LIBRARY_PATH=/home/BIPFS/shaberman/local/lib
+export PYTHON=/home/BIPFS/shaberman/local/bin/python
+export POST_RECEIVE_TRAC=/srv/git/hooks/server/post-receive-trac.py
+export TRAC_ENV=/srv/trac/cbas
+
 echo -n "$input" | sh /srv/git/hooks/server/post-receive-email
 echo -n "$input" | sh /srv/git/hooks/server/post-receive-trac
 echo -n "$input" | sh /srv/git/hooks/server/post-receive-git-config
