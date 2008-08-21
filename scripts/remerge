@@ -1,6 +1,6 @@
 #!/bin/sh
 
-git rev-list --first-parent "stable..HEAD" | while read commit ; do
+git rev-list --first-parent "origin/stable..HEAD" | while read commit ; do
 	number_of_parents=$(git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | wc -l)
 	if [[ $number_of_parents > 1 ]] ; then
 		# For each parent
