@@ -12,8 +12,3 @@ The tag, 2.1 has been deleted
 -----------------------------------------------------------------------
 $old_commit_hash force update lightweight tag
 -----------------------------------------------------------------------
-
-
-hooks/post-receive
---
-cbas

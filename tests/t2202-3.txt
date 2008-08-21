@@ -13,8 +13,3 @@ The branch, topic2 has been created
 -----------------------------------------------------------------------
 
 Summary of changes:
-
-
-hooks/post-receive
---
-cbas

@@ -23,8 +23,3 @@ A U Thor (3):
       force update annotated tag
 
 -----------------------------------------------------------------------
-
-
-hooks/post-receive
---
-cbas

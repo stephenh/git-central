@@ -17,8 +17,3 @@ Date:   $old_tag_date
 2.0
 $new_commit_hash force update annotated tag
 -----------------------------------------------------------------------
-
-
-hooks/post-receive
---
-cbas

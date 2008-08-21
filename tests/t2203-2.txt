@@ -54,8 +54,3 @@ index 1c043c5..96d4816 100644
 @@ -1 +1 @@
 -merge in stable 2
 +merge in stable with conflict 2
-
-
-hooks/post-receive
---
-cbas

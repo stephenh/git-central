@@ -41,8 +41,3 @@ index 146f275..7d07572 100644
 @@ -1 +1 @@
 -setup
 +commit on annotated tagged branch 2
-
-
-hooks/post-receive
---
-cbas

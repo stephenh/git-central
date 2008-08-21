@@ -12,8 +12,3 @@ The branch, topic has been deleted
 -----------------------------------------------------------------------
 $old_commit_hash rewind and continue branch on topic
 -----------------------------------------------------------------------
-
-
-hooks/post-receive
---
-cbas

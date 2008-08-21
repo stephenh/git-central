@@ -47,8 +47,3 @@ index 8516a40..a30ab5b 100644
 @@ -1 +1 @@
 -create branch 2
 +rewind and continue branch
-
-
-hooks/post-receive
---
-cbas

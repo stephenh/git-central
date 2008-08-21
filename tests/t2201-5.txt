@@ -17,8 +17,3 @@ Date:   $new_commit_date
 
     force update lightweight tag
 -----------------------------------------------------------------------
-
-
-hooks/post-receive
---
-cbas

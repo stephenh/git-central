@@ -58,7 +58,6 @@
 #  - generate_create_XXXX_email
 #  - generate_update_XXXX_email
 #  - generate_delete_XXXX_email
-#  - generate_email_footer
 #
 generate_email()
 {
@@ -133,7 +132,6 @@ generate_email()
 
 	generate_email_header
 	generate_${change_type}_${function}_email
-	generate_email_footer
 }
 
 generate_email_header()
@@ -153,16 +151,6 @@ generate_email_header()
 	EOF
 }
 
-generate_email_footer()
-{
-	cat <<-EOF
-
-
-	hooks/post-receive
-	--
-	$projectdesc
-	EOF
-}
 
 # --------------- Branches
 

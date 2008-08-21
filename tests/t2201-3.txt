@@ -21,8 +21,3 @@ A U Thor (2):
       commit on annotated tagged branch 2
 
 -----------------------------------------------------------------------
-
-
-hooks/post-receive
---
-cbas

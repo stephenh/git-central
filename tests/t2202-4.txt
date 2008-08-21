@@ -28,8 +28,3 @@ index 8516a40..5c0be09 100644
 @@ -1 +1 @@
 -create branch 2
 +update branch with existing commits does not replay them
-
-
-hooks/post-receive
---
-cbas
