@@ -1,13 +1,14 @@
 From: author@payflex.com
 To: commits@list.com
-Subject: [cbas] 2.0 annotated tag created. 2.0
+Subject: [cbas] 2.0 annotated tag updated. 2.0
 X-Git-Refname: refs/tags/2.0
 X-Git-Reftype: annotated tag
-X-Git-Oldrev: 0000000000000000000000000000000000000000
-X-Git-Newrev: $tag_hash
+X-Git-Oldrev: $old_tag_hash
+X-Git-Newrev: $new_tag_hash
 
-The annotated tag, 2.0 has been created
-        at  $tag_hash (tag)
+The annotated tag, 2.0 has been updated
+        to  $new_tag_hash (tag)
+      from  $old_tag_hash (which is now obsolete)
    tagging  $new_commit_hash (commit)
   replaces  1.0
  tagged by  C O Mitter
@@ -16,9 +17,10 @@ The annotated tag, 2.0 has been created
 - Log -----------------------------------------------------------------
 2.0
 
-A U Thor (2):
+A U Thor (3):
       commit on annotated tagged branch
       commit on annotated tagged branch 2
+      force update annotated tag
 
 -----------------------------------------------------------------------
 

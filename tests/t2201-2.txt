@@ -20,13 +20,13 @@ commit $prior_commit_hash
 Author: A U Thor <author@example.com>
 Date:   $prior_commit_date
 
-    commit on tag branch
+    commit on annotated tagged branch
 
 commit $new_commit_hash
 Author: A U Thor <author@example.com>
 Date:   $new_commit_date
 
-    commit on tag branch 2
+    commit on annotated tagged branch 2
 
 -----------------------------------------------------------------------
 
@@ -35,12 +35,12 @@ Summary of changes:
  1 files changed, 1 insertions(+), 1 deletions(-)
 
 diff --git a/a b/a
-index 146f275..affecee 100644
+index 146f275..7d07572 100644
 --- a/a
 +++ b/a
 @@ -1 +1 @@
 -setup
-+commit on tag branch 2
++commit on annotated tagged branch 2
 
 
 hooks/post-receive

@@ -1,0 +1,24 @@
+From: author@payflex.com
+To: commits@list.com
+Subject: [cbas] 2.0 annotated tag deleted. $new_commit_describe
+X-Git-Refname: refs/tags/2.0
+X-Git-Reftype: annotated tag
+X-Git-Oldrev: $old_tag_hash
+X-Git-Newrev: 0000000000000000000000000000000000000000
+
+The annotated tag, 2.0 has been deleted
+       was  $old_tag_hash
+
+-----------------------------------------------------------------------
+tag 2.0
+Tagger: C O Mitter <committer@example.com>
+Date:   $old_tag_date
+
+2.0
+$new_commit_hash force update annotated tag
+-----------------------------------------------------------------------
+
+
+hooks/post-receive
+--
+cbas

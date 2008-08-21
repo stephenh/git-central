@@ -23,7 +23,7 @@ test_expect_success 'setup' '
 
 install_post_receive_hook 'post-receive-email'
 
-test_expect_success 'create tag' '
+test_expect_success 'create annotated tag' '
 	git tag -a -m 1.0 1.0 &&
 	git push --tags &&
 	new_commit_hash=$(git rev-parse HEAD) &&
@@ -34,7 +34,7 @@ test_expect_success 'create tag' '
 	test_cmp 1.txt server/.git/refs.tags.1.0.out
 '
 
-test_expect_success 'commit on tag branch' '
+test_expect_success 'commit on annotated tagged branch' '
 	old_commit_hash=$(git rev-parse HEAD) &&
 	echo "$test_name" >a &&
 	git commit -a -m "$test_name" &&
@@ -52,7 +52,7 @@ test_expect_success 'commit on tag branch' '
 	test_cmp 2.txt server/.git/refs.heads.master.out
 '
 
-test_expect_success 'retag branch' '
+test_expect_success 're-annotated tag branch' '
 	git tag -a -m 2.0 2.0 &&
 	git push --tags &&
 	new_commit_hash=$(git rev-parse HEAD) &&
@@ -61,6 +61,37 @@ test_expect_success 'retag branch' '
 
 	interpolate ../t2201-3.txt 3.txt new_commit_hash tag_hash tag_date &&
 	test_cmp 3.txt server/.git/refs.tags.2.0.out
+'
+
+test_expect_success 'force update annotated tag' '
+	old_tag_hash=$(git rev-parse 2.0) &&
+
+	echo "$test_name" >a &&
+	git commit -a -m "$test_name" &&
+	new_commit_hash=$(git rev-parse HEAD) &&
+	new_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
+
+	git tag -f -a -m 2.0 2.0 &&
+	git push --tags &&
+	new_tag_hash=$(git rev-parse 2.0) &&
+	eval $(git for-each-ref --shell "--format=tag_date=%(taggerdate)" refs/tags/2.0) &&
+
+	interpolate ../t2201-7.txt 7.txt old_tag_hash new_commit_hash new_tag_hash tag_date &&
+	test_cmp 7.txt server/.git/refs.tags.2.0.out
+'
+
+test_expect_success 'delete annotated tag' '
+	old_tag_hash=$(git rev-parse 2.0) &&
+	eval $(git for-each-ref --shell "--format=old_tag_date=%(taggerdate)" refs/tags/2.0) &&
+
+	git tag -d 2.0 &&
+	git push origin :refs/tags/2.0 &&
+
+	new_commit_describe=$(git describe HEAD) &&
+	new_commit_hash=$(git rev-parse HEAD) &&
+
+	interpolate ../t2201-8.txt 8.txt old_tag_hash old_tag_date new_commit_describe new_commit_hash &&
+	test_cmp 8.txt server/.git/refs.tags.2.0.out
 '
 
 test_expect_success 'create lightweight tag' '
@@ -78,7 +109,7 @@ test_expect_success 'create lightweight tag' '
 	test_cmp 4.txt server/.git/refs.tags.2.1.out
 '
 
-test_expect_success 'update lightweight tag' '
+test_expect_success 'force update lightweight tag' '
 	old_commit_hash=$(git rev-parse HEAD) &&
 	echo "$test_name" >a &&
 	git commit -a -m "$test_name" &&

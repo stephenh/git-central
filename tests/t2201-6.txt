@@ -10,7 +10,7 @@ The tag, 2.1 has been deleted
        was  $old_commit_hash
 
 -----------------------------------------------------------------------
-$old_commit_hash update lightweight tag
+$old_commit_hash force update lightweight tag
 -----------------------------------------------------------------------
 
 

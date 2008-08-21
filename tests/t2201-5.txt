@@ -15,7 +15,7 @@ commit $new_commit_hash
 Author: A U Thor <author@example.com>
 Date:   $new_commit_date
 
-    update lightweight tag
+    force update lightweight tag
 -----------------------------------------------------------------------
 
 
