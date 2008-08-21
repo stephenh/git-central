@@ -8,8 +8,6 @@ X-Git-Newrev: $new_commit_hash
 
 The branch, topic1 has been updated
        via  $new_commit_hash (commit)
-       via  $second_stable_hash (commit)
-       via  $first_stable_hash (commit)
       from  $old_commit_hash (commit)
 
 Those revisions listed above that are new to this repository have

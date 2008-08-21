@@ -334,7 +334,8 @@ generate_update_branch_email()
 	# have already had notification emails and is present to show the
 	# full detail of the change from rolling back the old revision to
 	# the base revision and then forward to the new revision
-	for rev in $(git rev-list $oldrev..$newrev)
+	# Changed: added --first-parent to not go down merge commits
+	for rev in $(git rev-list --first-parent $oldrev..$newrev)
 	do
 		revtype=$(git cat-file -t "$rev")
 		echo "       via  $rev ($revtype)"
