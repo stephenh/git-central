@@ -1,0 +1,60 @@
+From: author@payflex.com
+To: commits@list.com
+Subject: [cbas] topic1 branch updated. $new_commit_hash
+X-Git-Refname: refs/heads/topic1
+X-Git-Reftype: branch
+X-Git-Oldrev: $old_commit_hash
+X-Git-Newrev: $new_commit_hash
+
+The branch, topic1 has been updated
+       via  $new_commit_hash (commit)
+       via  $second_stable_hash (commit)
+       via  $first_stable_hash (commit)
+      from  $old_commit_hash (commit)
+
+Those revisions listed above that are new to this repository have
+not appeared on any other notification email; so we list those
+revisions in full, below.
+
+- Log -----------------------------------------------------------------
+commit $new_commit_hash
+Merge: $old_commit_hash $second_stable_hash
+Author: A U Thor <author@example.com>
+Date:   $new_commit_date
+
+    Merge branch 'stable' into topic1
+
+-----------------------------------------------------------------------
+
+Summary of changes:
+ a |    2 +-
+ b |    2 +-
+ c |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/a b/a
+index 146f275..1c043c5 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-setup
++merge in stable 2
+diff --git a/b b/b
+index 146f275..1c043c5 100644
+--- a/b
++++ b/b
+@@ -1 +1 @@
+-setup
++merge in stable 2
+diff --git a/c b/c
+index 146f275..1c043c5 100644
+--- a/c
++++ b/c
+@@ -1 +1 @@
+-setup
++merge in stable 2
+
+
+hooks/post-receive
+--
+cbas
