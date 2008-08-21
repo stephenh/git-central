@@ -385,7 +385,6 @@ generate_delete_branch_email()
 generate_create_atag_email()
 {
 	echo "        at  $newrev ($newrev_type)"
-
 	generate_atag_email
 }
 
@@ -397,7 +396,6 @@ generate_update_atag_email()
 {
 	echo "        to  $newrev ($newrev_type)"
 	echo "      from  $oldrev (which is now obsolete)"
-
 	generate_atag_email
 }
 
@@ -486,7 +484,6 @@ generate_delete_atag_email()
 generate_create_ltag_email()
 {
 	echo "        at  $newrev ($newrev_type)"
-
 	generate_ltag_email
 }
 
@@ -498,7 +495,6 @@ generate_update_ltag_email()
 {
 	echo "        to  $newrev ($newrev_type)"
 	echo "      from  $oldrev"
-
 	generate_ltag_email
 }
 
@@ -559,8 +555,7 @@ LOGBEGIN="- Log ----------------------------------------------------------------
 LOGEND="-----------------------------------------------------------------------"
 
 # --- Config
-# Set GIT_DIR either from the working directory, or from the environment
-# variable.
+# Set GIT_DIR either from the working directory or the environment variable.
 GIT_DIR=$(git rev-parse --git-dir 2>/dev/null)
 if [ -z "$GIT_DIR" ]; then
 	echo >&2 "fatal: post-receive: GIT_DIR not set"
@@ -568,11 +563,9 @@ if [ -z "$GIT_DIR" ]; then
 fi
 
 projectdesc=$(sed -ne '1p' "$GIT_DIR/description")
-# Check if the description is unchanged from it's default, and shorten it to
-# a more manageable length if it is
-if expr "$projectdesc" : "Unnamed repository.*$" >/dev/null
-then
-	projectdesc="UNNAMED PROJECT"
+# Shorten the description if it's the default
+if expr "$projectdesc" : "Unnamed repository.*$" >/dev/null ; then
+	projectdesc="UNNAMED"
 fi
 
 recipients=$(git config hooks.post-receive-email.mailinglist)
