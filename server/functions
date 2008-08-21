@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Sets: new_commits
-# Assumes: $oldrev, $newrev, and $refname
+# Assumes: $oldrev $newrev $refname
 #
 # This is for use in post receive hooks, as it assumes the refname has moved and
 # is now newrev, we need to discard it. This is down with bash string replace,
@@ -28,5 +28,50 @@ function set_new_commits() {
 
 	new_commits=${new_commits/$nl$nl/$nl}
 	new_commits=${new_commits/#$nl/}
+}
+
+# Sets: $change_type
+# Assumes: $oldrev $newrev
+#
+# --- Interpret
+# 0000->1234 (create)
+# 1234->2345 (update)
+# 2345->0000 (delete)
+function set_change_type() {
+	if [ "$oldrev" == "0000000000000000000000000000000000000000" ] ; then
+		change_type="create"
+	else
+		if [ "$newrev" == "0000000000000000000000000000000000000000" ] ; then
+			change_type="delete"
+		else
+			change_type="update"
+		fi
+	fi
+}
+
+# Sets: $newrev_type $oldrev_type $rev $rev_type
+# Assumes: $newrev $oldrev
+# --- Get the revision types
+function set_rev_types() {
+	newrev_type=$(git cat-file -t "$newrev" 2> /dev/null)
+	oldrev_type=$(git cat-file -t "$oldrev" 2> /dev/null)
+	if [ "$newrev" == "0000000000000000000000000000000000000000" ] ; then
+		rev_type="$oldrev_type"
+		rev="$oldrev"
+	else
+		rev_type="$newrev_type"
+		rev="$newrev"
+	fi
+}
+
+# Sets: $describe
+# Assumes: $rev
+#
+# The email subject will contain the best description of the ref that we can build from the parameters
+function set_describe() {
+	describe=$(git describe $rev 2>/dev/null)
+	if [ -z "$describe" ]; then
+		describe=$rev
+	fi
 }
 

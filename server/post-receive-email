@@ -67,35 +67,9 @@ generate_email()
 	newrev=$(git rev-parse $2)
 	refname="$3"
 
-	# --- Interpret
-	# 0000->1234 (create)
-	# 1234->2345 (update)
-	# 2345->0000 (delete)
-	if expr "$oldrev" : '0*$' >/dev/null
-	then
-		change_type="create"
-	else
-		if expr "$newrev" : '0*$' >/dev/null
-		then
-			change_type="delete"
-		else
-			change_type="update"
-		fi
-	fi
-
-	# --- Get the revision types
-	newrev_type=$(git cat-file -t $newrev 2> /dev/null)
-	oldrev_type=$(git cat-file -t "$oldrev" 2> /dev/null)
-	case "$change_type" in
-	create|update)
-		rev="$newrev"
-		rev_type="$newrev_type"
-		;;
-	delete)
-		rev="$oldrev"
-		rev_type="$oldrev_type"
-		;;
-	esac
+	set_change_type
+	set_rev_types
+	set_describe
 
 	# The revision type tells us what type the commit is, combined with
 	# the location of the ref we can decide between
@@ -107,11 +81,13 @@ generate_email()
 		refs/tags/*,commit)
 			# un-annotated tag
 			refname_type="tag"
+			function="ltag"
 			short_refname=${refname##refs/tags/}
 			;;
 		refs/tags/*,tag)
 			# annotated tag
 			refname_type="annotated tag"
+			function="atag"
 			short_refname=${refname##refs/tags/}
 			# change recipients
 			if [ -n "$announcerecipients" ]; then
@@ -121,6 +97,7 @@ generate_email()
 		refs/heads/*,commit)
 			# branch
 			refname_type="branch"
+			function="branch"
 			short_refname=${refname##refs/heads/}
 			;;
 		refs/remotes/*,commit)
@@ -154,28 +131,8 @@ generate_email()
 		exit 0
 	fi
 
-	# Email parameters
-	# The email subject will contain the best description of the ref
-	# that we can build from the parameters
-	describe=$(git describe $rev 2>/dev/null)
-	if [ -z "$describe" ]; then
-		describe=$rev
-	fi
-
 	generate_email_header
-
-	# Call the correct body generation function
-	fn_name=general
-	case "$refname_type" in
-	"tracking branch"|branch)
-		fn_name=branch
-		;;
-	"annotated tag")
-		fn_name=atag
-		;;
-	esac
-	generate_${change_type}_${fn_name}_email
-
+	generate_${change_type}_${function}_email
 	generate_email_footer
 }
 
@@ -538,29 +495,29 @@ generate_delete_atag_email()
 # Called when any other type of reference is created (most likely a
 # non-annotated tag)
 #
-generate_create_general_email()
+generate_create_ltag_email()
 {
 	echo "        at  $newrev ($newrev_type)"
 
-	generate_general_email
+	generate_ltag_email
 }
 
 #
 # Called when any other type of reference is updated (most likely a
 # non-annotated tag)
 #
-generate_update_general_email()
+generate_update_ltag_email()
 {
 	echo "        to  $newrev ($newrev_type)"
 	echo "      from  $oldrev"
 
-	generate_general_email
+	generate_ltag_email
 }
 
 #
 # Called for creation or update of any other type of reference
 #
-generate_general_email()
+generate_ltag_email()
 {
 	# Unannotated tags are more about marking a point than releasing a
 	# version; therefore we don't do the shortlog summary that we do for
@@ -588,7 +545,7 @@ generate_general_email()
 #
 # Called for the deletion of any other type of reference
 #
-generate_delete_general_email()
+generate_delete_ltag_email()
 {
 	echo "       was  $oldrev"
 	echo ""
