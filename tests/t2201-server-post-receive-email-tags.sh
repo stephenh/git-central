@@ -63,5 +63,20 @@ test_expect_success 'retag branch' '
 	test_cmp 3.txt server/.git/refs.tags.2.0.out
 '
 
+test_expect_success 'create lightweight tag' '
+	echo "$test_name" >a &&
+	git commit -a -m "$test_name" &&
+    git push &&
+
+	git tag 2.1 &&
+	git push --tags &&
+	new_commit_hash=$(git rev-parse HEAD) &&
+	new_commit_describe=$(git describe HEAD) &&
+	new_commit_date=$(git rev-list --no-walk --pretty=format:%ad HEAD | tail -n 1) &&
+
+	interpolate ../t2201-4.txt 4.txt new_commit_hash new_commit_describe new_commit_date &&
+	test_cmp 4.txt server/.git/refs.tags.2.1.out
+'
+
 test_done
 
