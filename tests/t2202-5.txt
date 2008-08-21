@@ -1,0 +1,39 @@
+From: author@payflex.com
+To: commits@list.com
+Subject: [cbas] topic branch updated. $new_commit_hash
+X-Git-Refname: refs/heads/topic
+X-Git-Reftype: branch
+X-Git-Oldrev: $old_commit_hash
+X-Git-Newrev: $new_commit_hash
+
+The branch, topic has been updated
+  discards  $old_commit_hash (commit)
+
+This update discarded existing revisions and left the branch pointing at
+a previous point in the repository history.
+
+ * -- * -- N ($new_commit_hash)
+            \
+             O -- O -- O ($old_commit_hash)
+
+The removed revisions are not necessarilly gone - if another reference
+still refers to them they will stay in the repository.
+
+No new revisions were added by this update.
+
+Summary of changes:
+ a |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/a b/a
+index 5c0be09..8516a40 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-update branch with existing commits does not replay them
++create branch 2
+
+
+hooks/post-receive
+--
+cbas

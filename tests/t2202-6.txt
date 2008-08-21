@@ -1,0 +1,54 @@
+From: author@payflex.com
+To: commits@list.com
+Subject: [cbas] topic branch updated. $new_commit_hash
+X-Git-Refname: refs/heads/topic
+X-Git-Reftype: branch
+X-Git-Oldrev: $old_commit_hash
+X-Git-Newrev: $new_commit_hash
+
+The branch, topic has been updated
+  discards  $old_commit_hash (commit)
+       via  $new_commit_hash (commit)
+
+This update added new revisions after undoing existing revisions.  That is
+to say, the old revision is not a strict subset of the new revision.  This
+situation occurs when you --force push a change and generate a repository
+containing something like this:
+
+ * -- * -- B -- O -- O -- O ($old_commit_hash)
+            \
+             N -- N -- N ($new_commit_hash)
+
+When this happens we assume that you've already had alert emails for all
+of the O revisions, and so we here report only the revisions in the N
+branch from the common base, B.
+
+Those revisions listed above that are new to this repository have
+not appeared on any other notification email; so we list those
+revisions in full, below.
+
+- Log -----------------------------------------------------------------
+commit $new_commit_hash
+Author: A U Thor <author@example.com>
+Date:   $new_commit_date
+
+    rewind and continue branch on topic
+
+-----------------------------------------------------------------------
+
+Summary of changes:
+ a |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/a b/a
+index 8516a40..a30ab5b 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-create branch 2
++rewind and continue branch
+
+
+hooks/post-receive
+--
+cbas

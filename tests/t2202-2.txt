@@ -10,7 +10,7 @@ The branch, topic has been deleted
        was  $old_commit_hash
 
 -----------------------------------------------------------------------
-$old_commit_hash update branch with existing commits does not replay them on topic
+$old_commit_hash rewind and continue branch on topic
 -----------------------------------------------------------------------
 
 
