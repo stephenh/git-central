@@ -27,7 +27,7 @@ test_expect_success 'pushing just topic is okay' '
 	git push origin topic
 '
 
-test_expect_success 'if topic moves on, tagging candidate requires a merge' '
+test_expect_failure 'if topic moves on, tagging candidate requires a merge' '
 	git checkout -b candidate stable &&
 	git merge topic --no-ff &&
 	git push &&
@@ -68,7 +68,7 @@ test_expect_success 'if stable moves on, tagging candidate requires a merge' '
 	git push --tags
 '
 
-test_expect_success 'when creating a candidate, it must be a merge' '
+test_expect_failure 'when creating a candidate, it must be a merge' '
 	git checkout -b topic2 stable &&
 	echo "$test_name on topic2" >a &&
 	git commit -a -m "$test_name on topic2" &&
