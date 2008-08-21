@@ -66,7 +66,7 @@ test_expect_success 'retag branch' '
 test_expect_success 'create lightweight tag' '
 	echo "$test_name" >a &&
 	git commit -a -m "$test_name" &&
-    git push &&
+	git push &&
 
 	git tag 2.1 &&
 	git push --tags &&
@@ -76,6 +76,32 @@ test_expect_success 'create lightweight tag' '
 
 	interpolate ../t2201-4.txt 4.txt new_commit_hash new_commit_describe new_commit_date &&
 	test_cmp 4.txt server/.git/refs.tags.2.1.out
+'
+
+test_expect_success 'update lightweight tag' '
+	old_commit_hash=$(git rev-parse HEAD) &&
+	echo "$test_name" >a &&
+	git commit -a -m "$test_name" &&
+	git push &&
+
+	git tag -f 2.1 &&
+	git push --tags &&
+	new_commit_hash=$(git rev-parse HEAD) &&
+	new_commit_describe=$(git describe HEAD) &&
+	new_commit_date=$(git rev-list --no-walk --pretty=format:%ad HEAD | tail -n 1) &&
+
+	interpolate ../t2201-5.txt 5.txt new_commit_hash new_commit_describe new_commit_date old_commit_hash &&
+	test_cmp 5.txt server/.git/refs.tags.2.1.out
+'
+
+test_expect_success 'delete lightweight tag' '
+	old_commit_hash=$(git rev-parse HEAD) &&
+	old_commit_describe=$(git describe HEAD) &&
+	git tag -d 2.1 &&
+	git push origin :refs/tags/2.1 &&
+
+	interpolate ../t2201-6.txt 6.txt old_commit_hash old_commit_describe &&
+	test_cmp 6.txt server/.git/refs.tags.2.1.out
 '
 
 test_done

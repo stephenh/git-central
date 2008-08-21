@@ -1,0 +1,24 @@
+From: author@payflex.com
+To: commits@list.com
+Subject: [cbas] 2.1 tag updated. $new_commit_describe
+X-Git-Refname: refs/tags/2.1
+X-Git-Reftype: tag
+X-Git-Oldrev: $old_commit_hash
+X-Git-Newrev: $new_commit_hash
+
+The tag, 2.1 has been updated
+        to  $new_commit_hash (commit)
+      from  $old_commit_hash
+
+- Log -----------------------------------------------------------------
+commit $new_commit_hash
+Author: A U Thor <author@example.com>
+Date:   $new_commit_date
+
+    update lightweight tag
+-----------------------------------------------------------------------
+
+
+hooks/post-receive
+--
+cbas

@@ -1,0 +1,19 @@
+From: author@payflex.com
+To: commits@list.com
+Subject: [cbas] 2.1 tag deleted. $old_commit_describe
+X-Git-Refname: refs/tags/2.1
+X-Git-Reftype: tag
+X-Git-Oldrev: $old_commit_hash
+X-Git-Newrev: 0000000000000000000000000000000000000000
+
+The tag, 2.1 has been deleted
+       was  $old_commit_hash
+
+-----------------------------------------------------------------------
+$old_commit_hash update lightweight tag
+-----------------------------------------------------------------------
+
+
+hooks/post-receive
+--
+cbas
