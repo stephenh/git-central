@@ -7,10 +7,10 @@ X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: $tag_hash
 
 The annotated tag, 1.0 has been created
-        at  $tag_hash (tag)
-   tagging  $new_commit_hash (commit)
- tagged by  C O Mitter
-        on  $tag_date
+        at $tag_hash (tag)
+   tagging $new_commit_hash (commit)
+ tagged by C O Mitter
+        on $tag_date
 
 - Log -----------------------------------------------------------------
 1.0

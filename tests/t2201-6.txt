@@ -7,7 +7,7 @@ X-Git-Oldrev: $old_commit_hash
 X-Git-Newrev: 0000000000000000000000000000000000000000
 
 The tag, 2.1 has been deleted
-       was  $old_commit_hash
+       was $old_commit_hash (commit)
 
 -----------------------------------------------------------------------
 $old_commit_hash force update lightweight tag

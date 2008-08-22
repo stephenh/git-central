@@ -33,22 +33,24 @@ test_expect_success 'create branch' '
 	echo "$test_name 2" >a &&
 	git commit -a -m "$test_name on topic 2 " &&
 	new_commit_hash=$(git rev-parse HEAD) &&
+	new_commit_abbrev=$(git rev-parse --short HEAD) &&
 	new_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
 
 	git push origin topic &&
 
-	interpolate ../t2202-1.txt 1.txt new_commit_hash new_commit_date prior_commit_hash prior_commit_date &&
+	interpolate ../t2202-1.txt 1.txt new_commit_hash new_commit_abbrev new_commit_date prior_commit_hash prior_commit_date &&
 	test_cmp 1.txt server/.git/refs.heads.topic.out
 '
 
 test_expect_success 'create branch with existing commits does not replay them' '
 	git checkout -b topic2 topic &&
 	existing_commit_hash=$(git rev-parse HEAD) &&
+	existing_commit_abbrev=$(git rev-parse --short HEAD) &&
 	existing_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
 
 	git push origin topic2 &&
 
-	interpolate ../t2202-3.txt 3.txt existing_commit_hash existing_commit_date &&
+	interpolate ../t2202-3.txt 3.txt existing_commit_hash existing_commit_abbrev existing_commit_date &&
 	test_cmp 3.txt server/.git/refs.heads.topic2.out
 '
 
@@ -61,38 +63,43 @@ test_expect_success 'update branch with existing commits does not replay them' '
 
 	git checkout topic &&
 	old_commit_hash=$(git rev-parse HEAD) &&
+	old_commit_abbrev=$(git rev-parse --short HEAD) &&
 	git merge topic2 &&
 	existing_commit_hash=$(git rev-parse HEAD) &&
+	existing_commit_abbrev=$(git rev-parse --short HEAD) &&
 	git push &&
 
-	interpolate ../t2202-4.txt 4.txt old_commit_hash existing_commit_hash &&
+	interpolate ../t2202-4.txt 4.txt old_commit_hash old_commit_abbrev existing_commit_hash existing_commit_abbrev &&
 	test_cmp 4.txt server/.git/refs.heads.topic.out
 '
 
 test_expect_success 'rewind branch' '
 	git checkout topic &&
 	old_commit_hash=$(git rev-parse HEAD) &&
+	old_commit_abbrev=$(git rev-parse --short HEAD) &&
 
 	git reset --hard HEAD^ &&
 	git push --force &&
 	new_commit_hash=$(git rev-parse HEAD) &&
 
-	interpolate ../t2202-5.txt 5.txt old_commit_hash new_commit_hash &&
+	interpolate ../t2202-5.txt 5.txt old_commit_hash new_commit_hash old_commit_abbrev &&
 	test_cmp 5.txt server/.git/refs.heads.topic.out
 '
 
 test_expect_success 'rewind and continue branch' '
 	git checkout topic &&
 	old_commit_hash=$(git rev-parse HEAD) &&
+	old_commit_abbrev=$(git rev-parse --short HEAD) &&
 
 	git reset --hard HEAD^ &&
 	echo "$test_name" >a &&
 	git commit -a -m "$test_name on topic" &&
 	new_commit_hash=$(git rev-parse HEAD) &&
+	new_commit_abbrev=$(git rev-parse --short HEAD) &&
 	new_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
 
 	git push --force &&
-	interpolate ../t2202-6.txt 6.txt old_commit_hash new_commit_hash new_commit_date &&
+	interpolate ../t2202-6.txt 6.txt old_commit_hash new_commit_hash new_commit_date new_commit_abbrev old_commit_abbrev &&
 	test_cmp 6.txt server/.git/refs.heads.topic.out
 '
 

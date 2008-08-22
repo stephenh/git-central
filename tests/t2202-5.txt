@@ -7,7 +7,7 @@ X-Git-Oldrev: $old_commit_hash
 X-Git-Newrev: $new_commit_hash
 
 The branch, topic has been updated
-  discards  $old_commit_hash (commit)
+  discards $old_commit_abbrev update branch with existing commits does not replay them on topic
 
 This update discarded existing revisions and left the branch pointing at
 a previous point in the repository history.
@@ -24,11 +24,3 @@ No new revisions were added by this update.
 Summary of changes:
  a |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/a b/a
-index 5c0be09..8516a40 100644
---- a/a
-+++ b/a
-@@ -1 +1 @@
--update branch with existing commits does not replay them
-+create branch 2

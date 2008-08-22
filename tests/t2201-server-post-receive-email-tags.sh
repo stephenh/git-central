@@ -36,19 +36,23 @@ test_expect_success 'create annotated tag' '
 
 test_expect_success 'commit on annotated tagged branch' '
 	old_commit_hash=$(git rev-parse HEAD) &&
+	old_commit_abbrev=$(git rev-parse --short HEAD) &&
+
 	echo "$test_name" >a &&
 	git commit -a -m "$test_name" &&
 	prior_commit_hash=$(git rev-parse HEAD) &&
 	prior_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
+	prior_commit_abbrev=$(git rev-parse --short HEAD) &&
 
 	echo "$test_name 2" >a &&
 	git commit -a -m "$test_name 2" &&
 	new_commit_hash=$(git rev-parse HEAD) &&
 	new_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
+	new_commit_abbrev=$(git rev-parse --short HEAD) &&
 
 	git push &&
 	new_commit_abbrev=$(git rev-list -n 1 --pretty=format:%h HEAD | grep -v commit) &&
-	interpolate ../t2201-2.txt 2.txt old_commit_hash new_commit_hash new_commit_date new_commit_abbrev prior_commit_hash prior_commit_date &&
+	interpolate ../t2201-2.txt 2.txt old_commit_hash new_commit_hash new_commit_date new_commit_abbrev prior_commit_hash prior_commit_date old_commit_abbrev prior_commit_abbrev new_commit_abbrev &&
 	test_cmp 2.txt server/.git/refs.heads.master.out
 '
 

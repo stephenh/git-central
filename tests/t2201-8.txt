@@ -7,7 +7,7 @@ X-Git-Oldrev: $old_tag_hash
 X-Git-Newrev: 0000000000000000000000000000000000000000
 
 The annotated tag, 2.0 has been deleted
-       was  $old_tag_hash
+       was $old_tag_hash (tag)
 
 -----------------------------------------------------------------------
 tag 2.0

@@ -7,7 +7,7 @@ X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: $new_commit_hash
 
 The tag, 2.1 has been created
-        at  $new_commit_hash (commit)
+        at $new_commit_hash (commit)
 
 - Log -----------------------------------------------------------------
 commit $new_commit_hash

@@ -7,14 +7,26 @@ X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: $new_commit_hash
 
 The branch, topic has been created
-        at  $new_commit_hash (commit)
+        at $new_commit_abbrev create branch on topic 2
 
 - Log -----------------------------------------------------------------
+
 commit $prior_commit_hash
 Author: A U Thor <author@example.com>
 Date:   $prior_commit_date
 
     create branch on topic
+
+$prior_commit_hash
+diff --git a/a b/a
+index 146f275..55da47f 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-setup
++create branch
+
+-----------------------------------------------------------------------
 
 commit $new_commit_hash
 Author: A U Thor <author@example.com>
@@ -22,16 +34,17 @@ Date:   $new_commit_date
 
     create branch on topic 2
 
+$new_commit_hash
+diff --git a/a b/a
+index 55da47f..8516a40 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-create branch
++create branch 2
+
 -----------------------------------------------------------------------
 
 Summary of changes:
  a |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/a b/a
-index 146f275..8516a40 100644
---- a/a
-+++ b/a
-@@ -1 +1 @@
--setup
-+create branch 2

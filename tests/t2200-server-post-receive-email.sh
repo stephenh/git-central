@@ -24,13 +24,17 @@ test_expect_success 'setup' '
 install_post_receive_hook 'post-receive-email'
 
 test_expect_success 'simple commit' '
+	old_commit_hash=$(git rev-parse HEAD) &&
+	old_commit_abbrev=$(git rev-parse --short HEAD) &&
+
 	echo $test_name >a &&
 	git commit -a -m "$test_name" &&
 	git push &&
-	old_commit_hash=$(git rev-parse HEAD^) &&
 	new_commit_hash=$(git rev-parse HEAD) &&
 	new_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
-	interpolate ../t2200-1.txt 1.txt old_commit_hash new_commit_hash new_commit_date &&
+	new_commit_abbrev=$(git rev-parse --short HEAD) &&
+
+	interpolate ../t2200-1.txt 1.txt old_commit_hash old_commit_abbrev new_commit_hash new_commit_date new_commit_abbrev &&
 	test_cmp 1.txt server/.git/refs.heads.master.out
 '
 

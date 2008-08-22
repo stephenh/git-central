@@ -7,20 +7,32 @@ X-Git-Oldrev: $old_commit_hash
 X-Git-Newrev: $new_commit_hash
 
 The branch, master has been updated
-       via  $new_commit_hash (commit)
-       via  $prior_commit_hash (commit)
-      from  $old_commit_hash (commit)
+       via $new_commit_abbrev commit on annotated tagged branch 2
+       via $prior_commit_abbrev commit on annotated tagged branch
+      from $old_commit_abbrev setup
 
 Those revisions listed above that are new to this repository have
 not appeared on any other notification email; so we list those
 revisions in full, below.
 
 - Log -----------------------------------------------------------------
+
 commit $prior_commit_hash
 Author: A U Thor <author@example.com>
 Date:   $prior_commit_date
 
     commit on annotated tagged branch
+
+$prior_commit_hash
+diff --git a/a b/a
+index 146f275..815c4fa 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-setup
++commit on annotated tagged branch
+
+-----------------------------------------------------------------------
 
 commit $new_commit_hash
 Author: A U Thor <author@example.com>
@@ -28,16 +40,17 @@ Date:   $new_commit_date
 
     commit on annotated tagged branch 2
 
+$new_commit_hash
+diff --git a/a b/a
+index 815c4fa..7d07572 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-commit on annotated tagged branch
++commit on annotated tagged branch 2
+
 -----------------------------------------------------------------------
 
 Summary of changes:
  a |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/a b/a
-index 146f275..7d07572 100644
---- a/a
-+++ b/a
-@@ -1 +1 @@
--setup
-+commit on annotated tagged branch 2

@@ -7,12 +7,12 @@ X-Git-Oldrev: $old_tag_hash
 X-Git-Newrev: $new_tag_hash
 
 The annotated tag, 2.0 has been updated
-        to  $new_tag_hash (tag)
-      from  $old_tag_hash (which is now obsolete)
-   tagging  $new_commit_hash (commit)
-  replaces  1.0
- tagged by  C O Mitter
-        on  $tag_date
+        to $new_tag_hash (tag)
+      from $old_tag_hash (which is now obsolete)
+   tagging $new_commit_hash (commit)
+  replaces 1.0
+ tagged by C O Mitter
+        on $tag_date
 
 - Log -----------------------------------------------------------------
 2.0

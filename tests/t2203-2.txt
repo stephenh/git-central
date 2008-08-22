@@ -7,14 +7,15 @@ X-Git-Oldrev: $old_commit_hash
 X-Git-Newrev: $new_commit_hash
 
 The branch, topic1 has been updated
-       via  $new_commit_hash (commit)
-      from  $old_commit_hash (commit)
+       via $new_commit_abbrev Merge branch 'stable' into topic1
+      from $old_commit_abbrev move topic1
 
 Those revisions listed above that are new to this repository have
 not appeared on any other notification email; so we list those
 revisions in full, below.
 
 - Log -----------------------------------------------------------------
+
 commit $new_commit_hash
 Merge: $old_commit_hash $second_stable_hash
 Author: A U Thor <author@example.com>
@@ -25,6 +26,16 @@ Date:   $new_commit_date
     Conflicts:
     	a
 
+$new_commit_hash
+diff --cc a
+index a67d715,96d4816..01a17ba
+--- a/a
++++ b/a
+@@@ -1,1 -1,1 +1,1 @@@
+- merge in stable with conflict on topic1
+ -merge in stable with conflict 2
+++merge in stable with conflict 2 merged topic1
+
 -----------------------------------------------------------------------
 
 Summary of changes:
@@ -32,25 +43,3 @@ Summary of changes:
  b |    2 +-
  c |    2 +-
  3 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/a b/a
-index a67d715..01a17ba 100644
---- a/a
-+++ b/a
-@@ -1 +1 @@
--merge in stable with conflict on topic1
-+merge in stable with conflict 2 merged topic1
-diff --git a/b b/b
-index 1c043c5..96d4816 100644
---- a/b
-+++ b/b
-@@ -1 +1 @@
--merge in stable 2
-+merge in stable with conflict 2
-diff --git a/c b/c
-index 1c043c5..96d4816 100644
---- a/c
-+++ b/c
-@@ -1 +1 @@
--merge in stable 2
-+merge in stable with conflict 2

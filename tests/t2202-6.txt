@@ -7,8 +7,8 @@ X-Git-Oldrev: $old_commit_hash
 X-Git-Newrev: $new_commit_hash
 
 The branch, topic has been updated
-  discards  $old_commit_hash (commit)
-       via  $new_commit_hash (commit)
+  discards $old_commit_abbrev create branch on topic 2
+       via $new_commit_abbrev rewind and continue branch on topic
 
 This update added new revisions after undoing existing revisions.  That is
 to say, the old revision is not a strict subset of the new revision.  This
@@ -28,22 +28,24 @@ not appeared on any other notification email; so we list those
 revisions in full, below.
 
 - Log -----------------------------------------------------------------
+
 commit $new_commit_hash
 Author: A U Thor <author@example.com>
 Date:   $new_commit_date
 
     rewind and continue branch on topic
 
+$new_commit_hash
+diff --git a/a b/a
+index 55da47f..a30ab5b 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-create branch
++rewind and continue branch
+
 -----------------------------------------------------------------------
 
 Summary of changes:
  a |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
-
-diff --git a/a b/a
-index 8516a40..a30ab5b 100644
---- a/a
-+++ b/a
-@@ -1 +1 @@
--create branch 2
-+rewind and continue branch

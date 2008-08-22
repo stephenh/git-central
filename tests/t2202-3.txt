@@ -7,9 +7,6 @@ X-Git-Oldrev: 0000000000000000000000000000000000000000
 X-Git-Newrev: $existing_commit_hash
 
 The branch, topic2 has been created
-        at  $existing_commit_hash (commit)
+        at $existing_commit_abbrev create branch on topic 2
 
 - Log -----------------------------------------------------------------
------------------------------------------------------------------------
-
-Summary of changes:

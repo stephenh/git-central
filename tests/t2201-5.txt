@@ -7,8 +7,8 @@ X-Git-Oldrev: $old_commit_hash
 X-Git-Newrev: $new_commit_hash
 
 The tag, 2.1 has been updated
-        to  $new_commit_hash (commit)
-      from  $old_commit_hash
+        to $new_commit_hash (commit)
+      from $old_commit_hash (commit)
 
 - Log -----------------------------------------------------------------
 commit $new_commit_hash
