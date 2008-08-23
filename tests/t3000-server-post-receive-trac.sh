@@ -25,14 +25,14 @@ test_expect_success 'new branch' '
 	git commit -a -m "changed on topic1" &&
 	new_commit_hash=$(git rev-parse HEAD) &&
 	git push origin topic1 2>push.err &&
-	cat push.err | grep "/foo/post-receive-trac.py /foo/trac $new_commit_hash"
+	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic1 $new_commit_hash"
 '
 
 test_expect_success 'new branch with already existing does not double tap' '
 	git checkout -b topic2 topic1 &&
 	existing_commit_hash=$(git rev-parse HEAD) &&
 	git push origin topic2 2>push.err &&
-	! cat push.err | grep "/foo/post-receive-trac.py /foo/trac $existing_commit_hash"
+	! cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $existing_commit_hash"
 '
 
 test_expect_success 'update branch' '
@@ -41,7 +41,7 @@ test_expect_success 'update branch' '
 	git commit -a -m "changed on topic2" &&
 	new_commit_hash=$(git rev-parse HEAD) &&
 	git push origin topic2 2>push.err &&
-	cat push.err | grep "/foo/post-receive-trac.py /foo/trac $new_commit_hash"
+	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $new_commit_hash"
 '
 
 test_expect_success 'update branch to an already published commit does not double tap' '
@@ -55,8 +55,8 @@ test_expect_success 'update branch to an already published commit does not doubl
 
 	git push 2>push.err &&
 
-	! cat push.err | grep "/foo/post-receive-trac.py /foo/trac $topic2_hash"
-	! cat push.err | grep "/foo/post-receive-trac.py /foo/trac $topic1_hash"
+	! cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $topic2_hash"
+	! cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic1 $topic1_hash"
 '
 
 test_done

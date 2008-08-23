@@ -3,9 +3,22 @@
 . $(dirname $0)/functions
 
 while read oldrev newrev refname ; do
+	case "$refname" in
+		refs/tags/*)
+			short_refname=${refname##refs/tags/}
+			;;
+		refs/heads/*)
+			short_refname=${refname##refs/heads/}
+			;;
+		*)
+			echo >&2 "*** Unknown type of update to $refname"
+			exit 1
+			;;
+	esac
+
 	set_new_commits
 	echo "$new_commits" | git rev-list --reverse --stdin | while read commit ; do
-		"$PYTHON" "$POST_RECEIVE_TRAC" "$TRAC_ENV" "$commit"
+		"$PYTHON" "$POST_RECEIVE_TRAC" "$TRAC_ENV" "$short_refname" "$commit"
 	done
 done
 
