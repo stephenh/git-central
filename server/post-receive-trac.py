@@ -18,7 +18,8 @@ from trac.versioncontrol.api import NoSuchChangeset
 
 project = sys.argv[1]
 refname = sys.argv[2]
-rev = sys.argv[3]
+describe = sys.argv[3]
+rev = sys.argv[4]
 
 def refs(ticket):
 	pass
@@ -64,7 +65,7 @@ for ticketId, commands in tickets.iteritems():
 
 	username = authorPattern.findall(changeset.author)[0]
 	now = datetime.now(utc)
-	message = "(On %s [%s]) %s" % (refname, rev, changeset.message)
+	message = "(On %s [../changeset/%s %s]) %s" % (refname, rev, describe, changeset.message)
 	ticket['branch'] = refname
 	ticket.save_changes(username, message, now, db, cnum+1)
 	db.commit()

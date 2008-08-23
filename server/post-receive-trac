@@ -17,8 +17,11 @@ while read oldrev newrev refname ; do
 	esac
 
 	set_new_commits
+	set_rev_types
+	set_describe
+
 	echo "$new_commits" | git rev-list --reverse --stdin | while read commit ; do
-		"$PYTHON" "$POST_RECEIVE_TRAC" "$TRAC_ENV" "$short_refname" "$commit"
+		"$PYTHON" "$POST_RECEIVE_TRAC" "$TRAC_ENV" "$short_refname" "$describe" "$commit"
 	done
 done
 
