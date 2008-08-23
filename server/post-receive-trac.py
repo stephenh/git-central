@@ -65,7 +65,7 @@ for ticketId, commands in tickets.iteritems():
 
 	username = authorPattern.findall(changeset.author)[0]
 	now = datetime.now(utc)
-	message = "(On %s [../changeset/%s %s]) %s" % (refname, rev, describe, changeset.message)
+	message = "(On %s [changeset:%s %s]) %s" % (refname, rev, describe, changeset.message)
 	ticket['branch'] = refname
 	ticket.save_changes(username, message, now, db, cnum+1)
 	db.commit()
