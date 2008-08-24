@@ -32,7 +32,6 @@
 #
 # * --- * --- * --- oldrev --- new --- new --- newrev
 
-# Command line
 refname="$1"
 oldrev="$2"
 newrev="$3"
