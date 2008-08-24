@@ -41,5 +41,14 @@ test_expect_success 'checkout an existing local branch' '
 	gc-checkout topic1
 '
 
+test_expect_success 'checkout a revision does not create a new branch' '
+	echo "$test_name" >a &&
+	git commit -a -m "$test_name" &&
+
+	prior=$(git rev-parse HEAD^) &&
+	gc-checkout $prior &&
+	git branch | grep "no branch"
+'
+
 test_done
 
