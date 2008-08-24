@@ -16,7 +16,7 @@ test_expect_success 'setup' '
 # setup the update hook
 install_update_hook 'update-stable'
 
-test_expect_success 'initial stable commit works', '
+test_expect_success 'initial stable commit works' '
 	# do one stable-less commit
 	echo $test_name >a &&
 	git commit -a -m "$test_name" &&
@@ -107,9 +107,10 @@ test_expect_success 'reject merge with changes' '
 	# try merging topic4 into stable, which will get a merge commit, but
 	# it should have changes involved and so get rejected
 	git checkout stable &&
+	topic4_hash=$(git rev-parse topic4) &&
 	git merge topic4 &&
 	! git push 2>push.err &&
-	cat push.err | grep "Moving stable must not result in any changes"
+	cat push.err | grep "Moving stable must not result in any changes from $topic4_hash"
 '
 
 test_done

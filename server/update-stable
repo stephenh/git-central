@@ -36,7 +36,6 @@
 # would not have appeared in QA.
 #
 
-# Command line
 refname="$1"
 oldrev="$2"
 newrev="$3"
@@ -88,7 +87,7 @@ changed_lines=$(git diff $second_parent..$newrev | wc -l)
 if [ "$changed_lines" -ne "0" ] ; then
 	echo "----------------------------------------------------"
 	echo
-	echo "Moving stable must not result in any changes"
+	echo "Moving stable must not result in any changes from $second_parent"
 	echo
 	echo "----------------------------------------------------"
 	exit 1
