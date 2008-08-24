@@ -22,17 +22,17 @@ test_expect_success 'setup' '
 '
 
 test_expect_success 'push only does one branch' '
-	checkout topic1 &&
+	gc-checkout topic1 &&
 	echo "$test_name" >a &&
 	git commit -a -m "move topic1" &&
 	git rev-parse HEAD >head.topic1 &&
 
-	checkout topic2 &&
+	gc-checkout topic2 &&
 	echo "$test_name" >a &&
 	git commit -a -m "move topic2" &&
 	git rev-parse HEAD >head.topic2 &&
 
-	push &&
+	gc-push &&
 	git rev-parse origin/topic2 >head.origin.topic2 &&
 	git rev-parse origin/topic1 >head.origin.topic1 &&
 

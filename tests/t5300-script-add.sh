@@ -19,19 +19,19 @@ test_expect_success 'setup' '
 
 test_expect_success 'add picks up new files' '
 	echo "$test_name" >a.new &&
-	add &&
+	gc-add &&
 	git commit -m "add"
 '
 
 test_expect_success 'add picks up changed files' '
 	echo "$test_name" >a.new &&
-	add &&
+	gc-add &&
 	git commit -m "change"
 '
 
 test_expect_success 'add picks up removed files' '
 	rm a.new &&
-	add &&
+	gc-add &&
 	git commit -m "remove"
 '
 
