@@ -1,10 +1,18 @@
 #!/bin/sh
 
 #
-# This enforces stable only moving in the approved way, which
-# is via empty (no change) merge commits. The rationale is that
-# in the DAG we want a simple, one-commit move from each release
-# to the next.
+# This enforces stable/candidate/topic patterns.
+#
+# Specifically:
+#
+# * stable must be moved 1 merge commit at a time (see below)
+# * candidates/topics are frozen once merged into stable
+# * topics are frozen once merged into candidates
+#
+# For DAG aesthetics, we prefer stable only moving in the approved way,
+# which is via empty (no change) merge commits. The rationale is that
+# in the DAG we want a simple, one-commit move from each release to the
+# next.
 #
 # We started out with:
 #
@@ -40,56 +48,93 @@ refname="$1"
 oldrev="$2"
 newrev="$3"
 
-if expr "$oldrev" : '0*$' >/dev/null ; then
+. $(dirname $0)/functions
+set_change_type
+
+if [[ "$refname" =~ refs/heads/(.*) ]] ; then
+	short_refname=${refname##refs/heads/}
+else
 	exit 0
 fi
 
-if [ "$refname" != "refs/heads/stable" ] ; then
+# create/delete is okay
+if [ "$change_type" != "update" ] ; then
 	exit 0
 fi
 
-# read backwards:
-# - all commits from old..new
-# - unless they were already pointed to by a branch
-# = all new commits on stable
-count=$(git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | wc -l)
-if [ "$count" -ne "1" ] ; then
-	echo "----------------------------------------------------"
-	echo
-	echo "Moving stable must entail a single commit"
-	echo
-	echo "----------------------------------------------------"
-	exit 1
-fi
+if [ "$short_refname" == "stable" ] ; then
+	# Stable enforcement
 
-number_of_parents=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | wc -l)
-if [ "$number_of_parents" -ne "2" ] ; then
-	echo "----------------------------------------------------"
-	echo
-	echo "Moving stable must entail a merge commit"
-	echo
-	echo "----------------------------------------------------"
-	exit 1
-fi
+	# read backwards:
+	# - all commits from old..new
+	# - unless they were already pointed to by a branch
+	# = all new commits on stable
+	count=$(git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | wc -l)
+	if [ "$count" -ne "1" ] ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "Moving stable must entail a single commit"
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
 
-first_parent=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | head --lines=1)
-if [ "$first_parent" != "$oldrev" ] ; then
-	echo "----------------------------------------------------"
-	echo
-	echo "Moving stable must have the previous stable as the first parent"
-	echo
-	echo "----------------------------------------------------"
-	exit 1
-fi
+	number_of_parents=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | wc -l)
+	if [ "$number_of_parents" -ne "2" ] ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "Moving stable must entail a merge commit"
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
 
-second_parent=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | tail --lines=1)
-changed_lines=$(git diff $second_parent..$newrev | wc -l)
-if [ "$changed_lines" -ne "0" ] ; then
-	echo "----------------------------------------------------"
-	echo
-	echo "Moving stable must not result in any changes from $second_parent"
-	echo
-	echo "----------------------------------------------------"
-	exit 1
+	first_parent=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | head --lines=1)
+	if [ "$first_parent" != "$oldrev" ] ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "Moving stable must have the previous stable as the first parent"
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
+
+	second_parent=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | tail --lines=1)
+	changed_lines=$(git diff $second_parent..$newrev | wc -l)
+	if [ "$changed_lines" -ne "0" ] ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "Moving stable must not result in any changes from $second_parent"
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
+else
+	# Check if candidate/topic is already in stable
+	git branch --contains "$oldrev" | grep stable >/dev/null
+	if [ $? -eq 0 ] ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "$short_refname has been merged into stable"
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
+
+	# For now candidates can mix amongst each other so early exit
+	if [[ "$refname" =~ refs/heads/candidate(.*) ]] ; then
+		exit 0
+	fi
+
+	# Check if topic is already in candidates
+	candidate=$(git branch --contains "$oldrev" | grep -oP candidate.* --max-count=1)
+	if [ $? -eq 0 ] ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "$short_refname has been merged into $candidate"
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
 fi
 
