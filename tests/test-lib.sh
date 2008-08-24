@@ -466,8 +466,9 @@ install_update_hook () {
 	echo "#!/bin/sh" >$hook
 	for ((i=1;i<=$#;i+=1)); do
 		eval script_name="$"$i
-		echo "../../../../server/$script_name \$1 \$2 \$3" >>$hook
+		echo "../../../../server/$script_name \$1 \$2 \$3 &&" >>$hook
 	done
+	echo "echo >/dev/null" >>$hook
 
 	chmod +x $hook
 }
