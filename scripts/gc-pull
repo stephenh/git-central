@@ -1,4 +1,4 @@
 #!/bin/sh
 
-git pull --rebase
+git pull --rebase $*
 

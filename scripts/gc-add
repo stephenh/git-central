@@ -1,6 +1,10 @@
 #!/bin/sh
 
-git ls-files -d | xargs -r git rm
-git ls-files -m | xargs -r git add
-git ls-files -o --exclude-standard | xargs -r git add
+if [[ $# -eq 0 ]] ; then
+	git ls-files -d | xargs -r git rm
+	git ls-files -m | xargs -r git add
+	git ls-files -o --exclude-standard | xargs -r git add
+else
+	git add $*
+fi
 
