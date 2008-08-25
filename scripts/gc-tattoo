@@ -1,0 +1,20 @@
+#!/bin/sh
+
+head=$(git rev-parse HEAD)
+branch=$(git symbolic-ref --quiet HEAD)
+if [ $? -ne 0 ] ; then
+	echo "unknown"
+	exit 1
+fi
+
+case "$branch" in
+	refs/heads/*)
+		branch=${branch##refs/heads/}
+		number=$(git rev-list --first-parent "$head" ^stable | wc -l)
+		echo "$branch-$number"
+		;;
+	*)
+		echo "unknown"
+		exit 1
+esac
+
