@@ -5,9 +5,12 @@
 # whether the checkout was a branch checkout (changing branches, flag=1) or a
 # file checkout (retrieving a file from the index, flag=0).
 
-branch=$(git symbolic-ref HEAD)
-branch=${branch/refs\/heads\//}
+branch=$(git symbolic-ref --quiet HEAD)
+if [ $? -ne 0 ] ; then
+	exit 0
+fi
 
+branch=${branch/refs\/heads\//}
 git config --list | grep "branch.${branch}.rebase" > /dev/null
 if [ $? -ne 0 ] ; then
 	git config --add "branch.${branch}.rebase" true
