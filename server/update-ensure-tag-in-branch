@@ -9,12 +9,12 @@ newrev="$3"
 
 # Only interested in tags
 case "$refname" in
-    refs/tags/*)
-        short_refname=${BASH_REMATCH[1]}
-        ;;
-    *)
-        exit 0
-        ;;
+	refs/tags/*)
+		short_refname=${refname##refs/tags/}
+		;;
+	*)
+		exit 0
+		;;
 esac
 
 # Except if they're getting deleted
