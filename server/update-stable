@@ -51,11 +51,14 @@ newrev="$3"
 . $(dirname $0)/functions
 set_change_type
 
-if [[ "$refname" =~ refs/heads/(.*) ]] ; then
-	short_refname=${refname##refs/heads/}
-else
-	exit 0
-fi
+case "$refname" in
+	refs/heads/*)
+		short_refname=${refname##refs/heads/}
+		;;
+	*)
+		exit 0
+		;;
+esac
 
 # create/delete is okay
 if [ "$change_type" != "update" ] ; then
@@ -122,9 +125,13 @@ else
 	fi
 
 	# For now candidates can mix amongst each other so early exit
-	if [[ "$refname" =~ refs/heads/candidate(.*) ]] ; then
-		exit 0
-	fi
+	case "$refname" in
+		refs/heads/candidate*)
+			exit 0
+			;;
+		*)
+			;;
+	esac
 
 	# Check if topic is already in candidates
 	candidate=$(git branch --contains "$oldrev" | grep -oP candidate.* --max-count=1)

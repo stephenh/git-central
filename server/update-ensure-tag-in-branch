@@ -8,11 +8,14 @@ oldrev="$2"
 newrev="$3"
 
 # Only interested in tags
-if [[ "$refname" =~ refs/tags/(.*) ]] ; then
-	short_refname=${BASH_REMATCH[1]}
-else
-	exit 0
-fi
+case "$refname" in
+    refs/tags/*)
+        short_refname=${BASH_REMATCH[1]}
+        ;;
+    *)
+        exit 0
+        ;;
+esac
 
 # Except if they're getting deleted
 if [ "$newrev" == "0000000000000000000000000000000000000000" ] ; then
