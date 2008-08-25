@@ -1,0 +1,87 @@
+#!/bin/sh
+
+#
+# Goes through the ensure-follows branches and makes sure
+# the non-excused branches have it merged.
+#
+
+die() {
+	echo >&2 "$@"
+	exit 1
+}
+
+attempt_merge() {
+	source_branch=$1
+	remote_branch=$2
+
+	if [ "$source_branch" == "$remote_branch" ] ; then
+		return
+	fi
+	if [[ $excused =~ " $remote_branch " ]] ; then
+		return
+	fi
+	git branch -r --contains "$source_branch" | grep --quiet "origin/$remote_branch"
+	if [ $? -eq 0 ] ; then
+		return
+	fi
+
+	echo -n "Merging $source_branch into $remote_branch..."
+
+	baserev=$(git merge-base "$source_branch" "origin/$remote_branch")
+	git read-tree -m --trivial $baserev "origin/$remote_branch" "$source_branch"
+	if [ $? -ne 0 ] ; then
+		echo "failed merge"
+		return
+	fi
+
+	new_tree=$(git write-tree)
+	new_commit=$(git commit-tree $new_tree -p "origin/$remote_branch" -p "$source_branch" <<FOO
+Merge $source_branch into $remote_branch
+FOO)
+	if [ "$new_commit" == "" ] ; then
+		echo "failed commit"
+		return
+	fi
+
+	git push origin "$new_commit:$remote_branch" >/dev/null 2>/dev/null
+	if [ $? -ne 0 ] ; then
+		echo "failed push"
+		return
+	fi
+
+	echo "succeeded"
+}
+
+gitconfig=$(git rev-parse origin/gitconfig)
+if [ $? -ne 0 ] ; then
+	echo "gitconfig branch not found"
+	exit 1
+fi
+
+# The source branches
+config_hash=$(git ls-tree $gitconfig | grep config | grep -oP '\w{40}')
+branches=$(git cat-file blob "$config_hash" | grep hooks.update-ensure-follows.branches)
+branches=("${branches#*=}")
+excused=$(git cat-file blob "$config_hash" | grep hooks.update-ensure-follows.excused)
+excused=" ${excused#*=} "
+
+# We're going to merge stuff into the index, so make sure it's okay
+git diff-index --cached --quiet HEAD -- || die "refusing to refollow--your index is not clean"
+
+# Get the latest remote refs
+git fetch
+
+# So we can put the index back after we screw with it
+original_head=$(git rev-parse HEAD)
+
+for source_branch in ${branches[@]} ; do
+	git branch -r | grep -v HEAD | while read line ; do
+		if [[ "$line" =~ origin/(.*) ]] ; then
+			attempt_merge $source_branch ${BASH_REMATCH[1]}
+		fi
+	done
+done
+
+# Put the index back
+git read-tree "$original_head"
+
