@@ -1,4 +1,7 @@
 #!/bin/sh
 
+#
+# Note: we should use `git pull --rebase origin <branch>`?
+#
 git pull --rebase $*
 
