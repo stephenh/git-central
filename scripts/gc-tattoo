@@ -10,11 +10,31 @@ fi
 case "$branch" in
 	refs/heads/*)
 		branch=${branch##refs/heads/}
-		number=$(git rev-list --first-parent "$head" ^stable | wc -l)
-		echo "$branch-$number"
 		;;
 	*)
 		echo "unknown"
 		exit 1
+		;;
 esac
+
+# Ensure pushed
+git branch -r --contains $head | grep --quiet "origin/$branch"
+if [ $? -ne 0 ] ; then
+	echo "$branch has not been pushed"
+	exit 1
+fi
+
+# Handle stable special to look for the annotated tag
+if [ "$branch" == "stable" ] ; then
+	describe=$(git describe $head 2>/dev/null)
+	if [ $? -eq 0 ] ; then
+		echo "$describe"
+	else
+		echo "stable-$head"
+	fi
+	exit 0
+fi
+
+number=$(git rev-list --first-parent "$head" ^origin/stable | wc -l)
+echo "$branch-$number"
 
