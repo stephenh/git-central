@@ -27,14 +27,19 @@ test_expect_success 'checkout a new branch clones stable' '
 test_expect_success 'checkout an existing remote branch' '
 	cd server &&
 	git checkout -b topic2 stable &&
-	echo "$test_name" >a &&
+	echo "$test_name on server" >a &&
 	git commit -a -m "Made topic2 on server" &&
 	cd .. &&
 
-	gc-checkout topic2
-	git branch | grep topic2
-	git branch -r | grep origin/topic2
-	git config --list | grep "branch.topic2.merge=refs/heads/topic2"
+	! git branch | grep topic2 &&
+	gc-checkout topic2 &&
+	git branch | grep topic2 &&
+	git branch -r | grep origin/topic2 &&
+	git config --list | grep "branch.topic2.merge=refs/heads/topic2" &&
+
+	echo "$test_name on client" >a &&
+	git commit -a -m "Move topic2 on client" &&
+	git push origin topic2
 '
 
 test_expect_success 'checkout an existing local branch' '

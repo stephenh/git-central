@@ -3,14 +3,14 @@
 branch_name=$1
 
 # See if it already exists
-git rev-parse $branch_name >/dev/null
+git rev-parse --verify --quiet $branch_name >/dev/null 
 if [[ $? -eq 0 ]] ; then
 	# Just checkout what they asked
 	git checkout "$branch_name"
 else
 	# Make sure we have the latest origin/$branch_name to branch
 	git fetch
-	exists_remote=$(git branch | grep -x "  origin/$branch_name" | wc -l)
+	exists_remote=$(git branch -r | grep -x "  origin/$branch_name" | wc -l)
 	if [[ $exists_remote -eq 0 ]] ; then
 		# Specifying stable to get the last released code
 		git checkout -b "$branch_name" origin/stable
