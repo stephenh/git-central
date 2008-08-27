@@ -60,6 +60,22 @@ case "$refname" in
 		;;
 esac
 
+if [ "$change_type" == "delete" ] ; then
+	exit 0
+fi
+
+if [ "$change_type" == "create" -a "$short_refname" != "stable" ] ; then
+	not_on_stable=$(git rev-list stable..$newrev)
+	if [ "$not_on_stable" == "" ] ; then
+		echo "----------------------------------------------------"
+		echo
+		echo "Creating a branch must include new commits"
+		echo
+		echo "----------------------------------------------------"
+		exit 1
+	fi
+fi
+
 # create/delete is okay
 if [ "$change_type" != "update" ] ; then
 	exit 0

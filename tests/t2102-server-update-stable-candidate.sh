@@ -85,5 +85,11 @@ test_expect_success 'topic1 cannot be changed' '
 	cat push.err | grep "topic1 has been merged into stable"
 '
 
+test_expect_success 'topic3 cannot initially be created on stable' '
+	git checkout -b topic3 stable &&
+	! git push origin topic3 2>push.err &&
+	cat push.err | grep "Creating a branch must include new commits"
+'
+
 test_done
 
