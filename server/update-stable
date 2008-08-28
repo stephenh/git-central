@@ -81,6 +81,18 @@ if [ "$change_type" != "update" ] ; then
 	exit 0
 fi
 
+# The tip must always be new
+already=$(git branch --contains "$newrev")
+if [ "$already" != "" ] ; then
+	already=${already##  }
+	echo "----------------------------------------------------"
+	echo
+	echo "$short_refname is already referred to by $already"
+	echo
+	echo "----------------------------------------------------"
+	exit 1
+fi
+
 if [ "$short_refname" == "stable" ] ; then
 	# Stable enforcement
 

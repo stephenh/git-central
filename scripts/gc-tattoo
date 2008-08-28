@@ -1,40 +1,79 @@
 #!/bin/sh
 
 head=$(git rev-parse HEAD)
-branch=$(git symbolic-ref --quiet HEAD)
+
+# Watch out for the very first commit in the repo because we use head^ later
+git rev-parse --verify --quiet "$head^" >/dev/null
 if [ $? -ne 0 ] ; then
-	echo "unknown"
-	exit 1
-fi
-
-case "$branch" in
-	refs/heads/*)
-		branch=${branch##refs/heads/}
-		;;
-	*)
-		echo "unknown"
-		exit 1
-		;;
-esac
-
-# Ensure pushed
-git branch -r --contains $head | grep --quiet "origin/$branch"
-if [ $? -ne 0 ] ; then
-	echo "$branch has not been pushed"
-	exit 1
-fi
-
-# Handle stable special to look for the annotated tag
-if [ "$branch" == "stable" ] ; then
-	describe=$(git describe $head 2>/dev/null)
-	if [ $? -eq 0 ] ; then
-		echo "$describe"
-	else
-		echo "stable-$head"
-	fi
+	echo "0"
 	exit 0
 fi
 
-number=$(git rev-list --first-parent "$head" ^origin/stable | wc -l)
-echo "$branch-$number"
+# A --- B --- C    stable
+# |\         /
+# | D ----- E      topic1
+#  \       /
+#   F --- G        topic2
+#
+# topic1 stable result
+#  D      A      contains, merge base=A
+#  D      C      contains, merge base=A
+#  E      A      contains, merge base=E
+#  E      C      contains, merge base=A
+
+#
+# * --- * --------- *   stable
+# |\     \
+# | A --- B ---- C      topic1
+# \             /
+#  D --- E --- F        topic2
+#
+# F: contains=topic1,topic2
+# C: contains=topic1
+
+contains=($(git branch -r --contains $head))
+if [ ${#contains[@]} -eq 0 ] ; then
+	echo "$head has not been pushed"
+	exit 1
+fi
+
+potential=" "
+for branch in ${contains[@]} ; do
+	branch=${branch##origin/}
+	#echo "branch=$branch"
+
+	# Walk back until we hit a baserev that is not the branch_tip itself (because it was merged)
+	branch_tip=$(git rev-parse origin/$branch)
+	stable_rev=$(git rev-parse origin/stable)
+	stable_base=$(git merge-base "$branch_tip" "$stable_rev")
+
+	# echo "stable_base=$stable_base"
+	while [ "$stable_base" == "$branch_tip" ] ; do
+		stable_rev=$(git rev-parse "${stable_rev}^")
+		stable_base=$(git merge-base "$branch_tip" "$stable_rev")
+	done
+	# echo "stable_base=$stable_base"
+
+	git rev-list --first-parent $stable_base..$branch_tip | grep --quiet "$head"
+	if [ $? -eq 0 ] ; then
+		if [ "$branch" == "stable" ] ; then
+			describe=$(git describe $head 2>/dev/null)
+			if [ $? -eq 0 ] ; then
+				potential="$potential $describe"
+			else
+				potential="$potential stable-$head"
+			fi
+		else
+			number=$(git rev-list --first-parent "$stable_base..$head" | wc -l)
+			potential="$potential $branch-$number"
+		fi
+	fi
+done
+
+potential=($potential)
+if [ ${#potential[@]} -eq 1 ] ; then
+	echo "${potential[0]}"
+else
+	echo "unknown"
+fi
 
