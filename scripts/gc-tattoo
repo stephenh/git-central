@@ -1,14 +1,8 @@
 #!/bin/sh
 
-head=$(git rev-parse HEAD)
-
-# Watch out for the very first commit in the repo because we use head^ later
-git rev-parse --verify --quiet "$head^" >/dev/null
-if [ $? -ne 0 ] ; then
-	echo "0"
-	exit 0
-fi
-
+#
+# Some docs
+#
 # A --- B --- C    stable
 # |\         /
 # | D ----- E      topic1
@@ -30,6 +24,16 @@ fi
 #
 # F: contains=topic1,topic2
 # C: contains=topic1
+
+head=$(git rev-parse HEAD)
+
+# Watch out for the very first commit in the repo because we use head^
+# Hopefully we can optimize this away later.
+git rev-parse --verify --quiet "$head^" >/dev/null
+if [ $? -ne 0 ] ; then
+	echo "0"
+	exit 0
+fi
 
 contains=($(git branch -r --contains $head))
 if [ ${#contains[@]} -eq 0 ] ; then
