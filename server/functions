@@ -146,9 +146,14 @@ function set_rev_types() {
 #
 # The email subject will contain the best description of the ref that we can build from the parameters
 function set_describe() {
-	describe=$(git describe $rev 2>/dev/null)
+	rev_to_describe="$rev"
+	if [ "$1" != "" ] ; then
+		rev_to_describe="$1"
+	fi
+
+	describe=$(git describe $rev_to_describe 2>/dev/null)
 	if [ -z "$describe" ]; then
-		describe=$rev
+		describe=$rev_to_describe
 	fi
 }
 

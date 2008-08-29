@@ -72,5 +72,21 @@ test_expect_success 'update branch with abbreviation' '
 	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $new_commit_describe $new_commit_hash"
 '
 
+test_expect_success 'update branch with abbreviation and two commits' '
+	echo "$test_name 1" >a &&
+	git commit -a -m "changed on topic2 1" &&
+	first_commit_describe=$(git describe HEAD) &&
+	first_commit_hash=$(git rev-parse HEAD) &&
+
+	echo "$test_name 2" >a &&
+	git commit -a -m "changed on topic2 2" &&
+	second_commit_describe=$(git describe HEAD) &&
+	second_commit_hash=$(git rev-parse HEAD) &&
+
+	git push origin topic2 2>push.err &&
+	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $first_commit_describe $first_commit_hash" &&
+	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $second_commit_describe $second_commit_hash"
+'
+
 test_done
 
