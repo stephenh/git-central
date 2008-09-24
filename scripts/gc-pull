@@ -1,7 +1,18 @@
 #!/bin/sh
+#!/bin/sh
 
-#
-# Note: we should use `git pull --rebase origin <branch>`?
-#
-git pull --rebase $*
+branch_name=$(git symbolic-ref --quiet HEAD)
+if [[ $? -ne 0 ]] ; then
+	echo "not on a branch"
+	exit 1
+fi
+
+branch_name=${branch_name/refs\/heads\//}
+
+git fetch
+if [[ $? -ne 0 ]] ; then
+	exit $?
+fi
+
+GIT_EDITOR=: git rebase -p -i "origin/$branch_name"
 

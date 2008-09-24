@@ -32,46 +32,39 @@ test_expect_success 'pull does a rebase' '
 
 	# Only one parent
 	gc-pull &&
-	git cat-file commit $(git rev-parse HEAD) | grep parent | wc -l | grep 1
+	test 1 = $(git cat-file commit $(git rev-parse HEAD) | grep parent | wc -l)
 '
 
-#test_expect_success 'pull does a rebase but does not fuck up merges' '
-#	# Change "a" itself so we will eventually conflict
-#	gc-checkout topic2 &&
-#	echo "$test_name on topic2" >a &&
-#	git commit -a -m "move topic2" &&
-#
-#	# Change a.topic2 as well for another commit to continue rebasing after fixing the conflict
-#	echo "$test_name on topic2" >a.topic2 &&
-#	git add a.topic2 &&
-#	git commit -m "move a.topic2" &&
-#
-#	# Move stable
-#	git checkout stable &&
-#	echo "$test_name on stable" >a &&
-#	git commit -a -m "move stable" &&
-#	git push origin stable &&
-#
-#	# Move topic2 on the server, then merge stable
-#	cd server &&
-#	git checkout stable &&
-#	echo "$test_name on stable server" >a.stable.server &&
-#	git add a.stable.server &&
-#	git commit -m "move stable server" &&
-#	git checkout topic2 &&
-#	echo "$test_name" >a.topic2.server &&
-#	git add a.topic2.server &&
-#	git commit -m "move topic2 on the server" &&
-#	git merge stable &&
-#	cd .. &&
-#
-#	# Merge stable locally too--should conflict
-#	git checkout topic2 &&
-#	git merge origin/stable
-#
-#	# Now pull and see what happens
-#	# gc-pull
-#'
+test_expect_success 'pull does a rebase but does not fuck up merges' '
+	gc-checkout topic2 &&
+	echo "$test_name on topic2" >a.topic2 &&
+	git add a.topic2 &&
+	git commit -a -m "create topic2" &&
+	git push origin topic2 &&
+
+	# Move stable
+	git checkout stable &&
+	echo "$test_name on stable" >a &&
+	git commit -a -m "move stable that will not be replayed" &&
+	git push origin stable &&
+
+	# And merge stable into topic2
+	git checkout topic2 &&
+	git merge stable &&
+
+	# Move topic2 on the server
+	cd server &&
+	git checkout topic2 &&
+	echo "$test_name" >a.topic2.server &&
+	git add a.topic2.server &&
+	git commit -m "move topic2 on the server" &&
+	cd .. &&
+
+	# Merge stable locally too--should conflict
+	git checkout topic2 &&
+	gc-pull &&
+	test 1 = $(git rev-list --all --pretty=oneline | grep "replayed" | wc -l)
+'
 
 test_done
 
