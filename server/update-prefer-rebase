@@ -56,7 +56,7 @@ git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | while r
 		git merge-base --all $parents | while read baserev ; do
 			# For each parent
 			git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | while read parent ; do
-			parent_is_old=$(git branch --contains $parent | wc -l)
+				parent_is_old=$(git branch --contains $parent | wc -l)
 				all_commits=$(git rev-list --first-parent $baserev..$parent | wc -l)
 				new_commits=$(git rev-parse --not --branches | git rev-list --stdin $baserev..$parent | wc -l)
 				if [ $parent_is_old -gt 0 -a $all_commits -eq $new_commits ] ; then
