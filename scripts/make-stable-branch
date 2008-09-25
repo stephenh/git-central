@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# Make a root directory tree with no files in it
+config_tree_hash=$(git mktree <<FOO
+FOO)
+
+# Commit the root directory tree
+commit_hash=$(git commit-tree $config_tree_hash <<FOO
+Initial commit on stable branch.
+FOO)
+
+# Push the commit out to the gitconfig branch
+git update-ref refs/heads/stable "$commit_hash" 0000000000000000000000000000000000000000
+
