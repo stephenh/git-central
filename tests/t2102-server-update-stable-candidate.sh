@@ -97,7 +97,7 @@ test_expect_success 'topic3 cannot initially be created on stable' '
 	git push origin topic3
 '
 
-test_expect_success 'topic4 cannot point to the same place as topic4' '
+test_expect_failure 'topic4 cannot point to the same place as topic4' '
 	git checkout -b topic4 topic3 &&
 	echo "$test_name" >a.topic4 &&
 	git add a.topic4 &&

@@ -81,17 +81,17 @@ if [ "$change_type" != "update" ] ; then
 	exit 0
 fi
 
-# The tip must always be new
-already=$(git branch --contains "$newrev")
-if [ "$already" != "" ] ; then
-	already=${already##  }
-	echo "----------------------------------------------------"
-	echo
-	echo "$short_refname is already referred to by $already"
-	echo
-	echo "----------------------------------------------------"
-	exit 1
-fi
+# # The tip must always be new
+# already=$(git branch --contains "$newrev")
+# if [ "$already" != "" ] ; then
+#	already=${already##  }
+#	echo "----------------------------------------------------"
+#	echo
+#	echo "$short_refname is already referred to by $already"
+#	echo
+#	echo "----------------------------------------------------"
+#	exit 1
+#fi
 
 if [ "$short_refname" == "stable" ] ; then
 	# Stable enforcement
@@ -162,7 +162,7 @@ else
 	esac
 
 	# Check if topic is already in candidates
-	candidate=$(git branch --contains "$oldrev" | grep -oP candidate.* --max-count=1)
+	candidate=$(git branch --contains "$oldrev" | grep -oP "candidate.*" --max-count=1)
 	if [ $? -eq 0 ] ; then
 		echo "----------------------------------------------------"
 		echo
