@@ -16,7 +16,7 @@ test_expect_success 'setup' '
 	git fetch
 '
 
-install_server_hook 'update-prefer-rebase' 'update'
+install_update_hook 'update-prefer-rebase'
 
 test_expect_success 'all local changes do not need a merge' '
 	# server is on "setup"
