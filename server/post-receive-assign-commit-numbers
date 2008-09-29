@@ -5,15 +5,12 @@
 while read oldrev newrev refname ; do
 	set_new_commits
 	echo "$new_commits" | git rev-list --reverse --stdin | while read commit ; do
-		cat $GIT_DIR/packed-refs | grep --quiet "$commit"
+		touch "$GIT_DIR/commitnumbers"
+		cat "$GIT_DIR/commitnumbers" | grep --quiet "$commit"
 		if [ $? -ne 0 ] ; then
-			current=$(cat $GIT_DIR/packed-refs | grep "refs/tags/r/" | tail -n 1 | grep -oP "r\/\d+" | grep -oP "\d+")
-			if [ $? -ne 0 ] ; then
-				next="0"
-			else
-				next=$(($current + 1))
-			fi
-			echo "$commit refs/tags/r/$next" >> $GIT_DIR/packed-refs
+			echo "$commit" >> "$GIT_DIR/commitnumbers"
+			number=$(cat "$GIT_DIR/commitnumbers" | grep --line-number "$commit" | grep -oP "^\d+(?=:)")
+			git tag "r/$number" "$commit"
 		fi
 	done
 done

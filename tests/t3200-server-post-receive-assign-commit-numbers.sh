@@ -25,8 +25,8 @@ test_expect_success 'assign one new commit' '
 	git push origin master &&
 	git fetch &&
 
-	test "$(git rev-parse HEAD)" = "$(git rev-parse r/0)"
-	test "$(git describe --tags)" = "r/0"
+	test "$(git rev-parse HEAD)" = "$(git rev-parse r/1)"
+	test "$(git describe --tags)" = "r/1"
 '
 
 test_expect_success 'assign two new commits' '
@@ -37,11 +37,11 @@ test_expect_success 'assign two new commits' '
 	git push origin master &&
 	git fetch &&
 
-	test "$(git rev-parse HEAD)" = "$(git rev-parse r/2)"
-	test "$(git describe --tags)" = "r/2"
+	test "$(git rev-parse HEAD)" = "$(git rev-parse r/3)"
+	test "$(git describe --tags)" = "r/3"
 
-	test "$(git rev-parse HEAD^)" = "$(git rev-parse r/1)"
-	test "$(git describe --tags HEAD^)" = "r/1"
+	test "$(git rev-parse HEAD^)" = "$(git rev-parse r/2)"
+	test "$(git describe --tags HEAD^)" = "r/2"
 '
 
 test_expect_success 'pushing commits to a new branch does not reassign' '
@@ -50,7 +50,7 @@ test_expect_success 'pushing commits to a new branch does not reassign' '
 	git push origin topica &&
 	git fetch &&
 
-	! git rev-parse r/3
+	! git rev-parse r/4
 '
 
 test_done
