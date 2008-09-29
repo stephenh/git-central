@@ -9,6 +9,8 @@ commit_hash=$(git commit-tree $config_tree_hash <<FOO
 Initial commit on stable branch.
 FOO)
 
-# Push the commit out to the gitconfig branch
+echo "Made stable 0.0 commit $commit_hash"
+
+# Save the commit to the stable ref for later pushing to origin
 git update-ref refs/heads/stable "$commit_hash" 0000000000000000000000000000000000000000
 
