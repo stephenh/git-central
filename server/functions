@@ -173,3 +173,37 @@ function set_describe_tags() {
 	fi
 }
 
+# Takes a lockfile path and command to execute once the lock is acquired.
+#
+# Retries every second for 5 minutes.
+#
+# with_lock "foo.lock" "echo a"             # Works
+# with_lock "foo.lock" "echo b1 ; echo b2"  # Work
+# function several() {
+# echo several1 ; echo several2
+# }
+# with_lock "foo.lock" several              # Works
+#
+function with_lock() {
+	lockfile="$1"
+	block="$2"
+	with_lock_has_lock=1
+
+	trap with_lock_unlock_if_held INT TERM EXIT
+	lockfile -1 -r 300 "$lockfile"
+	with_lock_has_lock=$?
+	if [ $with_lock_has_lock -ne 0 ] ; then
+		exit $?
+	fi
+	eval "$block"
+	rm -f "$lockfile"
+	with_lock_has_lock=1
+}
+
+function with_lock_unlock_if_held() {
+	if [[ "$with_lock_has_lock" -eq 0 ]] ; then
+		rm -f "$lockfile"
+	fi
+}
+
+
