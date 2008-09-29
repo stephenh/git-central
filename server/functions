@@ -157,3 +157,19 @@ function set_describe() {
 	fi
 }
 
+# Sets: $describe_tags
+# Assumes: $rev
+#
+# The email subject will contain the best description of the ref that we can build from the parameters
+function set_describe_tags() {
+	rev_to_describe="$rev"
+	if [ "$1" != "" ] ; then
+		rev_to_describe="$1"
+	fi
+
+	describe_tags=$(git describe --tags $rev_to_describe 2>/dev/null)
+	if [ -z "$describe_tags" ]; then
+		describe_tags=$rev_to_describe
+	fi
+}
+

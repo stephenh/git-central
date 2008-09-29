@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test_description='server update lock check'
+test_description='server post receive trac with commit numbers'
 
 . ./test-lib.sh
 
@@ -17,7 +17,7 @@ test_expect_success 'setup' '
 	git remote add origin ./server
 '
 
-install_post_receive_hook 'post-receive-trac'
+install_post_receive_hook 'post-receive-assign-commit-numbers' 'post-receive-trac'
 
 test_expect_success 'new branch' '
 	git checkout -b topic1 master &&
@@ -25,7 +25,7 @@ test_expect_success 'new branch' '
 	git commit -a -m "changed on topic1" &&
 	new_commit_hash=$(git rev-parse HEAD) &&
 	git push origin topic1 2>push.err &&
-	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic1 $new_commit_hash $new_commit_hash $new_commit_hash"
+	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic1 $new_commit_hash r/1 $new_commit_hash"
 '
 
 test_expect_success 'new branch with already existing does not double tap' '
@@ -41,7 +41,7 @@ test_expect_success 'update branch' '
 	git commit -a -m "changed on topic2" &&
 	new_commit_hash=$(git rev-parse HEAD) &&
 	git push origin topic2 2>push.err &&
-	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $new_commit_hash $new_commit_hash $new_commit_hash"
+	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $new_commit_hash r/2 $new_commit_hash"
 '
 
 test_expect_success 'update branch to an already published commit does not double tap' '
@@ -69,7 +69,7 @@ test_expect_success 'update branch with abbreviation' '
 	new_commit_describe=$(git describe HEAD) &&
 	new_commit_hash=$(git rev-parse HEAD) &&
 	git push origin topic2 2>push.err &&
-	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $new_commit_describe $new_commit_describe $new_commit_hash"
+	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $new_commit_describe r/3 $new_commit_hash"
 '
 
 test_expect_success 'update branch with abbreviation and two commits' '
@@ -84,8 +84,8 @@ test_expect_success 'update branch with abbreviation and two commits' '
 	second_commit_hash=$(git rev-parse HEAD) &&
 
 	git push origin topic2 2>push.err &&
-	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $first_commit_describe $first_commit_describe $first_commit_hash" &&
-	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $second_commit_describe $second_commit_describe $second_commit_hash"
+	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $first_commit_describe r/4 $first_commit_hash" &&
+	cat push.err | grep "/foo/post-receive-trac.py /foo/trac topic2 $second_commit_describe r/5 $second_commit_hash"
 '
 
 test_done
