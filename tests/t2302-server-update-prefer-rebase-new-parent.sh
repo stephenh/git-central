@@ -18,7 +18,9 @@ test_expect_success 'setup' '
 
 install_update_hook 'update-prefer-rebase'
 
-test_expect_success 'merge local changes is caught' '
+test_expect_success 'one new, one old parent is okay' '
+	# server is on "setup"
+
 	# make an outstanding change for us--but do not push
 	echo "$test_name" >a.client1 &&
 	git add a.client1 &&
@@ -29,9 +31,9 @@ test_expect_success 'merge local changes is caught' '
 	echo "$test_name" >a.client2 &&
 	git add a.client2 &&
 	git commit -m "$test_name on client2" &&
+	cd .. &&
 
 	# go back to our client and it will merge in our changes
-	cd .. &&
 	git pull &&
 	merge=$(git rev-parse HEAD) &&
 
@@ -40,7 +42,11 @@ test_expect_success 'merge local changes is caught' '
 	git reset --hard origin/master
 '
 
-test_expect_success 'merge local changes followed by more commits is caught' '
+test_done
+
+test_expect_success 'all local changes do not need a merge even with more commits after' '
+	# server is on "setup"
+
 	# make an outstanding change for us--but do not push
 	echo "$test_name" >a.client1 &&
 	git add a.client1 &&
@@ -66,7 +72,9 @@ test_expect_success 'merge local changes followed by more commits is caught' '
 	git reset --hard origin/master
 '
 
-test_expect_success 'merge shared changes from another topic is okay' '
+test_expect_success 'already shared topic changes do warrant a merge' '
+	# server is on "setup"
+
 	# make a change on topic for us and share it
 	git checkout -b topic master &&
 	echo "$test_name" >a.client1 &&
@@ -74,7 +82,7 @@ test_expect_success 'merge shared changes from another topic is okay' '
 	git commit -m "$test_name on client1 and topic" &&
 	git push origin topic &&
 
-	# make an outstanding on topic that is not pushed
+	# make an outstanding change that we will have to merge later
 	echo "$test_name again" >>a.client1 &&
 	git commit -a -m "$test_name on client1 and topic again" &&
 
@@ -87,9 +95,7 @@ test_expect_success 'merge shared changes from another topic is okay' '
 	# go back to our client and it will merge in our changes
 	cd .. &&
 	git checkout master &&
-	# this should fast fwd
 	git pull &&
-	# this pulls in the shared branch+its new tip
 	git merge topic &&
 
 	git push

@@ -5,32 +5,36 @@
 # If they are introducing non-merge commits /and/ merge commits, it could
 # look like one of two ways. This way:
 #
-# * --- B --- * --- oldrev
-#        \             \
-#        new --- new --- newrev
+# A -- B             <-- origin/topic
+#  \    \
+#   c -- d           <-- topic
 #
 # They basically had an un-shared local dev branch (probably by making a
 # merge) and instead should have done a rebase. Also, if they did:
 #
-# * --- B --- * --- oldrev
-#        \             \
-#        new --- new --- new -- newrev
+# A -- B             <-- origin/topic
+#  \    \
+#   c -- d -- e      <-- topic
 #
 # We should try and catch them--where the merge happened previously to
 # them doing more work in the newrev commit.
 #
 # But if it looks like:
 #
-# * --- B --- * --- oldrev
-#        \              \
-#        old --- new --- newrev
+# A -- B             <-- origin/foo
+#  \    \
+#   C    \           <-- origin/topic
+#    \    \
+#     d -- e         <-- topic
 #
 # Then they had a pre-shared branch that cannot be rebased and so they
 # were correct in doing a merge to tie "old" and "oldrev" together.
 #
 # Also, we obviously have to be okay with:
 #
-# * --- * --- * --- oldrev --- new --- new --- newrev
+# A -- B            <-- origin/topic
+#       \
+#        c -- d     <-- topic
 
 refname="$1"
 oldrev="$2"
@@ -56,10 +60,9 @@ git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | while r
 		git merge-base --all $parents | while read baserev ; do
 			# For each parent
 			git rev-list -n 1 --parents $commit | sed 's/ /\n/g' | grep -v $commit | while read parent ; do
-				parent_is_old=$(git branch --contains $parent | wc -l)
 				all_commits=$(git rev-list --first-parent $baserev..$parent | wc -l)
 				new_commits=$(git rev-parse --not --branches | git rev-list --stdin $baserev..$parent | wc -l)
-				if [ $parent_is_old -gt 0 -a $all_commits -eq $new_commits ] ; then
+				if [ $all_commits -eq $new_commits ] ; then
 					# echo "parent=$parent"
 					# echo "all_commits=$all_commits"
 					# echo "new_commits=$new_commits"
