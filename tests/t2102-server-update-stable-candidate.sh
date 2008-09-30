@@ -86,26 +86,14 @@ test_expect_success 'topic1 cannot be changed' '
 	git reset --hard HEAD^
 '
 
-test_expect_success 'topic3 cannot initially be created on stable' '
+test_expect_success 'topic3 can initially be created on stable and then moved' '
 	git checkout -b topic3 stable &&
-	! git push origin topic3 2>push.err &&
-	cat push.err | grep "Creating a branch must include new commits" &&
+	git push origin topic3 &&
 
 	echo "$test_name" >a.topic3 &&
 	git add a.topic3 &&
 	git commit -m "$test_name" &&
 	git push origin topic3
-'
-
-test_expect_failure 'topic4 cannot point to the same place as topic4' '
-	git checkout -b topic4 topic3 &&
-	echo "$test_name" >a.topic4 &&
-	git add a.topic4 &&
-	git commit -m "making topic4" &&
-	git push origin topic4 &&
-
-	! git push origin topic4:topic3 2>push.err &&
-	cat push.err | grep "topic3 is already referred to by topic4"
 '
 
 test_done

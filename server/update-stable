@@ -40,8 +40,8 @@
 # would insinuate qa didn't happen on the merged result).
 #
 # Also, we want to enforce that C does not actually introduce
-# any diffs to the files between B and C--otherwise this changes
-# would not have appeared in QA.
+# any diffs to the files between B and C--as they would be changes
+# that QA does not see.
 #
 
 . $(dirname $0)/functions
@@ -64,30 +64,10 @@ if [ "$change_type" == "delete" ] ; then
 	exit 0
 fi
 
-if [ "$change_type" == "create" -a "$short_refname" != "stable" ] ; then
-	not_on_stable=$(git rev-list stable..$newrev)
-	if [ "$not_on_stable" == "" ] ; then
-		display_error_message "Creating a branch must include new commits"
-		exit 1
-	fi
-fi
-
 # create/delete is okay
 if [ "$change_type" != "update" ] ; then
 	exit 0
 fi
-
-# # The tip must always be new
-# already=$(git branch --contains "$newrev")
-# if [ "$already" != "" ] ; then
-#	already=${already##  }
-#	echo "----------------------------------------------------"
-#	echo
-#	echo "$short_refname is already referred to by $already"
-#	echo
-#	echo "----------------------------------------------------"
-#	exit 1
-#fi
 
 if [ "$short_refname" == "stable" ] ; then
 	# Stable enforcement
@@ -122,10 +102,14 @@ if [ "$short_refname" == "stable" ] ; then
 	fi
 else
 	# Check if candidate/topic is already in stable
-	git branch --contains "$oldrev" | grep stable >/dev/null
+	git branch --contains "$oldrev" | grep --quiet stable
 	if [ $? -eq 0 ] ; then
-		display_error_message "$short_refname has been merged into stable"
-		exit 1
+		# Okay, it's in stable...but was it previously just a 0-commit initial banch?
+		git rev-list --first-parent stable | grep --quiet "$oldrev"
+		if [ $? -ne 0 ] ; then
+			display_error_message "$short_refname has been merged into stable"
+			exit 1
+		fi
 	fi
 
 	# For now candidates can mix amongst each other so early exit
