@@ -48,6 +48,15 @@ test_expect_success 'create candidate1' '
 	git push origin candidate1
 '
 
+test_expect_success '0-commit branches are not caught by future stable' '
+	git checkout -b topic4 stable &&
+	git push origin topic4 &&
+
+	echo "$test_name" > a &&
+	git commit -a -m "$test_name" &&
+	git push origin topic4
+'
+
 test_expect_success 'topic1 cannot be changed' '
 	git checkout topic1 &&
 	echo "$test_name" >a.topic1 &&
