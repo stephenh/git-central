@@ -44,12 +44,11 @@
 # would not have appeared in QA.
 #
 
+. $(dirname $0)/functions
+
 refname="$1"
 oldrev="$2"
 newrev="$3"
-
-. $(dirname $0)/functions
-set_change_type
 
 case "$refname" in
 	refs/heads/*)
@@ -60,6 +59,7 @@ case "$refname" in
 		;;
 esac
 
+set_change_type
 if [ "$change_type" == "delete" ] ; then
 	exit 0
 fi
@@ -67,11 +67,7 @@ fi
 if [ "$change_type" == "create" -a "$short_refname" != "stable" ] ; then
 	not_on_stable=$(git rev-list stable..$newrev)
 	if [ "$not_on_stable" == "" ] ; then
-		echo "----------------------------------------------------"
-		echo
-		echo "Creating a branch must include new commits"
-		echo
-		echo "----------------------------------------------------"
+		display_error_message "Creating a branch must include new commits"
 		exit 1
 	fi
 fi
@@ -102,53 +98,33 @@ if [ "$short_refname" == "stable" ] ; then
 	# = all new commits on stable
 	count=$(git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | wc -l)
 	if [ "$count" -ne "1" ] ; then
-		echo "----------------------------------------------------"
-		echo
-		echo "Moving stable must entail a single commit"
-		echo
-		echo "----------------------------------------------------"
+		display_error_message "Moving stable must entail a single commit"
 		exit 1
 	fi
 
 	number_of_parents=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | wc -l)
 	if [ "$number_of_parents" -ne "2" ] ; then
-		echo "----------------------------------------------------"
-		echo
-		echo "Moving stable must entail a merge commit"
-		echo
-		echo "----------------------------------------------------"
+		display_error_message "Moving stable must entail a merge commit"
 		exit 1
 	fi
 
 	first_parent=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | head --lines=1)
 	if [ "$first_parent" != "$oldrev" ] ; then
-		echo "----------------------------------------------------"
-		echo
-		echo "Moving stable must have the previous stable as the first parent"
-		echo
-		echo "----------------------------------------------------"
+		display_error_message "Moving stable must have the previous stable as the first parent"
 		exit 1
 	fi
 
 	second_parent=$(git rev-list --no-walk --parents $newrev | sed 's/ /\n/g' | grep -v $newrev | tail --lines=1)
 	changed_lines=$(git diff $second_parent..$newrev | wc -l)
 	if [ "$changed_lines" -ne "0" ] ; then
-		echo "----------------------------------------------------"
-		echo
-		echo "Moving stable must not result in any changes from $second_parent"
-		echo
-		echo "----------------------------------------------------"
+		display_error_message "Moving stable must not result in any changes from $second_parent"
 		exit 1
 	fi
 else
 	# Check if candidate/topic is already in stable
 	git branch --contains "$oldrev" | grep stable >/dev/null
 	if [ $? -eq 0 ] ; then
-		echo "----------------------------------------------------"
-		echo
-		echo "$short_refname has been merged into stable"
-		echo
-		echo "----------------------------------------------------"
+		display_error_message "$short_refname has been merged into stable"
 		exit 1
 	fi
 
@@ -164,11 +140,7 @@ else
 	# Check if topic is already in candidates
 	candidate=$(git branch --contains "$oldrev" | grep -oP "candidate.*" --max-count=1)
 	if [ $? -eq 0 ] ; then
-		echo "----------------------------------------------------"
-		echo
-		echo "$short_refname has been merged into $candidate"
-		echo
-		echo "----------------------------------------------------"
+		display_error_message "$short_refname has been merged into $candidate"
 		exit 1
 	fi
 fi

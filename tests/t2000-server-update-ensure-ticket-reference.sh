@@ -16,13 +16,13 @@ test_expect_success 'setup' '
 '
 
 # setup the update hook
-install_server_hook 'update-ensure-ticket-reference' 'update'
+install_update_hook 'update-ensure-ticket-reference'
 
 test_expect_success 'reject with bad message' '
 	echo $test_name >a &&
 	git commit -a -m "$test_name" &&
 	head=$(git rev-parse HEAD) &&
-	! git push >push.out 2>push.err &&
+	! git push 2>push.err &&
 	cat push.err | grep "Commit $head does not reference a ticket"
 '
 
@@ -54,7 +54,7 @@ test_expect_success 'reject with bad message in second of three' '
 	echo "$test_name third" >a &&
 	git commit -a -m "$test_name third re #3222" &&
 
-	! git push >push.out 2>push.err &&
+	! git push 2>push.err &&
 	cat push.err | grep "Commit $head does not reference a ticket"
 '
 

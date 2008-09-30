@@ -3,6 +3,8 @@
 # Tags should only be allowed to point to commits that are within a branch.
 #
 
+. $(dirname $0)/functions
+
 refname="$1"
 oldrev="$2"
 newrev="$3"
@@ -24,11 +26,7 @@ fi
 
 contains=$(git branch --contains "$newrev" | wc -l)
 if [ $contains -eq 0 ] ; then
-	echo "----------------------------------------------------"
-	echo
-	echo "The tag $short_refname is not included in any branch."
-	echo
-	echo "----------------------------------------------------"
+	display_error_message "The tag $short_refname is not included in any branch."
 	exit 1
 fi
 

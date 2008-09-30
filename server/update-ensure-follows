@@ -9,6 +9,8 @@
 # in it.
 #
 
+. $(dirname $0)/functions
+
 # Command line
 refname="$1"
 oldrev="$2"
@@ -44,15 +46,11 @@ follows=($follows)
 count=${#follows[@]}
 for ((i = 0 ; i < count ; i++)) do
 	follow="${follows[$i]}"
-	git rev-parse "$follow"
+	git rev-parse --verify --quiet "$follow"
 	if [ $? -eq 0 ] ; then
 		missing_commits=$(git log ^$newrev $follow --pretty=oneline | wc -l)
 		if [ $missing_commits -ne 0 ] ; then
-			echo "----------------------------------------------------"
-			echo
-			echo "You need to merge $follow into $short_refname"
-			echo
-			echo "----------------------------------------------------"
+			display_error_message "You need to merge $follow into $short_refname"
 			exit 1
 		fi
 	fi

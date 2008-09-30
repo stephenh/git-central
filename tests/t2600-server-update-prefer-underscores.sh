@@ -32,7 +32,7 @@ test_expect_success 'pushing topicTopic fails' '
 	echo "$test_name" >a &&
 	git commit -a -m "$test_name on topicTopic" &&
 	! git push origin topicTopic 2>push.err &&
-	cat push.err | grep "Please prefer underscored branch names"
+	cat push.err | grep "Please use underscored branch names"
 '
 
 test_done

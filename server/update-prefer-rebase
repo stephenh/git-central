@@ -36,6 +36,8 @@
 #       \
 #        c -- d     <-- topic
 
+. $(dirname $0)/functions
+
 refname="$1"
 oldrev="$2"
 newrev="$3"
@@ -63,14 +65,8 @@ git rev-parse --not --branches | git rev-list --stdin $oldrev..$newrev | while r
 				all_commits=$(git rev-list --first-parent $baserev..$parent | wc -l)
 				new_commits=$(git rev-parse --not --branches | git rev-list --stdin $baserev..$parent | wc -l)
 				if [ $all_commits -eq $new_commits ] ; then
-					# echo "parent=$parent"
-					# echo "all_commits=$all_commits"
-					# echo "new_commits=$new_commits"
-					echo "----------------------------------------------------"
-					echo
-					echo "It looks like you should rebase instead of merging $commit"
-					echo
-					echo "----------------------------------------------------"
+					# echo "parent=$parent" # echo "all_commits=$all_commits" # echo "new_commits=$new_commits"
+					display_error_message "It looks like you should rebase instead of merging $commit"
 					exit 1
 				fi
 			done
