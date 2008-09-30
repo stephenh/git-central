@@ -1,0 +1,11 @@
+#!/bin/sh
+
+function set_branch_name() {
+	branch_name=$(git symbolic-ref --quiet HEAD)
+	if [[ $? -ne 0 ]] ; then
+		branch_name=""
+	else
+		branch_name=${branch_name/refs\/heads\//}
+	fi
+}
+

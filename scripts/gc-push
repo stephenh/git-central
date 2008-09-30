@@ -1,12 +1,12 @@
 #!/bin/sh
 
-branch_name=$(git symbolic-ref --quiet HEAD)
-if [[ $? -ne 0 ]] ; then
-	echo "not on a branch"
+. $(dirname $0)/functions
+
+set_branch_name
+if [ "$branch_name" == "" ] ; then
+	echo "Not on a branch"
 	exit 1
 fi
-
-branch_name=${branch_name/refs\/heads\//}
 
 git push origin $branch_name
 if [[ $? -ne 0 ]] ; then

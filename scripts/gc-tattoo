@@ -1,83 +1,27 @@
 #!/bin/sh
 
-#
-# Some docs
-#
-# A --- B --- C    stable
-# |\         /
-# | D ----- E      topic1
-#  \       /
-#   F --- G        topic2
-#
-# topic1 stable result
-#  D      A      contains, merge base=A
-#  D      C      contains, merge base=A
-#  E      A      contains, merge base=E
-#  E      C      contains, merge base=A
+. $(dirname $0)/functions
 
-#
-# * --- * --------- *   stable
-# |\     \
-# | A --- B ---- C      topic1
-# \             /
-#  D --- E --- F        topic2
-#
-# F: contains=topic1,topic2
-# C: contains=topic1
+git fetch
 
-head=$(git rev-parse HEAD)
+set_branch_name
 
-# Watch out for the very first commit in the repo because we use head^
-# Hopefully we can optimize this away later.
-git rev-parse --verify --quiet "$head^" >/dev/null
-if [ $? -ne 0 ] ; then
-	echo "0"
-	exit 0
-fi
+echo "branch_name='$branch_name'"
 
-contains=($(git branch -r --contains $head))
-if [ ${#contains[@]} -eq 0 ] ; then
-	echo "$head has not been pushed"
+if [ "$branch_name" == "" ] ; then
+	echo "Not on a branch (for $branch_name)"
 	exit 1
 fi
 
-potential=" "
-for branch in ${contains[@]} ; do
-	branch=${branch##origin/}
-	#echo "branch=$branch"
-
-	# Walk back until we hit a baserev that is not the branch_tip itself (because it was merged)
-	branch_tip=$(git rev-parse origin/$branch)
-	stable_rev=$(git rev-parse origin/stable)
-	stable_base=$(git merge-base "$branch_tip" "$stable_rev")
-
-	# echo "stable_base=$stable_base"
-	while [ "$stable_base" == "$branch_tip" ] ; do
-		stable_rev=$(git rev-parse "${stable_rev}^")
-		stable_base=$(git merge-base "$branch_tip" "$stable_rev")
-	done
-	# echo "stable_base=$stable_base"
-
-	git rev-list --first-parent $stable_base..$branch_tip | grep --quiet "$head"
-	if [ $? -eq 0 ] ; then
-		if [ "$branch" == "stable" ] ; then
-			describe=$(git describe $head 2>/dev/null)
-			if [ $? -eq 0 ] ; then
-				potential="$potential $describe"
-			else
-				potential="$potential stable-$head"
-			fi
-		else
-			number=$(git rev-list --first-parent "$stable_base..$head" | wc -l)
-			potential="$potential $branch-$number"
-		fi
-	fi
-done
-
-potential=($potential)
-if [ ${#potential[@]} -eq 1 ] ; then
-	echo "${potential[0]}"
-else
-	echo "unknown"
-fi
+describe=$(git describe --tags --always HEAD)
+case "$describe" in
+	r/*)
+		describe=${describe##r\/}
+		echo "$branch_name-$describe"
+		;;
+	*)
+		echo "No commit number tag found"
+		exit 1
+		;;
+esac
 

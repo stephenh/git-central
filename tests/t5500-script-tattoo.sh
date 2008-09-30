@@ -19,10 +19,13 @@ test_expect_success 'setup' '
 
 # tattoo makes assumptions based on the update stable hook sanity checks
 install_update_hook 'update-stable'
+install_post_receive_hook 'post-receive-assign-commit-numbers'
 
-test_expect_success 'tattoo of first commit' '
-	gc-tattoo | grep 0
+test_expect_success 'tattoo of unpublished commit fails' '
+	gc-tattoo | grep "No commit number tag found"
 '
+
+test_done
 
 test_expect_success 'tattoo 1' '
 	git checkout -b topic1 &&
