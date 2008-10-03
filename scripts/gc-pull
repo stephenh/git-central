@@ -1,5 +1,4 @@
 #!/bin/sh
-#!/bin/sh
 
 branch_name=$(git symbolic-ref --quiet HEAD)
 if [[ $? -ne 0 ]] ; then
