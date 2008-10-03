@@ -1,18 +1,26 @@
 #!/bin/sh
 
-# The hook is given three parameters: the ref of the previous HEAD, the ref of
-# the new HEAD (which may or may not have changed), and a flag indicating
-# whether the checkout was a branch checkout (changing branches, flag=1) or a
-# file checkout (retrieving a file from the index, flag=0).
+# $1 = previous hash
+# $2 = new hash (could be the same)
+# $3 = flag (0=retreiving from index, 1=new checkout)
 
-branch=$(git symbolic-ref HEAD 2>/dev/null)
+branch=$(git symbolic-ref --quiet HEAD)
 if [[ $? -ne 0 ]] ; then
 	exit 0
 fi
 
 branch=${branch/refs\/heads\//}
 
-git config --list | grep "branch.${branch}.rebase" > /dev/null
+rebase=$(git config "branch.${branch}.rebase")
 if [ $? -ne 0 ] ; then
-	git config --add "branch.${branch}.rebase" true
+	git config "branch.${branch}.rebase" "true"
 fi
+
+merge=$(git config "branch.${branch}.merge")
+remote=$(git config "branch.${branch}.remote")
+if [ "$branch" != "stable" -a "$remote" == "origin" -a "$merge" == "refs/heads/stable" ] ; then
+	git config "branch.${branch}.merge" "refs/heads/${branch}"
+fi
+
+exit 0
+

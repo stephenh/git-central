@@ -453,10 +453,24 @@ install_client_hook () {
     chmod +x "$TRASH_HOOKS/$2"
 }
 
+install_post_checkout_hook () {
+	mkdir -p ".git/hooks"
+	hook=".git/hooks/post-checkout"
+
+	echo "#!/bin/sh" >$hook
+	for ((i=1;i<=$#;i+=1)); do
+		eval script_name="$"$i
+		echo "../../client/$script_name \$1 \$2 \$3 &&" >>$hook
+	done
+	echo "echo >/dev/null" >>$hook
+
+	chmod +x $hook
+}
+
 install_server_hook () {
-    mkdir -p "server/.git/hooks"
-    cp "../../server/$1" "server/.git/hooks/$2"
-    chmod +x "server/.git/hooks/$2"
+	mkdir -p "server/.git/hooks"
+	cp "../../server/$1" "server/.git/hooks/$2"
+	chmod +x "server/.git/hooks/$2"
 }
 
 install_update_hook () {
