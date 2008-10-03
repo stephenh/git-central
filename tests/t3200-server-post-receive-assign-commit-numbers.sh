@@ -25,8 +25,8 @@ test_expect_success 'assign one new commit' '
 	git push origin master &&
 	git fetch &&
 
-	test "$(git rev-parse HEAD)" = "$(git rev-parse r/1)"
-	test "$(git describe --tags)" = "r/1"
+	test "$(git rev-parse HEAD)" = "$(git rev-parse r/1)" &&
+	test "$(git describe --tags)" = "r/1" &&
 	test "$(git rev-parse HEAD) refs/heads/master" = "$(cat server/.git/commitnumbers)"
 '
 
@@ -38,10 +38,10 @@ test_expect_success 'assign two new commits' '
 	git push origin master &&
 	git fetch &&
 
-	test "$(git rev-parse HEAD)" = "$(git rev-parse r/3)"
-	test "$(git describe --tags)" = "r/3"
+	test "$(git rev-parse HEAD)" = "$(git rev-parse r/3)" &&
+	test "$(git describe --tags)" = "r/3" &&
 
-	test "$(git rev-parse HEAD^)" = "$(git rev-parse r/2)"
+	test "$(git rev-parse HEAD^)" = "$(git rev-parse r/2)" &&
 	test "$(git describe --tags HEAD^)" = "r/2"
 '
 
