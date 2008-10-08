@@ -21,6 +21,8 @@ refname = sys.argv[2]
 describe = sys.argv[3]
 describe_tags = sys.argv[4]
 rev = sys.argv[5]
+author = sys.argv[6]
+message = sys.argv[7]
 
 def refs(ticket):
 	pass
@@ -40,12 +42,7 @@ authorPattern = re.compile(r'<(.+)@')
 tickets = {}
 
 env = open_environment(project)
-repos = env.get_repository()
-repos.sync()
-
-changeset = repos.get_changeset(rev)
-
-for command, ticketList in commandPattern.findall(changeset.message):
+for command, ticketList in commandPattern.findall(message):
 	if commands.has_key(command.lower()):
 		for ticketId in ticketPattern.findall(ticketList):
 			tickets.setdefault(ticketId, []).append(commands[command.lower()])
@@ -64,9 +61,9 @@ for ticketId, commands in tickets.iteritems():
 		if change['permanent']:
 			cnum += 1
 
-	username = authorPattern.findall(changeset.author)[0]
+	username = authorPattern.findall(author)[0]
 	now = datetime.now(utc)
-	message = "(On %s [changeset:%s %s]) %s" % (refname, rev, describe_tags, changeset.message)
+	message = "(On %s [changeset:%s %s]) %s" % (refname, rev, describe_tags, message)
 	ticket['branch'] = refname
 	ticket.save_changes(username, message, now, db, cnum+1)
 	db.commit()
