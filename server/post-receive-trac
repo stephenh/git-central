@@ -22,8 +22,8 @@ while read oldrev newrev refname ; do
 	echo "$new_commits" | git rev-list --reverse --stdin | while read commit ; do
 		set_describe "$commit"
 		set_describe_tags "$commit"
-        author="$(git rev-list -n 1 $commit --pretty=format:'%cn <%ce>' | grep -v $commit)"
-        message="$(git rev-list -n 1 $commit --pretty=format:'%s%n%b' | grep -v $commit)"
+		author="$(git rev-list -n 1 $commit --pretty=format:'%cn <%ce>' | grep -v $commit)"
+		message="$(git rev-list -n 1 $commit --pretty=format:'%s%n%b' | grep -v $commit)"
 		"$PYTHON" "$POST_RECEIVE_TRAC" "$TRAC_ENV" "$short_refname" "$describe" "$describe_tags" "$commit" "$author" "$message"
 	done
 done
