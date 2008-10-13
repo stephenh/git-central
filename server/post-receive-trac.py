@@ -58,8 +58,9 @@ for ticketId, commands in tickets.iteritems():
 	cnum = 0
 	tm = TicketModule(env)
 	for change in tm.grouped_changelog_entries(ticket, db):
-		if change['permanent']:
-			cnum += 1
+		c_cnum = change.get('cnum', None)
+		if c_cnum and int(c_cnum) > cnum:
+			cnum = int(c_cnum)
 
 	username = authorPattern.findall(author)[0]
 	now = datetime.now(utc)
