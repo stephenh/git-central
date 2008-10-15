@@ -50,7 +50,14 @@ for ((i = 0 ; i < count ; i++)) do
 	if [ $? -eq 0 ] ; then
 		missing_commits=$(git log ^$newrev $follow --pretty=oneline | wc -l)
 		if [ $missing_commits -ne 0 ] ; then
-			display_error_message "You need to merge $follow into $short_refname"
+			# If for some reason people are stupid and push with a --force flag,
+			# we should warn them to update first in case one of their teammates
+			# already merged for them
+			if [ "$(git merge-base $oldrev $newrev)" != "$oldrev" ] ; then
+				display_error_message "You need to update your local branch $short_refname"
+			else
+				display_error_message "You need to merge $follow into $short_refname"
+			fi
 			exit 1
 		fi
 	fi

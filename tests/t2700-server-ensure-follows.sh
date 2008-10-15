@@ -11,8 +11,6 @@ test_expect_success 'setup' '
 	git clone ./. server &&
 	rm -fr server/.git/hooks &&
 	git remote add origin ./server &&
-	git config --add branch.master.remote origin &&
-	git config --add branch.master.merge refs/heads/master &&
 	git fetch
 '
 
@@ -48,6 +46,29 @@ test_expect_success 'branch with moved stable requires merge' '
 	cat push.err | grep "You need to merge stable into topic1" &&
 
 	git merge stable &&
+	git push origin topic1
+'
+
+test_expect_success 'branch with moved stable is told to update first' '
+	git checkout stable &&
+	echo "$test_name" >a &&
+	git commit -a -m "Change on stable" &&
+	git push origin stable &&
+
+	# Someone fixes stable first
+	cd server &&
+	git checkout -f topic1 &&
+	git merge stable &&
+	cd .. &&
+
+	git checkout topic1 &&
+	echo "$test_name" >a.topic1 &&
+	git commit -a -m "Change on topic1." &&
+	! git push --force origin topic1 2>push.err &&
+	cat push.err | grep "You need to update your local branch topic1" &&
+
+	# Now it will work as the teammate merged for us
+	git pull origin topic1 &&
 	git push origin topic1
 '
 
