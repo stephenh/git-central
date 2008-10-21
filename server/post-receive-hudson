@@ -1,0 +1,59 @@
+#!/bin/sh
+
+. $(dirname $0)/functions
+
+email="$USER@payflex.com"
+
+while read oldrev newrev refname ; do
+	case "$refname" in
+		refs/tags/*)
+			exit 0
+			;;
+		refs/heads/*)
+			short_refname=${refname##refs/heads/}
+			;;
+		*)
+			echo >&2 "*** Unknown type of update to $refname"
+			exit 1
+			;;
+	esac
+
+	branch_config=$(wget -O - http://cbas1:8080/hudson/job/${short_refname}/config.xml 2>/dev/null)
+	if [ $? -ne 0 ] ; then
+		# Create the job
+		stable_config=$(wget -O - http://cbas1:8080/hudson/job/stable/config.xml 2>/dev/null)
+		if [ $? -ne 0 ] ; then
+			display_error_message "Could not get existing Hudson config for ${short_refname}"
+			exit 0
+		fi
+
+		branch_config="${stable_config/<branch>stable</<branch>$short_refname<}"
+
+		if [ "${branch_config/$email/}" == "$branch_config" ] ; then
+			branch_config="${branch_config/<recipients>/<recipients>$email }"
+		fi
+
+		echo "$branch_config" > branch_config.txt
+
+		# wget "http://cbas1:8080/hudson/createItem?name=${short_refname}&mode=copyJob&from=stable" > wget.txt
+		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "http://cbas1:8080/hudson/createItem?name=${short_refname}" >/dev/null 2>/dev/null
+		if [ $? -ne 0 ] ; then
+			display_error_message "Could not create new Hudson job for ${short_refname}"
+			exit 0
+		fi
+	else
+		# Add email to recipients list
+		if [ "${branch_config/$email/}" == "$branch_config" ] ; then
+			branch_config="${branch_config/<recipients>/<recipients>$email }"
+
+			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "http://cbas1:8080/hudson/job/${short_refname}/config.xml" >/dev/null 2>/dev/null
+			if [ $? -ne 0 ] ; then
+				display_error_message "Could not add $email to Hudson job ${short_refname}"
+				exit 0
+			fi
+		fi
+	fi
+done
+
+exit 0
+
