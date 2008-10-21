@@ -30,13 +30,15 @@ while read oldrev newrev refname ; do
 			exit 0
 		fi
 
+		# Replace stable with our branch
 		branch_config="${stable_config/<branch>stable</<branch>$short_refname<}"
 
+		# Add email to recipients list
 		if [ "${branch_config/$USER_EMAIL/}" == "$branch_config" ] ; then
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 		fi
 
-		# wget "http://cbas1:8080/hudson/createItem?name=${short_refname}&mode=copyJob&from=stable" > wget.txt
+		# Make the new job
 		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "http://cbas1:8080/hudson/createItem?name=${short_refname}" >/dev/null 2>/dev/null
 		if [ $? -ne 0 ] ; then
 			display_error_message "Could not create new Hudson job for ${short_refname}"
@@ -47,6 +49,7 @@ while read oldrev newrev refname ; do
 		if [ "${branch_config/$USER_EMAIL/}" == "$branch_config" ] ; then
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 
+			# Update the config
 			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "http://cbas1:8080/hudson/job/${short_refname}/config.xml" >/dev/null 2>/dev/null
 			if [ $? -ne 0 ] ; then
 				display_error_message "Could not add $USER_EMAIL to Hudson job ${short_refname}"
