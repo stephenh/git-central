@@ -2,8 +2,6 @@
 
 . $(dirname $0)/functions
 
-email="$USER@payflex.com"
-
 while read oldrev newrev refname ; do
 	case "$refname" in
 		refs/tags/*)
@@ -29,8 +27,8 @@ while read oldrev newrev refname ; do
 
 		branch_config="${stable_config/<branch>stable</<branch>$short_refname<}"
 
-		if [ "${branch_config/$email/}" == "$branch_config" ] ; then
-			branch_config="${branch_config/<recipients>/<recipients>$email }"
+		if [ "${branch_config/$USER_EMAIL/}" == "$branch_config" ] ; then
+			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 		fi
 
 		echo "$branch_config" > branch_config.txt
@@ -43,12 +41,12 @@ while read oldrev newrev refname ; do
 		fi
 	else
 		# Add email to recipients list
-		if [ "${branch_config/$email/}" == "$branch_config" ] ; then
-			branch_config="${branch_config/<recipients>/<recipients>$email }"
+		if [ "${branch_config/$USER_EMAIL/}" == "$branch_config" ] ; then
+			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 
 			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "http://cbas1:8080/hudson/job/${short_refname}/config.xml" >/dev/null 2>/dev/null
 			if [ $? -ne 0 ] ; then
-				display_error_message "Could not add $email to Hudson job ${short_refname}"
+				display_error_message "Could not add $USER_EMAIL to Hudson job ${short_refname}"
 				exit 0
 			fi
 		fi

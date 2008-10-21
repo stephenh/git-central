@@ -139,7 +139,7 @@ generate_email_header()
 	# --- Email (all stdout will be the email)
 	# Generate header
 	cat <<-EOF
-	From: ${USER}@payflex.com
+	From: $USER_EMAIL
 	To: $recipients
 	Subject: ${emailprefix} $short_refname $refname_type ${change_type}d. $describe
 	X-Git-Refname: $refname
