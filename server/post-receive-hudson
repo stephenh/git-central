@@ -16,6 +16,11 @@ while read oldrev newrev refname ; do
 			;;
 	esac
 
+	ignored=" $(git config hooks.post-receive-hudson.ignored) "
+	if [[ $ignored =~ " $short_refname " ]] ; then
+		exit 0
+	fi
+
 	branch_config=$(wget -O - http://cbas1:8080/hudson/job/${short_refname}/config.xml 2>/dev/null)
 	if [ $? -ne 0 ] ; then
 		# Create the job
