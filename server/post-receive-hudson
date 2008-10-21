@@ -36,8 +36,6 @@ while read oldrev newrev refname ; do
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 		fi
 
-		echo "$branch_config" > branch_config.txt
-
 		# wget "http://cbas1:8080/hudson/createItem?name=${short_refname}&mode=copyJob&from=stable" > wget.txt
 		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "http://cbas1:8080/hudson/createItem?name=${short_refname}" >/dev/null 2>/dev/null
 		if [ $? -ne 0 ] ; then
