@@ -21,10 +21,10 @@ while read oldrev newrev refname ; do
 		exit 0
 	fi
 
-	branch_config=$(wget -O - http://cbas1:8080/hudson/job/${short_refname}/config.xml 2>/dev/null)
+	branch_config=$(wget -O - $HUDSON_URL/job/${short_refname}/config.xml 2>/dev/null)
 	if [ $? -ne 0 ] ; then
 		# Create the job
-		stable_config=$(wget -O - http://cbas1:8080/hudson/job/stable/config.xml 2>/dev/null)
+		stable_config=$(wget -O - $HUDSON_URL/job/stable/config.xml 2>/dev/null)
 		if [ $? -ne 0 ] ; then
 			display_error_message "Could not get existing Hudson config for ${short_refname}"
 			exit 0
@@ -39,7 +39,7 @@ while read oldrev newrev refname ; do
 		fi
 
 		# Make the new job
-		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "http://cbas1:8080/hudson/createItem?name=${short_refname}" >/dev/null 2>/dev/null
+		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$HUDSON_URL/createItem?name=${short_refname}" >/dev/null 2>/dev/null
 		if [ $? -ne 0 ] ; then
 			display_error_message "Could not create new Hudson job for ${short_refname}"
 			exit 0
@@ -50,7 +50,7 @@ while read oldrev newrev refname ; do
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 
 			# Update the config
-			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "http://cbas1:8080/hudson/job/${short_refname}/config.xml" >/dev/null 2>/dev/null
+			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$HUDSON_URL/job/${short_refname}/config.xml" >/dev/null 2>/dev/null
 			if [ $? -ne 0 ] ; then
 				display_error_message "Could not add $USER_EMAIL to Hudson job ${short_refname}"
 				exit 0
