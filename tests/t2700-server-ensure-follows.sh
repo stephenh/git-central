@@ -135,5 +135,24 @@ test_expect_success 'excused branch with moved stable is okay' '
 	git push origin topic2
 '
 
+test_expect_success 'new branch without stable gets nicer error' '
+	git checkout -b topic3 stable &&
+	echo "$test_name" >a.topic3 &&
+	git add a.topic3 &&
+	git commit -m "Change on topic3" &&
+
+	git checkout stable &&
+	echo "$test_name" >a &&
+	git commit -a -m "Change on stable" &&
+	git push origin stable &&
+
+	git checkout topic3 &&
+	! git push origin topic3 2>push.err &&
+	grep "You need to merge stable into topic3" push.err &&
+
+	git merge stable &&
+	git push origin topic3
+'
+
 test_done
 
