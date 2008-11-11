@@ -1,21 +1,11 @@
 #!/bin/sh
 #
 # Copyright (c) 2007 Andy Parkins
+# Copyright (c) 2008 Stephen Haberman
 #
-# An example hook script to mail out commit update information.  This hook
-# sends emails listing new revisions to the repository introduced by the
-# change being reported.  The rule is that (for branch updates) each commit
+# This hook sends emails listing new revisions to the repository introduced by
+# the change being reported. The rule is that (for branch updates) each commit
 # will appear on one email and one email only.
-#
-# This hook is stored in the contrib/hooks directory.  Your distribution
-# will have put this somewhere standard.  You should make this script
-# executable then link to it in the repository you would like to use it in.
-# For example, on debian the hook is stored in
-# /usr/share/doc/git-core/contrib/hooks/post-receive-email:
-#
-#  chmod a+x post-receive-email
-#  cd /path/to/your/repository.git
-#  ln -sf /usr/share/doc/git-core/contrib/hooks/post-receive-email hooks/post-receive
 #
 # This hook script assumes it is enabled on the central repository of a
 # project, with all users pushing only to it and not between each other.  It
@@ -487,3 +477,4 @@ else
 		fi
 	done
 fi
+
