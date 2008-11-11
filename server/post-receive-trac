@@ -24,7 +24,7 @@ while read oldrev newrev refname ; do
 		set_describe_tags "$commit"
 		author="$(git rev-list -n 1 $commit --pretty=format:'%cn <%ce>' | grep -v $commit)"
 		message="$(git rev-list -n 1 $commit --pretty=format:'%s%n%b' | grep -v $commit)"
-		"$PYTHON" "$POST_RECEIVE_TRAC" "$TRAC_ENV" "$short_refname" "$describe" "$describe_tags" "$commit" "$author" "$message"
+		"$PYTHON" "$(dirname $0)/post-receive-trac.py" "$TRAC_ENV" "$short_refname" "$describe" "$describe_tags" "$commit" "$author" "$message"
 		# Trac will crap out if we submit ticket refs too quickly
 		# http://trac.edgewall.org/ticket/6466
 		sleep 1
