@@ -1,4 +1,4 @@
-From: author@payflex.com
+From: author@example.com
 To: commits@list.com
 Subject: [cbas] topic branch updated. $existing_commit_hash
 X-Git-Refname: refs/heads/topic

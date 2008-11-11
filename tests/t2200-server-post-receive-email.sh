@@ -4,7 +4,7 @@ test_description='server post-receive email notification'
 
 . ./test-lib.sh
 
-export USER=author
+export USER_EMAIL=author@example.com
 
 test_expect_success 'setup' '
 	echo "setup" >a &&
@@ -13,11 +13,10 @@ test_expect_success 'setup' '
 	git clone ./. server &&
 	rm -fr server/.git/hooks &&
 	git remote add origin ./server &&
-	git config --add branch.master.remote origin &&
-	git config --add branch.master.merge refs/heads/master &&
-	GIT_DIR=./server/.git git config --add hooks.post-receive-email.mailinglist commits@list.com &&
-	GIT_DIR=./server/.git git config --add hooks.post-receive-email.debug true &&
-	GIT_DIR=.
+	git config branch.master.remote origin &&
+	git config branch.master.merge refs/heads/master &&
+	GIT_DIR=./server/.git git config hooks.post-receive-email.mailinglist commits@list.com &&
+	GIT_DIR=./server/.git git config hooks.post-receive-email.debug true &&
 	echo cbas >./server/.git/description
 '
 
