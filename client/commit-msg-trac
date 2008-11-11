@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if test -f $GIT_DIR/MERGE_MSG ; then
+	exit 0
+fi
+
 grep -i '\(\(re\|refs\|qa\) #[0-9]\+\)\|\(no ticket\)' "$1" > /dev/null
 
 if [ $? -ne 0 ]

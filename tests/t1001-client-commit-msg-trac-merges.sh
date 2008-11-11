@@ -22,5 +22,14 @@ test_expect_success 'accepts merge' '
 	git log -n 1 HEAD | grep "Merge branch"
 '
 
+test_expect_success 'accepts hand-editted merge' '
+	git checkout topic1 &&
+	echo "$test_name" >>file &&
+	git commit -a -m "line three. re #3222." &&
+	git checkout master &&
+	git merge --no-ff --no-commit topic1 &&
+	git commit -F .git/MERGE_MSG
+'
+
 test_done
 
