@@ -63,7 +63,22 @@ test_expect_success 'pull does a rebase but does not fuck up merges' '
 	# Merge stable locally too--should conflict
 	git checkout topic2 &&
 	pull &&
-	test 1 = $(git rev-list --all --pretty=oneline | grep "replayed" | wc -l)
+	test 1 = $(git rev-list --all --pretty=oneline | grep "replayed" | wc -l) &&
+	push
+'
+
+test_expect_success 'pull moves when we have no local changes' '
+	git checkout topic2 &&
+
+	# Move topic2 on the server
+	cd server &&
+	git checkout topic2 &&
+	echo "$test_name" > a.topic2.server &&
+	git commit -a -m "move topic2 on the server" &&
+	cd .. &&
+
+	pull &&
+	test $(git rev-parse HEAD) = $(git rev-parse origin/topic2)
 '
 
 test_done

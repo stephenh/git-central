@@ -13,5 +13,9 @@ if [[ $? -ne 0 ]] ; then
 	exit $?
 fi
 
-GIT_EDITOR=: git rebase -p -i "origin/$branch_name"
+if test $(git rev-parse HEAD) = $(git merge-base HEAD origin/$branch_name) ; then
+	git rebase "origin/$branch_name"
+else
+	GIT_EDITOR=: git rebase -p -i "origin/$branch_name"
+fi
 
