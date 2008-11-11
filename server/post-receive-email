@@ -35,6 +35,8 @@
 # hooks.post-receive-email.envelopesender
 #   If set then the -f option is passed to sendmail to allow the envelope
 #   sender address to be set
+# hooks.post-receive-email.sendmail
+#   The path to sendmail, e.g. /usr/sbin/sendmail or /bin/msmtp
 #
 # Notes
 # -----
@@ -434,10 +436,9 @@ generate_delete_ltag_email()
 send_mail()
 {
 	if [ -n "$envelopesender" ] ; then
-		/usr/sbin/sendmail -t -f "$envelopesender"
+		$sendmail -t -f "$envelopesender"
 	else
-		# /usr/sbin/sendmail -t
-		/home/BIPFS/shaberman/local/bin/msmtp -t
+		$sendmail -t
 	fi
 }
 
@@ -466,6 +467,7 @@ announcerecipients=$(git config hooks.post-receive-email.announcelist)
 envelopesender=$(git config hooks.post-receive-email.envelopesender)
 emailprefix="[$projectdesc]"
 debug=$(git config hooks.post-receive-email.debug)
+sendmail=$(git config hooks.post-receive-email.sendmail)
 
 # --- Main loop
 # Allow dual mode: run from the command line just like the update hook, or
