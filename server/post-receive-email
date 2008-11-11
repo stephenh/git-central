@@ -27,6 +27,9 @@
 #   sender address to be set
 # hooks.post-receive-email.sendmail
 #   The path to sendmail, e.g. /usr/sbin/sendmail or /bin/msmtp
+# USER_EMAIL
+#   Environment variable that should be set by your repository-specific
+#   post-receive hook. E.g. export USER_EMAIL=${USER}@example.com
 #
 # Notes
 # -----
