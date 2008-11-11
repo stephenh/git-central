@@ -13,8 +13,8 @@ test_expect_success 'setup' '
 	git clone ./. server &&
 	rm -fr server/.git/hooks &&
 	git remote add origin ./server &&
-	git config --add branch.master.remote origin &&
-	git config --add branch.master.merge refs/heads/master &&
+	git config branch.master.remote origin &&
+	git config branch.master.merge refs/heads/master &&
 	git fetch &&
 
 	git checkout -b stable &&
@@ -22,17 +22,17 @@ test_expect_success 'setup' '
 '
 
 test_expect_success 'push only does one branch' '
-	gc-checkout topic1 &&
+	checkout topic1 &&
 	echo "$test_name" >a &&
 	git commit -a -m "move topic1" &&
 	git rev-parse HEAD >head.topic1 &&
 
-	gc-checkout topic2 &&
+	checkout topic2 &&
 	echo "$test_name" >a &&
 	git commit -a -m "move topic2" &&
 	git rev-parse HEAD >head.topic2 &&
 
-	gc-push &&
+	push &&
 	git rev-parse origin/topic2 >head.origin.topic2 &&
 	git rev-parse origin/topic1 >head.origin.topic1 &&
 

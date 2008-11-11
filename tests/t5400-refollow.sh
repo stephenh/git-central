@@ -42,7 +42,7 @@ test_expect_success 'make topic1 then move stable' '
 test_expect_success 'refollow fails with dirty index' '
 	echo "$test_name" >a &&
 	git add a &&
-	! gc-refollow 2>refollow.err &&
+	! refollow 2>refollow.err &&
 	cat refollow.err | grep "refusing to refollow--your index is not clean" &&
 	! git reset a
 '
@@ -51,7 +51,7 @@ test_expect_success 'refollow topic1 onto stable' '
 	echo "$test_name" >a &&
 	git commit -a -m "move stable" &&
 	git push origin stable &&
-	gc-refollow >refollow.out &&
+	refollow >refollow.out &&
 	cat refollow.out | grep "Merging stable into topic1...succeeded"
 
 	git checkout topic1 &&
@@ -62,7 +62,7 @@ test_expect_success 'refollow topic1 onto stable' '
 test_expect_success 'refollow does not double tap' '
 	# Still on topic1
 	head=$(git rev-parse HEAD) &&
-	gc-refollow &&
+	refollow &&
 	git pull origin topic1 &&
 	git rev-parse HEAD | grep $head
 '
@@ -76,7 +76,7 @@ test_expect_success 'refollow respects excused' '
 	git commit -a -m "move stable" &&
 	git push origin stable &&
 
-	gc-refollow &&
+	refollow &&
 
 	git checkout gitconfig &&
 	git pull origin gitconfig &&
@@ -94,7 +94,7 @@ test_expect_success 'refollow continues on conflict' '
 	git commit -a -m "move stable" &&
 	git push origin stable &&
 
-	gc-refollow > refollow.out &&
+	refollow > refollow.out &&
 	cat refollow.out | grep "Merging stable into topic1...succeeded"
 	cat refollow.out | grep "Merging stable into topic2...failed merge"
 '

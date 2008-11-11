@@ -18,7 +18,7 @@ test_expect_success 'setup' '
 '
 
 test_expect_success 'pull does a rebase' '
-	gc-checkout topic1 &&
+	checkout topic1 &&
 	echo "$test_name" >a.topic1 &&
 	git add a.topic1 &&
 	git commit -m "move topic1" &&
@@ -31,12 +31,12 @@ test_expect_success 'pull does a rebase' '
 	cd .. &&
 
 	# Only one parent
-	gc-pull &&
+	pull &&
 	test 1 = $(git cat-file commit $(git rev-parse HEAD) | grep parent | wc -l)
 '
 
 test_expect_success 'pull does a rebase but does not fuck up merges' '
-	gc-checkout topic2 &&
+	checkout topic2 &&
 	echo "$test_name on topic2" >a.topic2 &&
 	git add a.topic2 &&
 	git commit -a -m "create topic2" &&
@@ -62,7 +62,7 @@ test_expect_success 'pull does a rebase but does not fuck up merges' '
 
 	# Merge stable locally too--should conflict
 	git checkout topic2 &&
-	gc-pull &&
+	pull &&
 	test 1 = $(git rev-list --all --pretty=oneline | grep "replayed" | wc -l)
 '
 
