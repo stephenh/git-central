@@ -2,7 +2,7 @@
 
 branch_name=$(git symbolic-ref --quiet HEAD)
 if [[ $? -ne 0 ]] ; then
-	echo "not on a branch"
+	echo "Not on a branch"
 	exit 1
 fi
 
