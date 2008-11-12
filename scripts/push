@@ -1,4 +1,7 @@
 #!/bin/sh
+#
+# Makes push "just work" by only pushing the current branch to origin.
+#
 
 branch_name=$(git symbolic-ref --quiet HEAD)
 if [[ $? -ne 0 ]] ; then

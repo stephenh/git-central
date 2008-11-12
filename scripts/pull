@@ -1,4 +1,16 @@
 #!/bin/sh
+#
+# Makes pull "just work" by correctly rebasing of local commits on top of new
+# incoming commits.
+#
+# This avoids the "same-branch" merges that the default "git pull" creates of
+# your local branch foo being merged into the remote branch origin/foo.
+#
+# Also, even though "git pull" has a branch.<name>.rebase flag, it will replay
+# commits if you have local merges of other branches that are being rebased--the
+# "-p" parameter to git rebase prevents this reply but is not available from the
+# "git pull" command line or config options--hence this script.
+#
 
 branch_name=$(git symbolic-ref --quiet HEAD)
 if [[ $? -ne 0 ]] ; then

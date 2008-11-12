@@ -1,4 +1,14 @@
 #!/bin/sh
+#
+# Creates a separate DAG in your repo for git config files.
+#
+# This allows you to checkout/modify/push the config/hooks for your repo
+# locally. Then, with the help of post-receive-gitconfig, have your changes be
+# automatically updated on the server.
+#
+# Also, it keeps all of your repo-specific information in your repo instead of
+# leaking out into potentiallyshared hook scripts.
+#
 
 # Create an empty file object
 empty_file_hash=$(git hash-object -w --stdin <<FOO

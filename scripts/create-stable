@@ -1,4 +1,9 @@
 #!/bin/sh
+#
+# Creates a separate DAG in the repo to merge stable into.
+#
+# See the other docs about why this is a good idea.
+#
 
 # Make a root directory tree with no files in it
 config_tree_hash=$(git mktree <<FOO

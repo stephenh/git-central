@@ -1,4 +1,12 @@
 #!/bin/sh
+#
+# Makes checkout "just work" in terms of checking out the branch whether or not
+# it exists locally or remotely.
+#
+# If the branch exists locally (e.g. foo), then just check it out
+# If the branch exists remotely (e.g. origin/foo), then create a new local branch
+# If the branch does not exist remote, then make a new local branch and push it
+#
 
 branch_name=$1
 
