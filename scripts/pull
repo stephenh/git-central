@@ -5,7 +5,6 @@ if [[ $? -ne 0 ]] ; then
 	echo "Not on a branch"
 	exit 1
 fi
-
 branch_name=${branch_name/refs\/heads\//}
 
 git fetch
@@ -13,7 +12,8 @@ if [[ $? -ne 0 ]] ; then
 	exit $?
 fi
 
-if test $(git rev-parse HEAD) = $(git merge-base HEAD origin/$branch_name) ; then
+# rebase-p-i stops if nothing to do, even a ff, so do a non-i-p if needed
+if test "$(git rev-parse HEAD)" = "$(git merge-base HEAD origin/$branch_name)" ; then
 	git rebase "origin/$branch_name"
 else
 	GIT_EDITOR=: git rebase -p -i "origin/$branch_name"
