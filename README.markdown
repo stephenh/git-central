@@ -52,11 +52,9 @@ Client-side Hooks
 Bootstrapping Scripts
 =====================
 
-* [create-gitconfig][15]: creates a new DAG for managing repository-specific configuration
-* [create-stable][16]: creates a new DAG for the first release to merge in to
+* [create-gitconfig][15]: creates a new DAG for managing repository-specific configuration (works with [post-receive-gitconfig][3])
+* [create-stable][16]: creates a new DAG for the first release to merge in to (works with [update-stable][10])
 
 [15]: master/scripts/create-gitconfig
 [16]: master/scripts/create-stable
-
-
 
