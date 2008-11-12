@@ -16,7 +16,7 @@ test_expect_success 'setup' '
 	git remote add origin ./server
 '
 
-install_post_receive_hook 'post-receive-assign-commit-numbers' 'post-receive-trac'
+install_post_receive_hook 'post-receive-commitnumbers' 'post-receive-trac'
 
 test_expect_success 'new branch' '
 	git checkout -b topic1 master &&

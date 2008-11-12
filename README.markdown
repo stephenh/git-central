@@ -20,7 +20,7 @@ Server-side Hooks
 
 See the individual scripts for documentation, but an overview:
 
-* [post-receive-assign-commitnumbers][1]: makes Subversion-like monotonically increasing commit numbers for every commit
+* [post-receive-commitnumbers][1]: makes Subversion-like monotonically increasing commit numbers for every commit
 * [post-receive-email][2]: contrib email script with customizations for stuff like combined diffs
 * [post-receive-gitconfig][3]: auto-updates the git config+hooks on the server when updated in the repo
 * [post-receive-hudson][4]: auto-creates new jobs in Hudson when branches in git are created
@@ -31,7 +31,7 @@ See the individual scripts for documentation, but an overview:
 * [update-lock-check][9]: enforces locked/preserved branches
 * [update-stable][10]: enforces proper movement of stable
 
-[1]: master/server/post-receive-assign-commitnumbers
+[1]: master/server/post-receive-commitnumbers
 [2]: master/server/post-receive-email
 [3]: master/server/post-receive-gitconfig
 [4]: master/server/post-receive-hudson

@@ -13,17 +13,17 @@ test_expect_success 'setup' '
 	git remote add origin ./server
 '
 
-install_post_receive_hook 'post-receive-git-config'
+install_post_receive_hook 'post-receive-gitconfig'
 
 test_expect_success 'adding hook' '
 	ls server/.git/hooks | grep post-receive &&
-	../../scripts/make-gitconfig-branch &&
+	../../scripts/create-gitconfig &&
 	git checkout gitconfig &&
 
 	mkdir hooks &&
 	cd hooks &&
 	echo "#!/bin/sh" > post-receive &&
-	echo "../../../../server/post-receive-git-config" >> post-receive &&
+	echo "../../../../server/post-receive-gitconfig" >> post-receive &&
 	echo "echo barbar" >> post-receive &&
 	echo "#!/bin/sh" > update  &&
 	echo "echo foofoo" >> update &&

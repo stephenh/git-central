@@ -11,19 +11,19 @@ test_expect_success 'setup' '
 	git clone ./. server &&
 	rm -fr server/.git/hooks &&
 	git remote add origin ./server &&
-	git config --add branch.master.remote origin &&
-	git config --add branch.master.merge refs/heads/master &&
+	git config branch.master.remote origin &&
+	git config branch.master.merge refs/heads/master &&
 	git fetch
 '
 
-install_post_receive_hook 'post-receive-git-config'
+install_post_receive_hook 'post-receive-gitconfig'
 
 test_expect_success 'pushing initial value works' '
 	cd server &&
 	! git config --list | grep foo &&
 	cd .. &&
 
-	../../scripts/make-gitconfig-branch &&
+	../../scripts/create-gitconfig &&
 	git checkout gitconfig &&
 	echo "foo.foo=bar" > config &&
 	git commit -a -m "Set foo.foo=bar."

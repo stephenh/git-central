@@ -11,12 +11,12 @@ test_expect_success 'setup' '
 	git clone ./. server &&
 	rm -fr server/.git/hooks &&
 	git remote add origin ./server &&
-	git config --add branch.master.remote origin &&
-	git config --add branch.master.merge refs/heads/master &&
+	git config branch.master.remote origin &&
+	git config branch.master.merge refs/heads/master &&
 	git fetch
 '
 
-install_post_receive_hook 'post-receive-assign-commit-numbers'
+install_post_receive_hook 'post-receive-commitnumbers'
 
 test_expect_success 'assign one new commit' '
 	git checkout master &&
