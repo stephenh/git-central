@@ -37,5 +37,22 @@ test_expect_success 'simple commit' '
 	test_cmp 1.txt server/.git/refs.heads.master.out
 '
 
+test_expect_success 'simple commit with commitnumber' '
+	old_commit_hash=$(git rev-parse HEAD) &&
+	old_commit_abbrev=$(git rev-parse --short HEAD) &&
+
+	echo $test_name >a &&
+	git commit -a -m "$test_name" &&
+	git tag r/1000 &&
+	git push --tags &&
+	git push &&
+	new_commit_hash=$(git rev-parse HEAD) &&
+	new_commit_date=$(git log -n 1 --pretty=format:%cd HEAD) &&
+	new_commit_abbrev=$(git rev-parse --short HEAD) &&
+
+	interpolate ../t2200-2.txt 2.txt old_commit_hash old_commit_abbrev new_commit_hash new_commit_date new_commit_abbrev &&
+	test_cmp 2.txt server/.git/refs.heads.master.out
+'
+
 test_done
 

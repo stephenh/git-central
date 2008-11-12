@@ -63,7 +63,7 @@ generate_email()
 
 	set_change_type
 	set_rev_types
-	set_describe
+	set_describe_tags
 
 	# The revision type tells us what type the commit is, combined with
 	# the location of the ref we can decide between
@@ -136,7 +136,7 @@ generate_email_header()
 	cat <<-EOF
 	From: $USER_EMAIL
 	To: $recipients
-	Subject: ${emailprefix} $short_refname $refname_type ${change_type}d. $describe
+	Subject: ${emailprefix} $short_refname $refname_type ${change_type}d. $describe_tags
 	X-Git-Refname: $refname
 	X-Git-Reftype: $refname_type
 	X-Git-Oldrev: $oldrev

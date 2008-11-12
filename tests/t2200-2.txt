@@ -1,0 +1,38 @@
+From: author@example.com
+To: commits@list.com
+Subject: [cbas] master branch updated. r/1000
+X-Git-Refname: refs/heads/master
+X-Git-Reftype: branch
+X-Git-Oldrev: $old_commit_hash
+X-Git-Newrev: $new_commit_hash
+
+The branch, master has been updated
+       via $new_commit_abbrev simple commit with commitnumber
+      from $old_commit_abbrev simple commit
+
+Those revisions listed above that are new to this repository have
+not appeared on any other notification email; so we list those
+revisions in full, below.
+
+- Log -----------------------------------------------------------------
+
+commit $new_commit_hash
+Author: A U Thor <author@example.com>
+Date:   $new_commit_date
+
+    simple commit with commitnumber
+
+$new_commit_hash
+diff --git a/a b/a
+index b38f23c..bd6aaf6 100644
+--- a/a
++++ b/a
+@@ -1 +1 @@
+-simple commit
++simple commit with commitnumber
+
+-----------------------------------------------------------------------
+
+Summary of changes:
+ a |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)

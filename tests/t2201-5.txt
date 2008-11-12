@@ -1,6 +1,6 @@
 From: author@example.com
 To: commits@list.com
-Subject: [cbas] 2.1 tag updated. $new_commit_describe
+Subject: [cbas] 2.1 tag updated. 2.1
 X-Git-Refname: refs/tags/2.1
 X-Git-Reftype: tag
 X-Git-Oldrev: $old_commit_hash
