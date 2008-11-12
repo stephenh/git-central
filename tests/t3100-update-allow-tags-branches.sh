@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test_description='server update tags in branch check'
+test_description='server update allow tags and branches'
 
 . ./test-lib.sh
 
@@ -13,14 +13,14 @@ test_expect_success 'setup' '
 	git remote add origin ./server
 '
 
-install_update_hook 'update-ensure-tag-in-branch'
+install_update_hook 'update-allow-tags-branches'
 
 test_expect_success 'push only tag fails' '
 	echo "$test_name" >a &&
 	git commit -a -m "$test_name moved master" &&
 	git tag -a -m "tagged move as r1" r1 &&
 	! git push --tags 2>push.err &&
-	cat push.err | grep "The tag r1 is not included in any branch." &&
+	cat push.err | grep "The tag r1 is not included in any branch" &&
 
 	# But now it works if we push the commit first
 	git push &&
@@ -35,6 +35,7 @@ test_expect_success 'push works if done at the same time' '
 '
 
 test_expect_success 'moving branch back and deleting tag works' '
+	GIT_DIR=./server/.git git config hooks.update-allow-tags-branches.deletetag true
 	git reset --hard HEAD^ &&
 	git push --force origin master:master :r2
 '

@@ -3,8 +3,6 @@
 # An example hook script to blocks unannotated tags from entering.
 # Called by git-receive-pack with arguments: refname sha1-old sha1-new
 #
-# To enable this hook, make this file executable by "chmod +x update".
-#
 # Config
 # ------
 # hooks.update-allow-tags-branches.unannotatedtag
@@ -16,37 +14,23 @@
 # hooks.update-allow-tags-branches.deletebranch
 #   This boolean sets whether deleting branches will be allowed in the
 #   repository.  By default they won't be.
+# hooks.update-allow-tags-branches.nakedtag
+#   This boolean sets whether tags are allowed into the repo to commits
+#   that are not pointed to by a branch. By default they won't be.
 #
+
+. $(dirname $0)/functions
 
 # --- Command line
 refname="$1"
 oldrev="$2"
 newrev="$3"
 
-# --- Safety check
-if [ -z "$GIT_DIR" ]; then
-	echo "Don't run this script from the command line." >&2
-	echo " (if you want, you could supply GIT_DIR then run" >&2
-	echo "  $0 <ref> <oldrev> <newrev>)" >&2
-	exit 1
-fi
-
-if [ -z "$refname" -o -z "$oldrev" -o -z "$newrev" ]; then
-	echo "Usage: $0 <ref> <oldrev> <newrev>" >&2
-	exit 1
-fi
-
 # --- Config
 allowunannotatedtag=$(git config --bool hooks.update-allow-tags-branches.unannotatedtag)
 allowdeletebranch=$(git config --bool hooks.update-allow-tags-branches.deletebranch)
 allowdeletetag=$(git config --bool hooks.update-allow-tags-branches.deletetag)
-
-# check for no description
-projectdesc=$(sed -e '1q' "$GIT_DIR/description")
-if [ -z "$projectdesc" -o "$projectdesc" = "Unnamed repository; edit this file to name it for gitweb." ]; then
-	echo "*** Project description file hasn't been set" >&2
-	exit 1
-fi
+allownakedtag=$(git config --bool hooks.update-allow-tags-branches.nakedtag)
 
 # --- Check types
 # if $newrev is 0000...0000, it's a commit to delete a ref.
@@ -61,20 +45,30 @@ case "$refname","$newrev_type" in
 		# un-annotated tag
 		short_refname=${refname##refs/tags/}
 		if [ "$allowunannotatedtag" != "true" ]; then
-			echo "*** The un-annotated tag, $short_refname, is not allowed in this repository" >&2
-			echo "*** Use 'git tag [ -a | -s ]' for tags you want to propagate." >&2
+			display_error_message "Unannotated tags ($short_refname) are not allowed"
+			exit 1
+		fi
+		contains=$(git branch --contains "$newrev" | wc -l)
+		if [ $contains -eq 0 -a "$allownakedtag" != "true" ] ; then
+			display_error_message "The tag $short_refname is not included in any branch"
 			exit 1
 		fi
 		;;
 	refs/tags/*,delete)
 		# delete tag
 		if [ "$allowdeletetag" != "true" ]; then
-			echo "*** Deleting a tag is not allowed in this repository" >&2
+			display_error_message "Deleting tags is not allowed"
 			exit 1
 		fi
 		;;
 	refs/tags/*,tag)
 		# annotated tag
+		short_refname=${refname##refs/tags/}
+		contains=$(git branch --contains "$newrev" | wc -l)
+		if [ $contains -eq 0 -a "$allownakedtag" != "true" ] ; then
+			display_error_message "The tag $short_refname is not included in any branch"
+			exit 1
+		fi
 		;;
 	refs/heads/*,commit)
 		# branch
