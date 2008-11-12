@@ -11,17 +11,15 @@ test_expect_success 'setup' '
 	git clone ./. server &&
 	rm -fr server/.git/hooks &&
 	git remote add origin ./server &&
-	git config --add branch.master.remote origin &&
-	git config --add branch.master.merge refs/heads/master &&
+	git config branch.master.remote origin &&
+	git config branch.master.merge refs/heads/master &&
 	git fetch
 '
 
-install_update_hook 'update-lock-check.rb'
+install_update_hook 'update-lock-check'
 
 test_expect_success 'locked branch is rejected' '
-	cd server &&
-	git config hooks.update-lock-check.locked master &&
-	cd .. &&
+	echo master >> server/.git/locked &&
 
 	echo "$test_name" >a &&
 	git commit -a -m "changed" &&
@@ -30,9 +28,8 @@ test_expect_success 'locked branch is rejected' '
 '
 
 test_expect_success 'locked branch is rejected with multiple branches set' '
-	cd server &&
-	git config hooks.update-lock-check.locked "foo bar master" &&
-	cd .. &&
+	echo foo >> server/.git/locked &&
+	echo bar >> server/.git/locked &&
 
 	echo "$test_name" >a &&
 	git commit -a -m "changed" &&
@@ -41,10 +38,8 @@ test_expect_success 'locked branch is rejected with multiple branches set' '
 '
 
 test_expect_success 'preserved branch cannot be deleted' '
-	cd server &&
-	git config hooks.update-lock-check.locked "" &&
-	git config hooks.update-lock-check.preserved master &&
-	cd .. &&
+	echo > server/.git/locked &&
+	echo master > server/.git/preserved &&
 
 	! git push origin :master 2>push.err &&
 	cat push.err | grep "Branch master cannot be deleted"

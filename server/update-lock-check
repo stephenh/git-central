@@ -1,0 +1,39 @@
+#!/bin/sh
+
+#
+# Checks $GIT_DIR/locked and $GIT_DIR/preserved for branches that cannot be
+# touched.
+#
+
+. $(dirname $0)/functions
+
+refname=$1
+oldrev=$2
+newrev=$3
+
+# We only care about branches
+case "$refname" in
+	refs/heads/*)
+		short_refname=${refname##refs/heads/}
+		;;
+	*)
+		exit 0
+		;;
+esac
+
+if test -f "$GIT_DIR/locked" ; then
+	grep $short_refname "$GIT_DIR/locked"
+	if [ $? -eq 0 ] ; then
+		display_error_message "Branch $short_refname is locked"
+		exit 1
+	fi
+fi
+
+if test -f "$GIT_DIR/preserved" ; then
+	grep $short_refname "$GIT_DIR/preserved"
+	if [ $? -eq 0 ] ; then
+		display_error_message "Branch $short_refname cannot be deleted"
+		exit 1
+	fi
+fi
+
