@@ -45,8 +45,8 @@ When candidate_1.1 is released, we checkout stable, `git merge --no-ff candidate
 
 Note that the [update-stable][1] hook enforces this first-parent movement of stable and the [update-ensure-follows][2] enforces topic branches merge in the new release at their earliest possible convenience (i.e. before being able to push again).
 
-1: master/server/update-stable
-2: master/server/update-ensure-follows
+[1]: master/server/update-stable
+[2]: master/server/update-ensure-follows
 
 candidates
 ==========
