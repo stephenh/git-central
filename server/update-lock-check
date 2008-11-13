@@ -1,8 +1,8 @@
 #!/bin/sh
-
+#
 #
 # Checks $GIT_DIR/locked and $GIT_DIR/preserved for branches that cannot be
-# touched.
+# changed or deleted, respectively.
 #
 
 . $(dirname $0)/functions

@@ -7,11 +7,12 @@
 # the change being reported. The rule is that (for branch updates) each commit
 # will appear on one email and one email only.
 #
-# This hook script assumes it is enabled on the central repository of a
-# project, with all users pushing only to it and not between each other.  It
-# will still work if you don't operate in that style, but it would become
-# possible for the email to be from someone other than the person doing the
-# push.
+# Differences from the contrib script (off the top of my head):
+#
+# * Sends combined diff output which is great for viewing merge commits
+# * Changes order of commit listing to be oldest to newest
+# * Configurable sendmail path
+# * Use git describe --tags for the email subject to pick up commitnumbers
 #
 # Config
 # ------

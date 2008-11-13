@@ -1,4 +1,16 @@
 #!/bin/sh
+#
+# Auto-deploys the contents of the gitconfig branch to $GIT_DIR.
+#
+# The config file is handled specially--instead of the $GIT_DIR's config file
+# being copied over entirely, the gitconfig:config is evaluated line by line
+# with calls to `git config`. This means you can have settings in
+# $GIT_DIR/config that are not in the gitconfig:config and they will not be
+# overwritten.  Deleting $GIT_DIR/config entries has to be manually.
+#
+# Hooks are copied over entirely, but old ones are not deleted. Deleting
+# existing hooks has to be done manually.
+#
 
 while read oldrev newrev refname ; do
 	if [ "$refname" == "refs/heads/gitconfig" ] ; then

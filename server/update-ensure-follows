@@ -8,6 +8,13 @@
 # they are qa'ing will always have the last stable release
 # in it.
 #
+# Config
+# ------
+# hooks.update-ensure-follows.branches
+#  Space-separated list of branches that other branches must merge with
+# hooks.update-ensure-follows.excused
+#  Space-separated list of branches that are excused from following (e.g. gitconfig)
+#
 
 . $(dirname $0)/functions
 
