@@ -60,3 +60,18 @@ topics
 
 Topics are fairly obvious.
 
+rebase vs. merge
+================
+
+Merging:
+
+* Is great for cross-branch scenarios--merging candidates into stable, stable into topics, etc.
+* In cross-branch scenarios, fast-forwarding generally isn't preferred as seeing a no-op merge commit into stable or into a new candidate is still useful for DAG aesthetics
+
+Rebasing:
+
+* Is great for local commits to avoid same-branch merges (where a dev has a local, unshared commit and then creates a useless merge of it into the same branch that has since moved on)
+* Is a PITA unless you use the [pull][3] scripts
+
+[3]: master/scripts/pull
+
