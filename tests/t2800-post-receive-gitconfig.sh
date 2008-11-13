@@ -34,5 +34,17 @@ test_expect_success 'pushing initial value works' '
 	cd ..
 '
 
+test_expect_success 'pushing locked works' '
+	! test -f server/.git/locked &&
+
+	git checkout gitconfig &&
+	echo "foo" > locked &&
+	git add locked &&
+	git commit -m "Add locked"
+	git push origin gitconfig
+
+	test -f server/.git/locked
+'
+
 test_done
 

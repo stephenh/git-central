@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# Copyright (c) 2008 Stephen Haberman
+#
 # Auto-deploys the contents of the gitconfig branch to $GIT_DIR.
 #
 # The config file is handled specially--instead of the $GIT_DIR's config file
@@ -30,6 +32,11 @@ while read oldrev newrev refname ; do
 				git cat-file blob "$file_hash" > "hooks/$file_name"
 			done
 		fi
+
+		git ls-tree $newrev | grep -v hooks | grep -v config | grep blob | while read mode type file_hash file_name ; do
+			echo "Installing $file_name"
+			git cat-file blob "$file_hash" > "$file_name"
+		done
 	fi
 done
 
