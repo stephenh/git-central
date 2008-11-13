@@ -4,7 +4,7 @@ Overview
 
 I've found this workflow works well for close-collaboration topic branches in a typical enterprise software development project.
 
-By close-collaboration, I mean teams that are frequently sharing topic branches on a shared server and so prefer not to rebase their topic branches all the time.
+By close-collaboration, I mean teams that are frequently collaborating on topic branches via a shared server and so do not to rebase their topic branches all the time.
 
 Briefly:
 
