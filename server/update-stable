@@ -100,36 +100,5 @@ if [ "$short_refname" == "stable" ] ; then
 		display_error_message "Moving stable must not result in any changes from $second_parent"
 		exit 1
 	fi
-else
-	# Check if candidate/topic is already in stable
-	git branch --contains "$oldrev" | grep --quiet stable
-	if [ $? -eq 0 ] ; then
-		# Okay, it's in stable...but was it previously just a 0-commit initial banch?
-		git rev-list --first-parent stable | grep --quiet "$oldrev"
-		if [ $? -ne 0 ] ; then
-			display_error_message "$short_refname has been merged into stable"
-			exit 1
-		fi
-	fi
-
-	# For now candidates can mix amongst each other so early exit
-	case "$refname" in
-		refs/heads/candidate*)
-			exit 0
-			;;
-		*)
-			;;
-	esac
-
-	# Check if topic is already in candidates
-	candidate=$(git branch --contains "$oldrev" | grep -oP "candidate.*" --max-count=1)
-	if [ $? -eq 0 ] ; then
-		# Okay, it's in stable...but was it previously just a 0-commit initial banch?
-		git rev-list --first-parent stable | grep --quiet "$oldrev"
-		if [ $? -ne 0 ] ; then
-			display_error_message "$short_refname has been merged into $candidate"
-			exit 1
-		fi
-	fi
 fi
 
