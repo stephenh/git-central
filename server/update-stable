@@ -1,13 +1,18 @@
 #!/bin/sh
 
 #
-# This enforces stable/candidate/topic patterns.
+# This enforces stable moving in approved ways.
 #
 # Specifically:
 #
-# * stable must be moved 1 merge commit at a time (see below)
-# * candidates/topics are frozen once merged into stable
-# * topics are frozen once merged into candidates
+# * stable must move by only 1 commit-per-push
+# * the stable commit must have 2 and only 2 parents
+#   * The first parent must be the previous stable commit
+#   * The second parent is the tip of the candidate branch being released
+# * the stable commit must have the same contents as the candidate tip
+#   * Any merge conflicts should have been resolved in the candidate tip
+#     by pulling stable into the candidate and having qa/tests done--pulling
+#     candidate into stable should then apply cleanly
 #
 # For DAG aesthetics, we prefer stable only moving in the approved way,
 # which is via empty (no change) merge commits. The rationale is that
