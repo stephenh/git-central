@@ -58,9 +58,19 @@ Bootstrapping Scripts
 [15]: master/scripts/create-gitconfig
 [16]: master/scripts/create-stable
 
+Install Server-side Hooks
+=========================
+
+* Download/clone the `gc` repo to something like `/srv/git/gc`
+* Edit `your_repo.git/hooks/post-receive` and `your_repo.git/hooks/update` to call the `gc` hooks as appropriate
+  * [post-receive.sample][17] and [update.sample][18] are good templates to use for calling multiple hooks
+
+[17]: master/server/post-receive.sample
+[18]: master/server/update.sample
+
 Todo
 ====
 
 * Install approach for scripts
-* Install documentation for hooks
+* Install for client hooks
 

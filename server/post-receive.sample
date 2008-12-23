@@ -1,0 +1,11 @@
+#!/bin/sh
+
+nl=$'\n'
+input=""
+while read newref oldref refname ; do
+    input="$input$newref $oldref $refname$nl"
+done
+
+echo -n "$input" | /srv/git/gc/server/post-receive-one
+echo -n "$input" | /srv/git/gc/server/post-receive-two
+
