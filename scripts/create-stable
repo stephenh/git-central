@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Creates a separate DAG in the repo to merge stable into.
 #
@@ -7,12 +7,14 @@
 
 # Make a root directory tree with no files in it
 config_tree_hash=$(git mktree <<FOO
-FOO)
+FOO
+)
 
 # Commit the root directory tree
 commit_hash=$(git commit-tree $config_tree_hash <<FOO
 Initial commit on stable branch.
-FOO)
+FOO
+)
 
 echo "Made stable 0.0 commit $commit_hash"
 
