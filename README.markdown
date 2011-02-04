@@ -11,9 +11,9 @@ Scripts
 * [push][13]: pushes only the current branch to origin
 * [pull][14]: pulls changes down but with `rebase-i-p` to avoid same-branch merges and commit replays
 
-[12]: blob/master/scripts/checkout
-[13]: blob/master/scripts/push
-[14]: blob/master/scripts/pull
+[12]: /stephenh/git-central/blob/master/scripts/checkout
+[13]: /stephenh/git-central/blob/master/scripts/push
+[14]: /stephenh/git-central/blob/master/scripts/pull
 
 Server-side Hooks
 =================
@@ -31,23 +31,23 @@ See the individual scripts for documentation, but an overview:
 * [update-lock-check][9]: enforces locked/preserved branches
 * [update-stable][10]: enforces proper movement of stable
 
-[1]: blob/master/server/post-receive-commitnumbers
-[2]: blob/master/server/post-receive-email
-[3]: blob/master/server/post-receive-gitconfig
-[4]: blob/master/server/post-receive-hudson
-[5]: blob/master/server/post-receive-trac
-[6]: blob/master/server/update-allow-tags-branches
-[7]: blob/master/server/update-ensure-follows
-[8]: blob/master/server/update-ensure-ticket-reference
-[9]: blob/master/server/update-lost-check
-[10]: blob/master/server/update-stable
+[1]: /stephenh/git-central/blob/master/server/post-receive-commitnumbers
+[2]: /stephenh/git-central/blob/master/server/post-receive-email
+[3]: /stephenh/git-central/blob/master/server/post-receive-gitconfig
+[4]: /stephenh/git-central/blob/master/server/post-receive-hudson
+[5]: /stephenh/git-central/blob/master/server/post-receive-trac
+[6]: /stephenh/git-central/blob/master/server/update-allow-tags-branches
+[7]: /stephenh/git-central/blob/master/server/update-ensure-follows
+[8]: /stephenh/git-central/blob/master/server/update-ensure-ticket-reference
+[9]: /stephenh/git-central/blob/master/server/update-lost-check
+[10]: /stephenh/git-central/blob/master/server/update-stable
 
 Client-side Hooks
 =================
 
 * [commit-msg-trac][11]: enforces ticket references in commit messages
 
-[11]: blob/master/client/commit-msg-trac
+[11]: /stephenh/git-central/blob/master/client/commit-msg-trac
 
 Bootstrapping Scripts
 =====================
@@ -55,8 +55,8 @@ Bootstrapping Scripts
 * [create-gitconfig][15]: creates a new DAG for managing repository-specific configuration (works with [post-receive-gitconfig][3])
 * [create-stable][16]: creates a new DAG for the first release to merge in to (works with [update-stable][10])
 
-[15]: blob/master/scripts/create-gitconfig
-[16]: blob/master/scripts/create-stable
+[15]: /stephenh/git-central/blob/master/scripts/create-gitconfig
+[16]: /stephenh/git-central/blob/master/scripts/create-stable
 
 Install Server-side Hooks
 =========================
@@ -65,8 +65,8 @@ Install Server-side Hooks
 * Edit `your_repo.git/hooks/post-receive` and `your_repo.git/hooks/update` to call the `gc` hooks as appropriate
   * [post-receive.sample][17] and [update.sample][18] are good templates to use for calling multiple hooks
 
-[17]: blob/master/server/post-receive.sample
-[18]: blob/master/server/update.sample
+[17]: /stephenh/git-central/blob/master/server/post-receive.sample
+[18]: /stephenh/git-central/blob/master/server/update.sample
 
 Todo
 ====
