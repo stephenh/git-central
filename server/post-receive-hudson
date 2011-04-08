@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Copyright (c) 2008 Stephen Haberman
 #
@@ -19,7 +19,10 @@
 
 . $(dirname $0)/functions
 
-while read oldrev newrev refname ; do
+# get committer's email address
+USER_EMAIL=$(git log  -1 --pretty=format:'%ce')
+
+while  read oldrev newrev refname  ; do
 	case "$refname" in
 		refs/tags/*)
 			exit 0
@@ -39,25 +42,28 @@ while read oldrev newrev refname ; do
 		exit 0
 	fi
 
-	branch_config=$(wget -O - $hudson_url/job/${short_refname}/config.xml 2>/dev/null)
+	jobName=$REPOSITORY_BASE_NAME$short_refname
+        jobUrl=$hudson_url"/job/"${jobName}
+        jobNameMaster=$REPOSITORY_BASE_NAME"master"
+	branch_config=$(wget -O - $jobUrl/config.xml 2>/dev/null)
 	if [ $? -ne 0 ] ; then
 		# Create the job
-		stable_config=$(wget -O - $hudson_url/job/stable/config.xml 2>/dev/null)
+		stable_config=$(wget -O - $hudson_url/job/${jobNameMaster}/config.xml 2>/dev/null)
 		if [ $? -ne 0 ] ; then
-			display_error_message "Could not get existing Hudson config for ${short_refname}"
+			display_error_message "Could not get existing Hudson config for ${short_refname} at url ${hudson_url}"
 			exit 0
 		fi
 
 		# Replace stable with our branch
-		branch_config="${stable_config/<branch>stable</<branch>$short_refname<}"
-
+		branch_config="${stable_config/<name>master</<name>$short_refname<}"
+               
 		# Add email to recipients list
 		if [ "${branch_config/$USER_EMAIL/}" == "$branch_config" ] ; then
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 		fi
 
 		# Make the new job
-		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/createItem?name=${short_refname}" >/dev/null 2>/dev/null
+		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/createItem?name=${jobName}" >/dev/null 2>/dev/null
 		if [ $? -ne 0 ] ; then
 			display_error_message "Could not create new Hudson job for ${short_refname}"
 			exit 0
@@ -68,13 +74,20 @@ while read oldrev newrev refname ; do
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 
 			# Update the config
-			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/job/${short_refname}/config.xml" >/dev/null 2>/dev/null
+			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$jobUrl/config.xml" >/dev/null 2>/dev/null
 			if [ $? -ne 0 ] ; then
-				display_error_message "Could not add $USER_EMAIL to Hudson job ${short_refname}"
+				display_error_message "Could not add $USER_EMAIL to recipients list for Hudson job ${short_refname}"
 				exit 0
 			fi
 		fi
+
 	fi
+
+#Trigger Build
+buildUrl=$jobUrl"/build"
+curl -X POST $buildUrl -u git:banana -d token=$TOKEN --data-urlencode json="$JSON
+"
+
 done
 
 exit 0

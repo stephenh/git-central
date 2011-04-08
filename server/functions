@@ -85,7 +85,7 @@
 # "remotes/" will be ignored as well.
 #
 ##################################################
-function set_new_commits() {
+set_new_commits() {
 	nl=$'\n'
 
 	# Get all the current branches, not'd as we want only new ones
@@ -114,7 +114,7 @@ function set_new_commits() {
 # 0000->1234 (create)
 # 1234->2345 (update)
 # 2345->0000 (delete)
-function set_change_type() {
+set_change_type() {
 	if [ "$oldrev" == "0000000000000000000000000000000000000000" ] ; then
 		change_type="create"
 	else
@@ -129,7 +129,7 @@ function set_change_type() {
 # Sets: $newrev_type $oldrev_type $rev $rev_type
 # Assumes: $newrev $oldrev
 # --- Get the revision types
-function set_rev_types() {
+set_rev_types() {
 	newrev_type=$(git cat-file -t "$newrev" 2> /dev/null)
 	oldrev_type=$(git cat-file -t "$oldrev" 2> /dev/null)
 	if [ "$newrev" == "0000000000000000000000000000000000000000" ] ; then
@@ -145,7 +145,7 @@ function set_rev_types() {
 # Assumes: $rev
 #
 # The email subject will contain the best description of the ref that we can build from the parameters
-function set_describe() {
+set_describe() {
 	rev_to_describe="$rev"
 	if [ "$1" != "" ] ; then
 		rev_to_describe="$1"
@@ -161,7 +161,7 @@ function set_describe() {
 # Assumes: $rev
 #
 # The email subject will contain the best description of the ref that we can build from the parameters
-function set_describe_tags() {
+set_describe_tags() {
 	rev_to_describe="$rev"
 	if [ "$1" != "" ] ; then
 		rev_to_describe="$1"
@@ -184,7 +184,7 @@ function set_describe_tags() {
 # }
 # with_lock "foo.lock" several              # Works
 #
-function with_lock() {
+with_lock() {
 	lockfile="$1"
 	block="$2"
 	with_lock_has_lock=1
@@ -200,19 +200,20 @@ function with_lock() {
 	with_lock_has_lock=1
 }
 
-function with_lock_unlock_if_held() {
+with_lock_unlock_if_held() {
 	if [[ "$with_lock_has_lock" -eq 0 ]] ; then
 		rm -f "$lockfile"
 	fi
 }
 
-function display_error_message() {
+display_error_message() {
 	echo "----------------------------------------------------" >&2
 	echo ""                                                     >&2
 	echo ""                                                     >&2
-	for ((i=1;i<=$#;i+=1)); do
-	eval message="$"$i
-	echo "$message"                                             >&2
+	for i in `seq 1 $#`
+        do
+	   eval message="$"$i
+	   echo "$message"                                          >&2
 	done
 	echo ""                                                     >&2
 	echo ""                                                     >&2
