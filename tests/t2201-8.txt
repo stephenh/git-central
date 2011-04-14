@@ -11,8 +11,6 @@ The annotated tag, 2.0 has been deleted
 
 -----------------------------------------------------------------------
 tag 2.0
-Tagger: C O Mitter <committer@example.com>
-Date:   $old_tag_date
 
 2.0
 $new_commit_hash force update annotated tag

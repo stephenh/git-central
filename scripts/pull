@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Makes pull "just work" by correctly rebasing of local commits on top of new
 # incoming commits.

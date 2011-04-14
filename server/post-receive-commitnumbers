@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Creates commitnumbers as lightweight tags named "r/X" where X increases
 # monotonically.

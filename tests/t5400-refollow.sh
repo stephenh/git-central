@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='script refollow'
 
@@ -10,15 +10,15 @@ test_expect_success 'setup' '
 	echo "setup" >a &&
 	git add a &&
 	git commit -m "setup" &&
-	git clone ./. server &&
-	rm -fr server/.git/hooks &&
-	git remote add origin ./server &&
+	git clone -l . --bare server.git &&
+	rm -fr server.git/hooks &&
+	git remote add origin ./server.git &&
 	git checkout -b stable &&
 	git push origin stable
 '
 
 test_expect_success 'setup gitconfig' '
-	make-gitconfig-branch &&
+	create-gitconfig &&
 	git checkout gitconfig &&
 	echo "hooks.update-ensure-follows.branches=stable" >>config &&
 	echo "hooks.update-ensure-follows.excused=master gitconfig" >>config &&

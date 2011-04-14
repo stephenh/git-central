@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='server update trac ticket enforcer via shim'
 

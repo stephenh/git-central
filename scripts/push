@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Makes push "just work" by only pushing the current branch to origin.
 #

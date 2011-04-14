@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='server post-receive email notification'
 
@@ -10,14 +10,14 @@ test_expect_success 'setup' '
 	echo "setup" >a &&
 	git add a &&
 	git commit -m "setup" &&
-	git clone ./. server &&
-	rm -fr server/.git/hooks &&
-	git remote add origin ./server &&
+	git clone -l . --bare server.git &&
+	rm -fr server.git/hooks &&
+	git remote add origin ./server.git &&
 	git config branch.master.remote origin &&
 	git config branch.master.merge refs/heads/master &&
-	GIT_DIR=./server/.git git config hooks.post-receive-email.mailinglist commits@list.com &&
-	GIT_DIR=./server/.git git config hooks.post-receive-email.debug true &&
-	echo cbas >./server/.git/description
+	GIT_DIR=./server.git git config hooks.post-receive-email.mailinglist commits@list.com &&
+	GIT_DIR=./server.git git config hooks.post-receive-email.debug true &&
+	echo cbas >./server.git/description
 '
 
 install_post_receive_hook 'post-receive-email'
@@ -30,7 +30,7 @@ test_expect_success 'create annotated tag' '
 	eval $(git for-each-ref --shell "--format=tag_date=%(taggerdate)" refs/tags/1.0) &&
 
 	interpolate ../t2201-1.txt 1.txt new_commit_hash tag_hash tag_date &&
-	test_cmp 1.txt server/.git/refs.tags.1.0.out
+	test_cmp 1.txt server.git/refs.tags.1.0.out
 '
 
 test_expect_success 'commit on annotated tagged branch' '
@@ -52,7 +52,7 @@ test_expect_success 'commit on annotated tagged branch' '
 	git push &&
 	new_commit_abbrev=$(git rev-list -n 1 --pretty=format:%h HEAD | grep -v commit) &&
 	interpolate ../t2201-2.txt 2.txt old_commit_hash new_commit_hash new_commit_date new_commit_abbrev prior_commit_hash prior_commit_date old_commit_abbrev prior_commit_abbrev new_commit_abbrev &&
-	test_cmp 2.txt server/.git/refs.heads.master.out
+	test_cmp 2.txt server.git/refs.heads.master.out
 '
 
 test_expect_success 're-annotated tag branch' '
@@ -63,7 +63,7 @@ test_expect_success 're-annotated tag branch' '
 	eval $(git for-each-ref --shell "--format=tag_date=%(taggerdate)" refs/tags/2.0) &&
 
 	interpolate ../t2201-3.txt 3.txt new_commit_hash tag_hash tag_date &&
-	test_cmp 3.txt server/.git/refs.tags.2.0.out
+	test_cmp 3.txt server.git/refs.tags.2.0.out
 '
 
 test_expect_success 'force update annotated tag' '
@@ -80,7 +80,7 @@ test_expect_success 'force update annotated tag' '
 	eval $(git for-each-ref --shell "--format=tag_date=%(taggerdate)" refs/tags/2.0) &&
 
 	interpolate ../t2201-7.txt 7.txt old_tag_hash new_commit_hash new_tag_hash tag_date &&
-	test_cmp 7.txt server/.git/refs.tags.2.0.out
+	test_cmp 7.txt server.git/refs.tags.2.0.out
 '
 
 test_expect_success 'delete annotated tag' '
@@ -94,7 +94,7 @@ test_expect_success 'delete annotated tag' '
 	new_commit_hash=$(git rev-parse HEAD) &&
 
 	interpolate ../t2201-8.txt 8.txt old_tag_hash old_tag_date new_commit_describe new_commit_hash &&
-	test_cmp 8.txt server/.git/refs.tags.2.0.out
+	test_cmp 8.txt server.git/refs.tags.2.0.out
 '
 
 test_expect_success 'create lightweight tag' '
@@ -109,7 +109,7 @@ test_expect_success 'create lightweight tag' '
 	new_commit_date=$(git rev-list --no-walk --pretty=format:%ad HEAD | tail -n 1) &&
 
 	interpolate ../t2201-4.txt 4.txt new_commit_hash new_commit_describe new_commit_date &&
-	test_cmp 4.txt server/.git/refs.tags.2.1.out
+	test_cmp 4.txt server.git/refs.tags.2.1.out
 '
 
 test_expect_success 'force update lightweight tag' '
@@ -125,7 +125,7 @@ test_expect_success 'force update lightweight tag' '
 	new_commit_date=$(git rev-list --no-walk --pretty=format:%ad HEAD | tail -n 1) &&
 
 	interpolate ../t2201-5.txt 5.txt new_commit_hash new_commit_describe new_commit_date old_commit_hash &&
-	test_cmp 5.txt server/.git/refs.tags.2.1.out
+	test_cmp 5.txt server.git/refs.tags.2.1.out
 '
 
 test_expect_success 'delete lightweight tag' '
@@ -135,7 +135,7 @@ test_expect_success 'delete lightweight tag' '
 	git push origin :refs/tags/2.1 &&
 
 	interpolate ../t2201-6.txt 6.txt old_commit_hash old_commit_describe &&
-	test_cmp 6.txt server/.git/refs.tags.2.1.out
+	test_cmp 6.txt server.git/refs.tags.2.1.out
 '
 
 test_done

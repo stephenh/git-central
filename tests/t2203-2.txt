@@ -17,7 +17,7 @@ revisions in full, below.
 - Log -----------------------------------------------------------------
 
 commit $new_commit_hash
-Merge: $old_commit_hash $second_stable_hash
+Merge: $old_commit_abbrev $second_stable_abbrev
 Author: A U Thor <author@example.com>
 Date:   $new_commit_date
 

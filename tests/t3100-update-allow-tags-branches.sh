@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='server update allow tags and branches'
 
@@ -8,9 +8,9 @@ test_expect_success 'setup' '
 	echo "setup" >a &&
 	git add a &&
 	git commit -m "setup" &&
-	git clone ./. server &&
-	rm -fr server/.git/hooks &&
-	git remote add origin ./server
+	git clone -l . --bare server.git &&
+	rm -fr server.git/hooks &&
+	git remote add origin ./server.git
 '
 
 install_update_hook 'update-allow-tags-branches'
@@ -35,7 +35,7 @@ test_expect_success 'push works if done at the same time' '
 '
 
 test_expect_success 'moving branch back and deleting tag works' '
-	GIT_DIR=./server/.git git config hooks.update-allow-tags-branches.deletetag true
+	GIT_DIR=./server.git git config hooks.update-allow-tags-branches.deletetag true
 	git reset --hard HEAD^ &&
 	git push --force origin master:master :r2
 '

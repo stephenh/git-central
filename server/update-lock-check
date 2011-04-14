@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #
 # Checks $GIT_DIR/locked and $GIT_DIR/preserved for branches that cannot be

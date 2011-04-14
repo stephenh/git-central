@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Creates a separate DAG in your repo for git config files.
 #

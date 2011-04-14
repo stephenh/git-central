@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Makes checkout "just work" in terms of checking out the branch whether or not
 # it exists locally or remotely.

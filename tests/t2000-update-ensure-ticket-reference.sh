@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='server update trac ticket enforcer'
 
@@ -8,9 +8,9 @@ test_expect_success 'setup' '
 	echo This is a test. >a &&
 	git add a &&
 	git commit -m "a" &&
-	git clone ./. server &&
-	rm -fr server/.git/hooks &&
-	git remote add origin ./server &&
+	git clone --bare -l ./ server.git &&
+	rm -fr server.git/hooks &&
+	git remote add origin ./server.git &&
 	git config --add branch.master.remote origin &&
 	git config --add branch.master.merge refs/heads/master
 '

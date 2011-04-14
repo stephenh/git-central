@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='server post receive trac with commit numbers'
 
@@ -11,9 +11,9 @@ test_expect_success 'setup' '
 	echo "setup" >a &&
 	git add a &&
 	git commit -m "setup" &&
-	git clone ./. server &&
-	rm -fr server/.git/hooks &&
-	git remote add origin ./server
+	git clone -l . --bare server.git &&
+	rm -fr server.git/hooks &&
+	git remote add origin ./server.git
 '
 
 install_post_receive_hook 'post-receive-commitnumbers' 'post-receive-trac'

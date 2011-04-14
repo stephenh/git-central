@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='script pull'
 
@@ -10,9 +10,9 @@ test_expect_success 'setup' '
 	echo "setup" >a &&
 	git add a &&
 	git commit -m "setup" &&
-	git clone ./. server &&
-	rm -fr server/.git/hooks &&
-	git remote add origin ./server &&
+	git clone -l . --bare server.git &&
+	rm -fr server.git/hooks &&
+	git remote add origin ./server.git &&
 	git checkout -b stable &&
 	git push origin stable
 '
@@ -24,10 +24,12 @@ test_expect_success 'pull does a rebase' '
 	git commit -m "move topic1" &&
 
 	# Move topic1 on the server
-	cd server &&
+	git clone server.git person2 &&
+	cd person2 &&
 	git checkout topic1 &&
 	echo "$test_name" >a &&
 	git commit -a -m "move topic1 on the server" &&
+	git push origin &&
 	cd .. &&
 
 	# Only one parent
@@ -53,11 +55,13 @@ test_expect_success 'pull does a rebase but does not fuck up merges' '
 	git merge stable &&
 
 	# Move topic2 on the server
-	cd server &&
-	git checkout topic2 &&
+	cd person2 &&
+	git fetch &&
+	git checkout -b topic2 origin/topic2 &&
 	echo "$test_name" >a.topic2.server &&
 	git add a.topic2.server &&
 	git commit -m "move topic2 on the server" &&
+	git push origin &&
 	cd .. &&
 
 	# Merge stable locally too--should conflict
@@ -71,10 +75,11 @@ test_expect_success 'pull moves when we have no local changes' '
 	git checkout topic2 &&
 
 	# Move topic2 on the server
-	cd server &&
-	git checkout topic2 &&
+	cd person2 &&
+	git pull &&
 	echo "$test_name" > a.topic2.server &&
 	git commit -a -m "move topic2 on the server" &&
+	git push origin &&
 	cd .. &&
 
 	pull &&

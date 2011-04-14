@@ -10,7 +10,7 @@ T = $(wildcard t[0-9][0-9][0-9][0-9]-*.sh)
 all: $(T) clean
 
 $(T):
-	@echo "*** $@ ***"; GIT_CONFIG=.git/config /bin/sh $@ $(GIT_TEST_OPTS)
+	@echo "*** $@ ***"; GIT_CONFIG=.git/config /bin/bash $@ $(GIT_TEST_OPTS)
 
 clean:
 	rm -fr 'trash directory'

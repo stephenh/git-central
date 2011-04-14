@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='server assign commit numbers'
 
@@ -8,9 +8,9 @@ test_expect_success 'setup' '
 	echo "setup" >a &&
 	git add a &&
 	git commit -m "setup" &&
-	git clone ./. server &&
-	rm -fr server/.git/hooks &&
-	git remote add origin ./server &&
+	git clone -l . --bare server.git &&
+	rm -fr server.git/hooks &&
+	git remote add origin ./server.git &&
 	git config branch.master.remote origin &&
 	git config branch.master.merge refs/heads/master &&
 	git fetch
@@ -27,7 +27,7 @@ test_expect_success 'assign one new commit' '
 
 	test "$(git rev-parse HEAD)" = "$(git rev-parse r/1)" &&
 	test "$(git describe --tags)" = "r/1" &&
-	test "$(git rev-parse HEAD) refs/heads/master" = "$(cat server/.git/commitnumbers)"
+	test "$(git rev-parse HEAD) refs/heads/master" = "$(cat server.git/commitnumbers)"
 '
 
 test_expect_success 'assign two new commits' '

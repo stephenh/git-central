@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 /srv/git/gc/server/update-one $1 $2 $3 &&
 /srv/git/gc/server/update-two $1 $2 $3

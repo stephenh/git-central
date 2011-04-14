@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # Copyright (c) 2005 Junio C Hamano
 #
@@ -334,6 +334,7 @@ test_must_fail () {
 # - not all diff versions understand "-u"
 
 test_cmp() {
+    echo "t=${GIT_TEST_CMP}"
 	$GIT_TEST_CMP "$@"
 }
 
@@ -468,19 +469,19 @@ install_post_checkout_hook () {
 }
 
 install_server_hook () {
-	mkdir -p "server/.git/hooks"
-	cp "../../server/$1" "server/.git/hooks/$2"
-	chmod +x "server/.git/hooks/$2"
+	mkdir -p "server.git/hooks"
+	cp "../../server.git/$1" "server.git/hooks/$2"
+	chmod +x "server.git/hooks/$2"
 }
 
 install_update_hook () {
-	mkdir -p "server/.git/hooks"
-	hook="server/.git/hooks/update"
+	mkdir -p "server.git/hooks"
+	hook="server.git/hooks/update"
 
-	echo "#!/bin/sh" >$hook
+	echo "#!/bin/bash" >$hook
 	for ((i=1;i<=$#;i+=1)); do
 		eval script_name="$"$i
-		echo "../../../../server/$script_name \$1 \$2 \$3 &&" >>$hook
+		echo "../../../server/$script_name \$1 \$2 \$3 &&" >>$hook
 	done
 	echo "echo >/dev/null" >>$hook
 
@@ -488,11 +489,11 @@ install_update_hook () {
 }
 
 install_post_receive_hook () {
-	mkdir -p "server/.git/hooks"
-	hook="server/.git/hooks/post-receive"
+	mkdir -p "server.git/hooks"
+	hook="server.git/hooks/post-receive"
 
 	cat >$hook <<-'EOF'
-		#!/bin/sh
+		#!/bin/bash
 		nl=$'\n'
 		input=""
 		while read newref oldref refname ; do
@@ -502,7 +503,7 @@ install_post_receive_hook () {
 
 	for ((i=1;i<=$#;i+=1)); do
 		eval script_name="$"$i
-		echo "echo -n \"\$input\" | ../../../../server/$script_name" >>$hook
+		echo "echo -n \"\$input\" | ../../../server/$script_name" >>$hook
 	done
 
 	chmod +x $hook

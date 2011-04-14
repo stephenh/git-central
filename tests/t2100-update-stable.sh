@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='server update stable enforcer'
 
@@ -8,9 +8,9 @@ test_expect_success 'setup' '
 	echo setup >a &&
 	git add a &&
 	git commit -m "a" &&
-	git clone ./. server &&
-	git remote add origin ./server &&
-	rm -fr server/.git/hooks
+	git clone -l . --bare server.git &&
+	git remote add origin ./server.git &&
+	rm -fr server.git/hooks
 '
 
 # setup the update hook
@@ -47,7 +47,7 @@ test_expect_success 'reject fast-forward to candidate branch' '
 
 	git checkout stable &&
 	git merge topic1 >merge.out &&
-	cat merge.out | grep "Fast forward" &&
+	cat merge.out | grep "Fast-forward" &&
 	! git push 2>push.err &&
 	cat push.err | grep "Moving stable must entail a single commit" &&
 	git reset --hard ORIG_HEAD

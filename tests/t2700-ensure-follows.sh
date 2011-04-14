@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 test_description='server update ensure follows'
 
@@ -8,9 +8,9 @@ test_expect_success 'setup' '
 	echo "setup" >a &&
 	git add a &&
 	git commit -m "setup" &&
-	git clone ./. server &&
-	rm -fr server/.git/hooks &&
-	git remote add origin ./server &&
+	git clone -l . --bare server.git &&
+	rm -fr server.git/hooks &&
+	git remote add origin ./server.git &&
 	git fetch
 '
 
@@ -22,9 +22,7 @@ test_expect_success 'pushing stable works' '
 '
 
 test_expect_success 'branch with unmoved stable is okay' '
-	cd server &&
-	git config hooks.update-ensure-follows.branches stable &&
-	cd .. &&
+	GIT_DIR=server.git git config hooks.update-ensure-follows.branches stable &&
 
 	git checkout -b topic1 &&
 	echo "$test_name" >a.topic1 &&
@@ -56,9 +54,12 @@ test_expect_success 'branch with moved stable is told to update first' '
 	git push origin stable &&
 
 	# Someone fixes stable first
-	cd server &&
+	git clone server.git person2 &&
+	cd person2 &&
 	git checkout -f topic1 &&
-	git merge stable &&
+	git remote add server ../server.git &&
+	git merge origin/stable &&
+	git push server topic1 &&
 	cd .. &&
 
 	git checkout topic1 &&
@@ -73,9 +74,7 @@ test_expect_success 'branch with moved stable is told to update first' '
 '
 
 test_expect_success 'branch with moved stable as second branch requires merge' '
-	cd server &&
-	git config hooks.update-ensure-follows.branches "foo stable" &&
-	cd .. &&
+	GIT_DIR=server.git git config hooks.update-ensure-follows.branches "foo stable" &&
 
 	git checkout stable &&
 	echo "$test_name" >a &&
@@ -128,9 +127,7 @@ test_expect_success 'excused branch with moved stable is okay' '
 	git commit -a -m "Change on topic2 again" &&
 	! git push origin topic2 &&
 
-	cd server &&
-	git config hooks.update-ensure-follows.excused topic2 &&
-	cd .. &&
+	GIT_DIR=server.git git config hooks.update-ensure-follows.excused topic2 &&
 
 	git push origin topic2
 '

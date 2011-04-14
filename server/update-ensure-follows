@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # When updating a branch, ensure it has the latest changes
 # from other branches, e.g. stable.
