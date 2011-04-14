@@ -14,7 +14,8 @@
 #   Whitespace separated list of branches to not make jobs for.
 # USER_EMAIL
 #   Environment variable that should be set by your repository-specific
-#   post-receive hook. E.g. export USER_EMAIL=${USER}@example.com
+#   post-receive hook. E.g. export USER_EMAIL=${USER}@example.com. If
+#   unset, defaults to the email by of the pushed commit.
 #
 
 . $(dirname $0)/functions
@@ -37,6 +38,10 @@ while read oldrev newrev refname ; do
 	hudson_url=$(git config hooks.post-receive-hudson.url)
 	if [[ $ignored =~ " $short_refname " ]] ; then
 		exit 0
+	fi
+
+	if [ -z "$USER_EMAIL" ] ; then
+		USER_EMAIL=$(git log -1 --pretty=format:'%ce' $newrev)
 	fi
 
 	branch_config=$(wget -O - $hudson_url/job/${short_refname}/config.xml 2>/dev/null)
