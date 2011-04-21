@@ -12,7 +12,6 @@
 # see contrib/hooks/ for a sample, or uncomment the next line and
 # rename the file to "post-receive".
 
-
 # get base repository name
 if [ $(git rev-parse --is-bare-repository) = true ]
 then
@@ -28,6 +27,6 @@ export JSON="{\"parameter\": [{\"name\": \"Configuration\", \"value\": \"Release
 {\"name\": \"DistributionBuild\", \"value\": \"FALSE\"}], \"\": \"\"}"
 
 export TOKEN="EGGPLANT"
-/usr/share/doc/git-core/contrib/hooks/post-receive-hudson
+/usr/share/doc/git-core/contrib/hooks/post-receive-hudson 
 
 
