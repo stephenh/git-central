@@ -19,23 +19,32 @@
 # USER_EMAIL
 #   Environment variable that should be set by your repository-specific
 #   post-receive hook. E.g. export USER_EMAIL=${USER}@example.com
-#
+# NAMESPACE
+#   Prefix all hudson job names with $NAMESPACE.
+#   Useful for hudson installations building mutliple repostories
+# PARENT_JOB
+#   name of hudson job (minus $NAMESPACE, if set) to be used as a template
+#   to create new jobs for new branches
+# PARENT_BRANCH
+#  git branch of PARENT_JOB
 
 . $(dirname $0)/functions
 
 
+# This function is passed arguments through stdin in the form
+# <oldrev> <newrev> <refname>
 hudson()
 {
 	
-        case "$1" in
+        case "$3" in
 		refs/tags/*)
 			exit 0
 			;;
 		refs/heads/*)
-			short_refname=${1##refs/heads/}
+			short_refname=${3##refs/heads/}
 			;;
 		*)
-			display_error_message "*** Unknown type of update to $1"
+			display_error_message "*** Unknown type of update to $3"
 			exit 1
 			;;
 	esac
@@ -50,25 +59,33 @@ hudson()
 
         # parse USER_EMAIL from git log if not set
         if [ -z "$USER_EMAIL" ] ; then
-		USER_EMAIL=$(git log -1 --pretty=format:'%ce' $newrev)
+		USER_EMAIL=$(git log -1 --pretty=format:'%ce' $2)
 	fi
 
 
+	job=$NAMESPACE$short_refname
+        jobUrl=$hudson_url"/job/"${job}
 
-	jobName=$REPOSITORY_BASE_NAME$short_refname
-        jobUrl=$hudson_url"/job/"${jobName}
-        jobNameMaster=$REPOSITORY_BASE_NAME"master"
+        if [ -z "$PARENT_JOB" ] ; then
+              PARENT_JOB="master"
+	fi
+
+        if [ -z "$PARENT_BRANCH" ] ; then
+              PARENT_BRANCH="master"
+	fi
+
+        jobParent=$NAMESPACE$PARENT_JOB
 	branch_config=$(wget -O - $jobUrl/config.xml 2>/dev/null)
 	if [ $? -ne 0 ] ; then
 		# Create the job
-		stable_config=$(wget -O - $hudson_url/job/${jobNameMaster}/config.xml 2>/dev/null)
+		stable_config=$(wget -O - $hudson_url/job/${jobParent}/config.xml 2>/dev/null)
 		if [ $? -ne 0 ] ; then
 			display_error_message "Could not get existing Hudson config for ${short_refname} at url ${hudson_url}"
 			exit 0
 		fi
 
 		# Replace stable with our branch
-		branch_config="${stable_config/<name>master</<name>$short_refname<}"
+		branch_config="${stable_config/<name>$PARENT_BRANCH</<name>$short_refname<}"
                
 		# Add email to recipients list
 		if [ "${branch_config/$USER_EMAIL/}" == "$branch_config" ] ; then
@@ -76,9 +93,9 @@ hudson()
 		fi
 
 		# Make the new job
-		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/createItem?name=${jobName}" >/dev/null 2>/dev/null
+		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/createItem?name=${job}" >/dev/null 2>/dev/null
 		if [ $? -ne 0 ] ; then
-			display_error_message "Could not create new Hudson job for ${short_refname}"
+			display_error_message "Could not create new Hudson job ${job} for ${short_refname}"
 			exit 0
 		fi
 	else
@@ -107,11 +124,11 @@ curl -X POST $buildUrl -u $hudson_user:$hudson_password -d token=$TOKEN --data-u
 
 # Main()
 
-if [ -n "$1" ]; then
-	hudson $1	
+if [ -n "$1" -a -n "$2" -a -n "$3" ]; then
+	hudson $1 $2 $3	
 else
 	while read oldrev newrev refname
 	do
-	hudson $refname	
+	hudson $oldrev $newrev $refname	
 	done
 fi
