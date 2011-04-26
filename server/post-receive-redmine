@@ -27,7 +27,7 @@ fi
 
 cd "$GIT_DIR"
 if [ -d "$GIT_REDMINE_BASE/$(basename $PWD .git)" ]; then
-        git push "$GIT_REDMINE_BASE/$(basename $PWD .git)"
+        git push --all "$GIT_REDMINE_BASE/$(basename $PWD .git)"
 	if [ $? -eq 0 ]; then
 		echo "Successfully updated Redmine $(basename $PWD .git) bare repository"
 	else
