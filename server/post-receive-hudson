@@ -35,7 +35,32 @@
 # <oldrev> <newrev> <refname>
 hudson()
 {
-	
+
+	# --- Interpret
+	# 0000->1234 (create)
+	# 1234->2345 (update)
+	# 2345->0000 (delete)
+	if expr "$1" : '0*$' >/dev/null
+	then
+		change_type="create"
+	else
+		if expr "$2" : '0*$' >/dev/null
+		then
+			change_type="delete"
+		else
+			change_type="update"
+		fi
+	fi
+
+	case "$change_type" in
+	create|update)
+
+		;;
+	delete)
+                exit 0
+		;;
+	esac
+
         case "$3" in
 		refs/tags/*)
 			exit 0
@@ -80,7 +105,7 @@ hudson()
 		# Create the job
 		stable_config=$(wget -O - $hudson_url/job/${jobParent}/config.xml 2>/dev/null)
 		if [ $? -ne 0 ] ; then
-			display_error_message "Could not get existing Hudson config for ${short_refname} at url ${hudson_url}"
+			display_error_message "Could not get existing Hudson config from job ${jobParent} for ${short_refname} at url ${hudson_url}"
 			exit 0
 		fi
 
@@ -107,7 +132,6 @@ hudson()
 			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$jobUrl/config.xml" >/dev/null 2>/dev/null
 			if [ $? -ne 0 ] ; then
 				display_error_message "Could not add $USER_EMAIL to recipients list for Hudson job ${short_refname}"
-				exit 0
 			fi
 		fi
 
