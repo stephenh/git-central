@@ -10,59 +10,73 @@
 # ------
 # hooks.post-receive-hudson.url
 #   The url to hudson, e.g. http://internalbox/hudson
+# hooks.post-receive-hudson.user
+#   Hudson user name
+# hooks.post-receive-hudson.password
+#   Hudson password
 # hooks.post-receive-hudson.ignored
 #   Whitespace separated list of branches to not make jobs for.
 # USER_EMAIL
 #   Environment variable that should be set by your repository-specific
-#   post-receive hook. E.g. export USER_EMAIL=${USER}@example.com. If
-#   unset, defaults to the email by of the pushed commit.
+#   post-receive hook. E.g. export USER_EMAIL=${USER}@example.com
 #
 
 . $(dirname $0)/functions
 
-while read oldrev newrev refname ; do
-	case "$refname" in
+
+hudson()
+{
+	
+        case "$1" in
 		refs/tags/*)
 			exit 0
 			;;
 		refs/heads/*)
-			short_refname=${refname##refs/heads/}
+			short_refname=${1##refs/heads/}
 			;;
 		*)
-			echo >&2 "*** Unknown type of update to $refname"
+			display_error_message "*** Unknown type of update to $1"
 			exit 1
 			;;
 	esac
 
+        echo "Check ignore list"
 	ignored=" $(git config hooks.post-receive-hudson.ignored) "
 	hudson_url=$(git config hooks.post-receive-hudson.url)
 	if [[ $ignored =~ " $short_refname " ]] ; then
+
 		exit 0
 	fi
 
-	if [ -z "$USER_EMAIL" ] ; then
+        # parse USER_EMAIL from git log if not set
+        if [ -z "$USER_EMAIL" ] ; then
 		USER_EMAIL=$(git log -1 --pretty=format:'%ce' $newrev)
 	fi
 
-	branch_config=$(wget -O - $hudson_url/job/${short_refname}/config.xml 2>/dev/null)
+
+
+	jobName=$REPOSITORY_BASE_NAME$short_refname
+        jobUrl=$hudson_url"/job/"${jobName}
+        jobNameMaster=$REPOSITORY_BASE_NAME"master"
+	branch_config=$(wget -O - $jobUrl/config.xml 2>/dev/null)
 	if [ $? -ne 0 ] ; then
 		# Create the job
-		stable_config=$(wget -O - $hudson_url/job/stable/config.xml 2>/dev/null)
+		stable_config=$(wget -O - $hudson_url/job/${jobNameMaster}/config.xml 2>/dev/null)
 		if [ $? -ne 0 ] ; then
-			display_error_message "Could not get existing Hudson config for ${short_refname}"
+			display_error_message "Could not get existing Hudson config for ${short_refname} at url ${hudson_url}"
 			exit 0
 		fi
 
 		# Replace stable with our branch
-		branch_config="${stable_config/<branch>stable</<branch>$short_refname<}"
-
+		branch_config="${stable_config/<name>master</<name>$short_refname<}"
+               
 		# Add email to recipients list
 		if [ "${branch_config/$USER_EMAIL/}" == "$branch_config" ] ; then
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 		fi
 
 		# Make the new job
-		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/createItem?name=${short_refname}" >/dev/null 2>/dev/null
+		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/createItem?name=${jobName}" >/dev/null 2>/dev/null
 		if [ $? -ne 0 ] ; then
 			display_error_message "Could not create new Hudson job for ${short_refname}"
 			exit 0
@@ -73,14 +87,31 @@ while read oldrev newrev refname ; do
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 
 			# Update the config
-			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/job/${short_refname}/config.xml" >/dev/null 2>/dev/null
+			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$jobUrl/config.xml" >/dev/null 2>/dev/null
 			if [ $? -ne 0 ] ; then
-				display_error_message "Could not add $USER_EMAIL to Hudson job ${short_refname}"
+				display_error_message "Could not add $USER_EMAIL to recipients list for Hudson job ${short_refname}"
 				exit 0
 			fi
 		fi
+
 	fi
-done
 
-exit 0
+echo "Trigger Build for job $jobUrl"
+buildUrl=$jobUrl"/build"
+hudson_user=$(git config hooks.post-receive-hudson.user)
+hudson_password=$(git config hooks.post-receive-hudson.password)
+curl -X POST $buildUrl -u $hudson_user:$hudson_password -d token=$TOKEN --data-urlencode json="$JSON
+"
 
+}
+
+# Main()
+
+if [ -n "$1" ]; then
+	hudson $1	
+else
+	while read oldrev newrev refname
+	do
+	hudson $refname	
+	done
+fi
