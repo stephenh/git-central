@@ -10,61 +10,117 @@
 # ------
 # hooks.post-receive-hudson.url
 #   The url to hudson, e.g. http://internalbox/hudson
+# hooks.post-receive-hudson.user
+#   Hudson user name
+# hooks.post-receive-hudson.password
+#   Hudson password
 # hooks.post-receive-hudson.ignored
 #   Whitespace separated list of branches to not make jobs for.
 # USER_EMAIL
 #   Environment variable that should be set by your repository-specific
-#   post-receive hook. E.g. export USER_EMAIL=${USER}@example.com. If
-#   unset, defaults to the email by of the pushed commit.
-#
+#   post-receive hook. E.g. export USER_EMAIL=${USER}@example.com
+# NAMESPACE
+#   Prefix all hudson job names with $NAMESPACE.
+#   Useful for hudson installations building mutliple repostories
+# PARENT_JOB
+#   name of hudson job (minus $NAMESPACE, if set) to be used as a template
+#   to create new jobs for new branches
+# PARENT_BRANCH
+#  git branch of PARENT_JOB
 
 . $(dirname $0)/functions
 
-while read oldrev newrev refname ; do
-	case "$refname" in
+
+# This function is passed arguments through stdin in the form
+# <oldrev> <newrev> <refname>
+hudson()
+{
+
+	# --- Interpret
+	# 0000->1234 (create)
+	# 1234->2345 (update)
+	# 2345->0000 (delete)
+	if expr "$1" : '0*$' >/dev/null
+	then
+		change_type="create"
+	else
+		if expr "$2" : '0*$' >/dev/null
+		then
+			change_type="delete"
+		else
+			change_type="update"
+		fi
+	fi
+
+	case "$change_type" in
+	create|update)
+
+		;;
+	delete)
+                exit 0
+		;;
+	esac
+
+        case "$3" in
 		refs/tags/*)
 			exit 0
 			;;
 		refs/heads/*)
-			short_refname=${refname##refs/heads/}
+			short_refname=${3##refs/heads/}
 			;;
 		*)
-			echo >&2 "*** Unknown type of update to $refname"
+			display_error_message "*** Unknown type of update to $3"
 			exit 1
 			;;
 	esac
 
+        echo "Check ignore list"
 	ignored=" $(git config hooks.post-receive-hudson.ignored) "
 	hudson_url=$(git config hooks.post-receive-hudson.url)
 	if [[ $ignored =~ " $short_refname " ]] ; then
+
 		exit 0
 	fi
 
-	if [ -z "$USER_EMAIL" ] ; then
-		USER_EMAIL=$(git log -1 --pretty=format:'%ce' $newrev)
+        # parse USER_EMAIL from git log if not set
+        if [ -z "$USER_EMAIL" ] ; then
+		USER_EMAIL=$(git log -1 --pretty=format:'%ce' $2)
 	fi
 
-	branch_config=$(wget -O - $hudson_url/job/${short_refname}/config.xml 2>/dev/null)
+
+	job=$NAMESPACE$short_refname
+        jobUrl=$hudson_url"/job/"${job}
+
+        if [ -z "$PARENT_JOB" ] ; then
+              PARENT_JOB="master"
+	fi
+
+        if [ -z "$PARENT_BRANCH" ] ; then
+              PARENT_BRANCH="master"
+	fi
+
+        jobParent=$NAMESPACE$PARENT_JOB
+	branch_config=$(wget -O - $jobUrl/config.xml 2>/dev/null)
 	if [ $? -ne 0 ] ; then
 		# Create the job
-		stable_config=$(wget -O - $hudson_url/job/stable/config.xml 2>/dev/null)
+		stable_config=$(wget -O - $hudson_url/job/${jobParent}/config.xml 2>/dev/null)
 		if [ $? -ne 0 ] ; then
-			display_error_message "Could not get existing Hudson config for ${short_refname}"
+			display_error_message "Could not get existing Hudson config from job ${jobParent} for ${short_refname} at url ${hudson_url}"
 			exit 0
 		fi
 
 		# Replace stable with our branch
-		branch_config="${stable_config/<branch>stable</<branch>$short_refname<}"
-
+		branch_config="${stable_config/<name>$PARENT_BRANCH</<name>$short_refname<}"
+               
 		# Add email to recipients list
 		if [ "${branch_config/$USER_EMAIL/}" == "$branch_config" ] ; then
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 		fi
 
 		# Make the new job
-		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/createItem?name=${short_refname}" >/dev/null 2>/dev/null
+		wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/createItem?name=${job}" >/dev/null 2>/dev/null
 		if [ $? -ne 0 ] ; then
-			display_error_message "Could not create new Hudson job for ${short_refname}"
+			display_error_message "Could not create new Hudson job ${job} for ${short_refname}"
 			exit 0
 		fi
 	else
@@ -73,14 +129,30 @@ while read oldrev newrev refname ; do
 			branch_config="${branch_config/<recipients>/<recipients>$USER_EMAIL }"
 
 			# Update the config
-			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$hudson_url/job/${short_refname}/config.xml" >/dev/null 2>/dev/null
+			wget --header "Content-Type: text/xml" --post-data="$branch_config" -O - "$jobUrl/config.xml" >/dev/null 2>/dev/null
 			if [ $? -ne 0 ] ; then
-				display_error_message "Could not add $USER_EMAIL to Hudson job ${short_refname}"
-				exit 0
+				display_error_message "Could not add $USER_EMAIL to recipients list for Hudson job ${short_refname}"
 			fi
 		fi
+
 	fi
-done
 
-exit 0
+echo "Trigger Build for job $jobUrl"
+buildUrl=$jobUrl"/build"
+hudson_user=$(git config hooks.post-receive-hudson.user)
+hudson_password=$(git config hooks.post-receive-hudson.password)
+curl -X POST $buildUrl -u $hudson_user:$hudson_password -d token=$TOKEN --data-urlencode json="$JSON
+"
 
+}
+
+# Main()
+
+if [ -n "$1" -a -n "$2" -a -n "$3" ]; then
+	hudson $1 $2 $3	
+else
+	while read oldrev newrev refname
+	do
+	hudson $oldrev $newrev $refname	
+	done
+fi

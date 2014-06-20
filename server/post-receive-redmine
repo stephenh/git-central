@@ -1,0 +1,58 @@
+#!/bin/sh
+# PostRecieve Hook to update and create bare clones for use with Redmine.
+# GIT_REPO_TYPE Takes either ssh or file.
+# GIT_REPO_BASE is only for ssh use and should be the user@URL
+# set -x
+user="git"
+group="www-data"
+GIT_REDMINE_BASE="/sn/git/checkouts"
+GIT_REPO_TYPE="file"
+GIT_REPO_BASE="user@URL"
+
+GIT_DIR=$(git rev-parse --git-dir 2>/dev/null)
+if [ -z "$GIT_DIR" ]; then
+        echo >&2 "fatal: post-receive: GIT_DIR not set"
+        exit 1
+fi
+
+if [ ! -d $GIT_REDMINE_BASE ]; then
+	GIT_REDMINE_BASE_TEMP=$(git config hooks.redmineGitBase)
+	if [ -z "$GIT_REDMINE_BASE_TEMP" ]; then
+		echo >&2 "fatal: post-receive: redmineGitBase not set"
+		exit 1
+	else
+		GIT_REDMINE_BASE="$GIT_REDMINE_BASE_TEMP"
+	fi
+fi
+
+cd "$GIT_DIR"
+if [ -d "$GIT_REDMINE_BASE/$(basename $PWD .git)" ]; then
+        git push --all "$GIT_REDMINE_BASE/$(basename $PWD .git)"
+	if [ $? -eq 0 ]; then
+		echo "Successfully updated Redmine $(basename $PWD .git) bare repository"
+	else
+		echo "Failed to update Redmine $(basename $PWD .git) bare repository"
+	fi
+else
+	GIT_DIR="$PWD"
+	BASE_DIR="$(basename $GIT_DIR .git)"
+        cloned=0
+	cd "$GIT_REDMINE_BASE"
+        if [ "$GIT_REPO_TYPE" = "ssh" ] && [ ! -z $GIT_REPO_BASE ]; then
+                git clone --bare "$GIT_REPO_BASE:$BASE_DIR" "$GIT_REDMINE_BASE/$BASE_DIR"
+                if [ $? -eq 0 ]; then
+                        cloned=1
+                fi
+        elif [ "$GIT_REPO_TYPE" = "file" ]; then
+                git clone --bare "$GIT_DIR" "$GIT_REDMINE_BASE/$BASE_DIR"
+                if [ $? -eq 0 ]; then
+                        cloned=1
+                fi
+        fi
+        if [ $cloned -eq 1 ]; then
+		echo "Successfully created $BASE_DIR repository in $GIT_REDMINE_BASE"
+                chown "$user:$group" -Rf "$GIT_REDMINE_BASE/$BASE_DIR"
+                chmod 775 -Rf "$GIT_REDMINE_BASE/$BASE_DIR"
+		chmod -x -Rf "$GIT_REDMINE_BASE/$BASE_DIR/hooks"
+        fi
+fi

@@ -211,9 +211,10 @@ display_error_message() {
 	echo "----------------------------------------------------" >&2
 	echo ""                                                     >&2
 	echo ""                                                     >&2
-	for ((i=1;i<=$#;i+=1)); do
-	eval message="$"$i
-	echo "$message"                                             >&2
+	for i in `seq 1 $#`
+        do
+	   eval message="$"$i
+	   echo "$message"                                          >&2
 	done
 	echo ""                                                     >&2
 	echo ""                                                     >&2
